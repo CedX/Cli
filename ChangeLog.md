@@ -1,5 +1,8 @@
 # Changelog
 
+## Version [5.1.1](https://github.com/CedX/Cli/compare/v5.1.0...v5.1.1)
+- Fixed the entry point of the [PowerShell](https://learn.microsoft.com/en-us/powershell) applications installed with the `New-NssmService` cmdlet.
+
 ## Version [5.1.0](https://github.com/CedX/Cli/compare/v5.0.1...v5.1.0)
 - Merged the nested modules into a single main module.
 - Updated the package dependencies.
