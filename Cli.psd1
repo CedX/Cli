@@ -1,5 +1,5 @@
 @{
-	ModuleVersion = "5.1.0"
+	ModuleVersion = "5.1.1"
 	PowerShellVersion = "7.6"
 	RootModule = "src/Main.psm1"
 

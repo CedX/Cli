@@ -4,7 +4,7 @@
 		<Copyright>© Cédric Belin</Copyright>
 		<Description>PowerShell cmdlets for common administrative tasks, such as database management, service management and software installation.</Description>
 		<Product>Belin CLI</Product>
-		<Version>5.1.0</Version>
+		<Version>5.1.1</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
