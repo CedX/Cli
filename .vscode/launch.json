@@ -3,10 +3,11 @@
 	"configurations": [
 		{
 			"name": "Script",
-			"preLaunchTask": "Build",
-			"request": "launch",
 			"type": "PowerShell",
-			"script": "${workspaceFolder}/Debug.ps1"
+			"request": "launch",
+			"preLaunchTask": "Build",
+			"script": "${workspaceFolder}/Debug.ps1",
+			"createTemporaryIntegratedConsole": true
 		}
 	]
 }
