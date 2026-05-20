@@ -51,8 +51,8 @@ function New-NssmService {
 			AppDirectory = $application.Path
 			AppEnvironmentExtra = "$($application.EnvironmentVariable())=$($application.Manifest.Environment)"
 			AppNoConsole = "1"
-			AppStderr = Join-Path $application.Path var/Error.log
-			AppStdout = Join-Path $application.Path var/Output.log
+			AppStderr = Join-Path $application.Path Temp/Error.log
+			AppStdout = Join-Path $application.Path Temp/Output.log
 			Description = $application.Manifest.Description
 			DisplayName = $application.Manifest.Name
 			Start = "SERVICE_AUTO_START"
