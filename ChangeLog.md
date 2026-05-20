@@ -1,5 +1,8 @@
 # Changelog
 
+## Version [5.2.0](https://github.com/CedX/Cli/compare/v5.1.1...v5.2.0)
+- Updated the list of source folders scanned by the `New-NssmService` and `Remove-NssmService` cmdlets.
+
 ## Version [5.1.1](https://github.com/CedX/Cli/compare/v5.1.0...v5.1.1)
 - Fixed the entry point of [PowerShell](https://learn.microsoft.com/en-us/powershell) applications installed with the `New-NssmService` cmdlet.
 
