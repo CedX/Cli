@@ -5,13 +5,13 @@ using namespace System.Text
 .SYNOPSIS
 	The list of binary file extensions.
 #>
-[string[]] $BinaryExtensions = @()
+[string[]] $Script:BinaryExtensions = @()
 
 <#
 .SYNOPSIS
 	The list of text file extensions.
 #>
-[string[]] $TextExtensions = @()
+[string[]] $Script:TextExtensions = @()
 
 <#
 .SYNOPSIS
