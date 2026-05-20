@@ -14,7 +14,7 @@
 		<HotReloadAutoRestart>true</HotReloadAutoRestart>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<OutDir>../bin</OutDir>
+		<OutDir>../Binaries</OutDir>
 		<RootNamespace>Belin.Cli</RootNamespace>
 		<TargetFramework>net10.0</TargetFramework>
 	</PropertyGroup>

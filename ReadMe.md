@@ -6,8 +6,8 @@ such as database management, service management and software installation.
 > **Use at your own risk!** No support will be provided.
 
 ## Documentation
-- [User guide](https://github.com/CedX/Cli/tree/main/docs)
-- [Examples](https://github.com/CedX/Cli/tree/main/example)
+- [User guide](https://github.com/CedX/Cli/tree/main/Documentation)
+- [Examples](https://github.com/CedX/Cli/tree/main/Examples)
 
 ## Development
 - [Git repository](https://github.com/CedX/Cli)
