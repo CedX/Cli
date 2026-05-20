@@ -34,7 +34,7 @@ class Application {
 	Application([string] $Path) {
 		$this.Path = [Path]::TrimEndingDirectorySeparator((Resolve-Path $Path))
 
-		foreach ($folder in "Sources/Server", "src") {
+		foreach ($folder in "Sources/Server", "Sources") {
 			$files = ("config", "json", "psd1", "xml").ForEach{ Join-Path $this.Path -ChildPath $folder "appsettings.$_" }.Where({ Test-Path $_ -PathType Leaf }, "First")
 			if ($files.Count) { $this.Manifest = [ApplicationManifest]::Read($files[0]); break }
 		}
