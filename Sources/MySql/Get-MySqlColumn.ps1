@@ -17,18 +17,20 @@ function Get-MySqlColumn {
 		[IDbConnection] $Connection,
 
 		# The database table.
-		[Parameter(Mandatory, Position = 1)]
+		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
 		[Table] $Table
 	)
 
-	$sql = "
-		SELECT *
-		FROM information_schema.COLUMNS
-		WHERE TABLE_SCHEMA = @Schema AND TABLE_NAME = @Name
-		ORDER BY ORDINAL_POSITION"
+	process {
+		$sql = "
+			SELECT *
+			FROM information_schema.COLUMNS
+			WHERE TABLE_SCHEMA = @Schema AND TABLE_NAME = @Name
+			ORDER BY ORDINAL_POSITION"
 
-	Invoke-SqlQuery $Connection -As ([Column]) -Command $sql -Parameters @{
-		Name = $Table.Name
-		Schema = $Table.Schema
+		Invoke-SqlQuery $Connection -As ([Column]) -Command $sql -Parameters @{
+			Name = $Table.Name
+			Schema = $Table.Schema
+		}
 	}
 }

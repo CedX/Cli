@@ -17,18 +17,20 @@ function Get-MySqlTable {
 		[IDbConnection] $Connection,
 
 		# The database schema.
-		[Parameter(Mandatory, Position = 1)]
+		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
 		[Schema] $Schema
 	)
 
-	$sql = "
-		SELECT *
-		FROM information_schema.TABLES
-		WHERE TABLE_SCHEMA = @Name AND TABLE_TYPE = @Type
-		ORDER BY TABLE_NAME"
+	process {
+		$sql = "
+			SELECT *
+			FROM information_schema.TABLES
+			WHERE TABLE_SCHEMA = @Name AND TABLE_TYPE = @Type
+			ORDER BY TABLE_NAME"
 
-	Invoke-SqlQuery $Connection -As ([Table]) -Command $sql -Parameters @{
-		Name = $Schema.Name
-		Type = [TableType]::BaseTable
+		Invoke-SqlQuery $Connection -As ([Table]) -Command $sql -Parameters @{
+			Name = $Schema.Name
+			Type = [TableType]::BaseTable
+		}
 	}
 }
