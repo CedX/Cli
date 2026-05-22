@@ -6,7 +6,7 @@ else {
 	exit 1
 }
 
-"Publishing the module..."
+"Publishing the package..."
 $version = (Import-PowerShellDataFile Cli.psd1).ModuleVersion
 New-GitTag "v$version"
 Publish-PSGalleryModule
