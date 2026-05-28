@@ -51,6 +51,6 @@ function Set-MySqlEngine {
 	}
 
 	clean {
-		Close-SqlConnection $connection
+		Close-SqlConnection $connection -Dispose
 	}
 }

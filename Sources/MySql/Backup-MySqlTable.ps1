@@ -43,7 +43,7 @@ function Backup-MySqlTable {
 	}
 
 	clean {
-		Close-SqlConnection $connection
+		Close-SqlConnection $connection -Dispose
 	}
 }
 
