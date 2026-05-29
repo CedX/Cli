@@ -4,6 +4,7 @@ using namespace System.ComponentModel.DataAnnotations.Schema
 .SYNOPSIS
 	Provides the metadata of a database schema.
 #>
+[NoRunspaceAffinity()]
 [Table("SCHEMATA")]
 class MySqlSchema {
 

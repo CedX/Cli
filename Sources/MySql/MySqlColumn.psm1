@@ -4,6 +4,7 @@ using namespace System.ComponentModel.DataAnnotations.Schema
 .SYNOPSIS
 	Provides the metadata of a table column.
 #>
+[NoRunspaceAffinity()]
 [Table("COLUMNS")]
 class MySqlColumn {
 
