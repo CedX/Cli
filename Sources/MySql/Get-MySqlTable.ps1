@@ -1,6 +1,6 @@
 using namespace System.Data
-using module ./Schema.psm1
-using module ./Table.psm1
+using module ./MySqlSchema.psm1
+using module ./MySqlTable.psm1
 
 <#
 .SYNOPSIS
@@ -10,7 +10,7 @@ using module ./Table.psm1
 #>
 function Get-MySqlTable {
 	[CmdletBinding()]
-	[OutputType([Table])]
+	[OutputType([MySqlTable])]
 	param (
 		# The connection to the data source.
 		[Parameter(Mandatory, Position = 0)]
@@ -18,7 +18,7 @@ function Get-MySqlTable {
 
 		# The database schema.
 		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
-		[Schema] $Schema
+		[MySqlSchema] $Schema
 	)
 
 	process {
@@ -28,9 +28,9 @@ function Get-MySqlTable {
 			WHERE TABLE_SCHEMA = @Name AND TABLE_TYPE = @Type
 			ORDER BY TABLE_NAME"
 
-		Invoke-SqlQuery $Connection -As ([Table]) -Command $sql -Parameters @{
+		Invoke-SqlQuery $Connection -As ([MySqlTable]) -Command $sql -Parameters @{
 			Name = $Schema.Name
-			Type = [TableType]::BaseTable
+			Type = [MySqlTableType]::BaseTable
 		}
 	}
 }

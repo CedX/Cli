@@ -5,7 +5,7 @@ using namespace System.ComponentModel.DataAnnotations.Schema
 	Provides the metadata of a database schema.
 #>
 [Table("SCHEMATA")]
-class Schema {
+class MySqlSchema {
 
 	<#
 	.SYNOPSIS

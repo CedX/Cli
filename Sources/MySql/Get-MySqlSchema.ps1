@@ -1,5 +1,5 @@
 using namespace System.Data
-using module ./Schema.psm1
+using module ./MySqlSchema.psm1
 
 <#
 .SYNOPSIS
@@ -9,14 +9,14 @@ using module ./Schema.psm1
 #>
 function Get-MySqlSchema {
 	[CmdletBinding()]
-	[OutputType([Schema])]
+	[OutputType([MySqlSchema])]
 	param (
 		# The connection to the data source.
 		[Parameter(Mandatory, Position = 0)]
 		[IDbConnection] $Connection
 	)
 
-	Invoke-SqlQuery $Connection -As ([Schema]) -Command "
+	Invoke-SqlQuery $Connection -As ([MySqlSchema]) -Command "
 		SELECT *
 		FROM information_schema.SCHEMATA
 		WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')

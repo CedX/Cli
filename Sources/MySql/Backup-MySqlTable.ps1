@@ -1,7 +1,7 @@
 using namespace System.Collections.Generic
 using namespace System.IO
 using namespace System.Web
-using module ./Schema.psm1
+using module ./MySqlSchema.psm1
 
 <#
 .SYNOPSIS
@@ -35,7 +35,7 @@ function Backup-MySqlTable {
 	}
 
 	process {
-		$schemas = $Schema ? $Schema.ForEach{ [Schema]@{ Name = $_ } } : @(Get-MySqlSchema $connection)
+		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Get-MySqlSchema $connection)
 		foreach ($schemaObject in $schemas) {
 			"Exporting: $($Table.Count -eq 1 ? "$($schemaObject.Name).$($Table[0])" : $schemaObject.Name)"
 			Export-SqlDump $schemaObject -Path $Path -Table $Table -Uri $Uri
@@ -57,7 +57,7 @@ function Export-SqlDump {
 	param (
 		# The database schema.
 		[Parameter(Mandatory, Position = 0)]
-		[Schema] $Schema,
+		[MySqlSchema] $Schema,
 
 		# The path to the output directory.
 		[Parameter(Mandatory, Position = 1)]

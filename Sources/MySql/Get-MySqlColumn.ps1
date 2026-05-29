@@ -1,6 +1,6 @@
 using namespace System.Data
-using module ./Column.psm1
-using module ./Table.psm1
+using module ./MySqlColumn.psm1
+using module ./MySqlTable.psm1
 
 <#
 .SYNOPSIS
@@ -10,7 +10,7 @@ using module ./Table.psm1
 #>
 function Get-MySqlColumn {
 	[CmdletBinding()]
-	[OutputType([Column])]
+	[OutputType([MySqlColumn])]
 	param (
 		# The connection to the data source.
 		[Parameter(Mandatory, Position = 0)]
@@ -18,7 +18,7 @@ function Get-MySqlColumn {
 
 		# The database table.
 		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
-		[Table] $Table
+		[MySqlTable] $Table
 	)
 
 	process {
@@ -28,7 +28,7 @@ function Get-MySqlColumn {
 			WHERE TABLE_SCHEMA = @Schema AND TABLE_NAME = @Name
 			ORDER BY ORDINAL_POSITION"
 
-		Invoke-SqlQuery $Connection -As ([Column]) -Command $sql -Parameters @{
+		Invoke-SqlQuery $Connection -As ([MySqlColumn]) -Command $sql -Parameters @{
 			Name = $Table.Name
 			Schema = $Table.Schema
 		}

@@ -1,4 +1,4 @@
-using module ./Schema.psm1
+using module ./MySqlSchema.psm1
 
 <#
 .SYNOPSIS
@@ -26,9 +26,9 @@ function Optimize-MySqlTable {
 	}
 
 	process {
-		$schemas = $Schema ? $Schema.ForEach{ [Schema]@{ Name = $_ } } : @(Get-MySqlSchema $connection)
+		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Get-MySqlSchema $connection)
 		$tables = foreach ($schemaObject in $schemas) {
-			$Table ? $Table.ForEach{ [Table]@{ Name = $_; Schema = $schemaObject.Name } } : @(Get-MySqlTable $connection $schemaObject)
+			$Table ? $Table.ForEach{ [MySqlTable]@{ Name = $_; Schema = $schemaObject.Name } } : @(Get-MySqlTable $connection $schemaObject)
 		}
 
 		foreach ($tableObject in $tables) {

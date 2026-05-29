@@ -4,8 +4,8 @@ using namespace System.ComponentModel.DataAnnotations.Schema
 .SYNOPSIS
 	Provides the metadata of a database table.
 #>
-[TableAttribute("TABLES")]
-class Table {
+[Table("TABLES")]
+class MySqlTable {
 
 	<#
 	.SYNOPSIS
@@ -19,7 +19,7 @@ class Table {
 		The storage engine.
 	#>
 	[Column("ENGINE")]
-	[string] $Engine = [TableEngine]::None
+	[string] $Engine = [MySqlTableEngine]::None
 
 	<#
 	.SYNOPSIS
@@ -40,7 +40,7 @@ class Table {
 		The table type.
 	#>
 	[Column("TABLE_TYPE")]
-	[string] $Type = [TableType]::BaseTable
+	[string] $Type = [MySqlTableType]::BaseTable
 
 	<#
 	.SYNOPSIS
@@ -70,7 +70,7 @@ class Table {
 .SYNOPSIS
 	Defines the storage engine of a table.
 #>
-class TableEngine {
+class MySqlTableEngine {
 
 	<#
 	.SYNOPSIS
@@ -101,7 +101,7 @@ class TableEngine {
 .SYNOPSIS
 	Defines the type of a table.
 #>
-class TableType {
+class MySqlTableType {
 
 	<#
 	.SYNOPSIS
