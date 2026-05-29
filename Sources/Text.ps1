@@ -1,4 +1,5 @@
 using namespace System.Diagnostics.CodeAnalysis
+using namespace System.IO
 using namespace System.Text
 
 <#
@@ -53,7 +54,7 @@ function ConvertTo-Encoding {
 	)
 
 	begin {
-		$resources = Join-Path $PSScriptRoot ../../Resources/Text
+		$resources = Join-Path $PSScriptRoot ../Resources/Text
 		if (-not $Script:BinaryExtensions) { $Script:BinaryExtensions = Get-Content "$resources/BinaryExtensions.json" -Raw | ConvertFrom-Json }
 		if (-not $Script:TextExtensions) { $Script:TextExtensions = Get-Content "$resources/TextExtensions.json" -Raw | ConvertFrom-Json }
 	}
@@ -80,5 +81,37 @@ function ConvertTo-Encoding {
 			"Converting: $file"
 			Set-Content $file.FullName ([Encoding]::Convert($sourceEncoding, $destinationEncoding, $bytes)) -AsByteStream
 		}
+	}
+}
+
+<#
+.SYNOPSIS
+	Checks if the specified file should be excluded from the processing.
+.INPUTS
+	The file to be checked.
+.OUTPUTS
+	`$true` if the specified file should be excluded from the processing, otherwise `$false`.
+#>
+function Test-IsExcludedFile {
+	[CmdletBinding()]
+	[OutputType([bool])]
+	param (
+		# The file to be checked.
+		[Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+		[FileInfo] $File,
+
+		# The list of folders to exclude from the processing.
+		[ValidateNotNull()]
+		[string[]] $Exclude = @(".git", "node_modules", "ps_modules", "vendor")
+	)
+
+	process {
+		$directory = $File.Directory
+		while ($directory) {
+			if ($directory.Name -in $Exclude) { return $true }
+			$directory = $directory.Parent
+		}
+
+		$false
 	}
 }
