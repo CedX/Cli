@@ -337,7 +337,7 @@ function Restore-MySqlTable {
 		$parameters = @{ File = $true; Recurse = $Recurse }
 		if ($Filter) { $parameters.Filter = $Filter }
 
-		$files = $PSCmdlet.ParameterSetName -eq "LiteralPath" ? (Get-ChildItem -LiteralPath $LiteralPath @parameters) : (Get-ChildItem $Path @parameters)
+		$files = $LiteralPath ? (Get-ChildItem -LiteralPath $LiteralPath @parameters) : (Get-ChildItem $Path @parameters)
 		foreach ($file in $files) {
 			"Importing: $($file.BaseName)"
 			$userName, $password = ($Uri.UserInfo -split ":").ForEach{ [Uri]::UnescapeDataString($_) }
