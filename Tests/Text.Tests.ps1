@@ -3,7 +3,7 @@
 	Tests the features of the `Test-IsExcludedFile` cmdlet.
 #>
 Describe "Test-IsExcludedFile" {
-	BeforeAll { . "$PSScriptRoot/../../Sources/Text/Test-IsExcludedFile.ps1" }
+	BeforeAll { . "$PSScriptRoot/../Sources/Text.ps1" }
 
 	It "should return `$false if the file path does not contain any excluded folder" -ForEach @(
 		"C:\Users\Cedric\.gitconfig"
