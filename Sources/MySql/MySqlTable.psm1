@@ -4,7 +4,6 @@ using namespace System.ComponentModel.DataAnnotations.Schema
 .SYNOPSIS
 	Provides the metadata of a database table.
 #>
-[NoRunspaceAffinity()]
 [Table("TABLES")]
 class MySqlTable {
 
@@ -71,7 +70,6 @@ class MySqlTable {
 .SYNOPSIS
 	Defines the storage engine of a table.
 #>
-[NoRunspaceAffinity()]
 class MySqlTableEngine {
 
 	<#
@@ -103,7 +101,6 @@ class MySqlTableEngine {
 .SYNOPSIS
 	Defines the type of a table.
 #>
-[NoRunspaceAffinity()]
 class MySqlTableType {
 
 	<#
