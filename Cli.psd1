@@ -34,7 +34,7 @@
 	)
 
 	RequiredModules = @(
-		@{ ModuleName = "Belin.Sql"; ModuleVersion = "2.0.1" }
+		@{ ModuleName = "Belin.Sql"; ModuleVersion = "3.0.0" }
 	)
 
 	PrivateData = @{
