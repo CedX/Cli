@@ -9,13 +9,13 @@ Describe "Test-IsExcludedFile" {
 		"C:\Users\Cedric\.gitconfig"
 		"/usr/local/bin/pwsh"
 	) {
-		$_ | Test-IsExcludedFile | Should -BeFalse
+		$_ | Test-IsExcludedFile | Should-BeFalse
 	}
 
 	It "should return `$true if the file path contains an excluded folder" -ForEach @(
 		"C:\Projects\Cli\.git\config"
 		"/var/www/ps_modules/Pester/Pester.ps1"
 	) {
-		$_ | Test-IsExcludedFile | Should -BeTrue
+		$_ | Test-IsExcludedFile | Should-BeTrue
 	}
 }
