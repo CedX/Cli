@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 param (
 	# The name of the cmdlet to run.
-	[Parameter(Mandatory, Position = 0)]
+	[Parameter(Mandatory, Position = 1)]
 	[ArgumentCompleter({
 		param ([string] $commandName, [string] $parameterName, [string] $wordToComplete)
 		$module = Import-PowerShellDataFile "$PSScriptRoot/Cli.psd1"
@@ -14,7 +14,7 @@ param (
 	[string] $Command,
 
 	# The parameters of the cmdlet to run.
-	[Parameter(Position = 1, ValueFromRemainingArguments)]
+	[Parameter(Position = 2, ValueFromRemainingArguments)]
 	[string[]] $Parameters = @()
 )
 

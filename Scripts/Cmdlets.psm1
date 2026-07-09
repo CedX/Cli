@@ -7,7 +7,7 @@ using namespace System.Diagnostics.CodeAnalysis
 function Build-DotNetSolution {
 	param (
 		# The configuration to use for generating the project.
-		[Parameter(Position = 0)]
+		[Parameter(Position = 1)]
 		[string] $Configuration
 	)
 
@@ -23,7 +23,7 @@ function New-GitTag {
 	[SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
 	param (
 		# The tag name.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[string] $Name
 	)
 
@@ -74,7 +74,7 @@ function Test-PSResourceUpdate {
 	[OutputType([psobject])]
 	param (
 		# The PowerShell module to be checked.
-		[Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
 		[Microsoft.PowerShell.PSResourceGet.UtilClasses.PSResourceInfo] $InputObject
 	)
 

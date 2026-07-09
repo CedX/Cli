@@ -11,7 +11,7 @@ function Test-IsPrivilegedProcess {
 	[OutputType([bool])]
 	param (
 		# The path to a directory used to verify if the process has sufficient permissions.
-		[Parameter(Position = 0)]
+		[Parameter(Position = 1)]
 		[ValidateScript({ Test-Path $_ -IsValid }, ErrorMessage = "The specified path is invalid.")]
 		[string] $Path
 	)

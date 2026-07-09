@@ -28,7 +28,7 @@ function ConvertTo-Encoding {
 	[SuppressMessage("PSReviewUnusedParameter", "Exclude")]
 	param (
 		# The path to the files to convert.
-		[Parameter(Mandatory, ParameterSetName = "Path", Position = 0, ValueFromPipeline)]
+		[Parameter(Mandatory, ParameterSetName = "Path", Position = 1, ValueFromPipeline)]
 		[SupportsWildcards()]
 		[string[]] $Path,
 
@@ -97,7 +97,7 @@ function Test-IsExcludedFile {
 	[OutputType([bool])]
 	param (
 		# The file to be checked.
-		[Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
 		[FileInfo] $File,
 
 		# The list of folders to exclude from the processing.

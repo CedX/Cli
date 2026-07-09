@@ -18,7 +18,7 @@ function Get-NssmPath {
 	[OutputType([string])]
 	param (
 		# The process architecture.
-		[Parameter(Position = 0, ValueFromPipeline)]
+		[Parameter(Position = 1, ValueFromPipeline)]
 		[Architecture] $Architecture = [Environment]::Is64BitOperatingSystem ? [Architecture]::x64 : [Architecture]::x86
 	)
 
@@ -41,7 +41,7 @@ function New-NssmService {
 	[SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
 	param (
 		# The path to the root directory of the web application.
-		[Parameter(Position = 0, ValueFromPipeline)]
+		[Parameter(Position = 1, ValueFromPipeline)]
 		[ValidateScript({ Test-Path $_ -PathType Container }, ErrorMessage = "The specified directory does not exist.")]
 		[string] $Path = $PWD,
 
@@ -115,7 +115,7 @@ function Remove-NssmService {
 	[SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
 	param (
 		# The path to the root directory of the web application.
-		[Parameter(Position = 0, ValueFromPipeline)]
+		[Parameter(Position = 1, ValueFromPipeline)]
 		[ValidateScript({ Test-Path $_ -PathType Container }, ErrorMessage = "The specified directory does not exist.")]
 		[string] $Path = $PWD
 	)

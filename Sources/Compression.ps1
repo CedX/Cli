@@ -9,12 +9,12 @@ function Expand-TarArchive {
 	[OutputType([void])]
 	param (
 		# The path to the input TAR archive.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[ValidateScript({ Test-Path $_ -PathType Leaf }, ErrorMessage = "The specified input file does not exist.")]
 		[string] $Path,
 
 		# The path to the output directory.
-		[Parameter(Mandatory, Position = 1)]
+		[Parameter(Mandatory, Position = 2)]
 		[ValidateScript({ Test-Path $_ -IsValid }, ErrorMessage = "The specified output path is invalid.")]
 		[string] $DestinationPath,
 
@@ -36,12 +36,12 @@ function Expand-ZipArchive {
 	[OutputType([void])]
 	param (
 		# The path to the input ZIP archive.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[ValidateScript({ Test-Path $_ -PathType Leaf }, ErrorMessage = "The specified input file does not exist.")]
 		[string] $Path,
 
 		# The path to the output directory.
-		[Parameter(Mandatory, Position = 1)]
+		[Parameter(Mandatory, Position = 2)]
 		[ValidateScript({ Test-Path $_ -IsValid }, ErrorMessage = "The specified output path is invalid.")]
 		[string] $DestinationPath,
 

@@ -19,11 +19,11 @@ function Backup-MySqlTable {
 	[OutputType([string])]
 	param (
 		# The connection URI.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[uri] $Uri,
 
 		# The path to the output directory.
-		[Parameter(Mandatory, Position = 1)]
+		[Parameter(Mandatory, Position = 2)]
 		[ValidateScript({ Test-Path $_ -IsValid }, ErrorMessage = "The specified output path is invalid.")]
 		[string] $Path,
 
@@ -61,11 +61,11 @@ function Export-MySqlDump {
 	[OutputType([void])]
 	param (
 		# The database schema.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[MySqlSchema] $Schema,
 
 		# The path to the output directory.
-		[Parameter(Mandatory, Position = 1)]
+		[Parameter(Mandatory, Position = 2)]
 		[ValidateScript({ Test-Path $_ -IsValid }, ErrorMessage = "The specified output path is invalid.")]
 		[string] $Path,
 
@@ -105,7 +105,7 @@ function Get-MySqlCollation {
 	[OutputType([string])]
 	param (
 		# The connection to the data source.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[IDbConnection] $Connection
 	)
 
@@ -124,11 +124,11 @@ function Get-MySqlColumn {
 	[OutputType([MySqlColumn])]
 	param (
 		# The connection to the data source.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[IDbConnection] $Connection,
 
 		# The database table.
-		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
+		[Parameter(Mandatory, Position = 2, ValueFromPipeline)]
 		[MySqlTable] $Table
 	)
 
@@ -157,7 +157,7 @@ function Get-MySqlEngine {
 	[OutputType([string])]
 	param (
 		# The connection to the data source.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[IDbConnection] $Connection
 	)
 
@@ -176,7 +176,7 @@ function Get-MySqlSchema {
 	[OutputType([MySqlSchema])]
 	param (
 		# The connection to the data source.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[IDbConnection] $Connection
 	)
 
@@ -198,11 +198,11 @@ function Get-MySqlTable {
 	[OutputType([MySqlTable])]
 	param (
 		# The connection to the data source.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[IDbConnection] $Connection,
 
 		# The database schema.
-		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
+		[Parameter(Mandatory, Position = 2, ValueFromPipeline)]
 		[MySqlSchema] $Schema
 	)
 
@@ -230,7 +230,7 @@ function New-MySqlConnection {
 	[SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
 	param (
 		# The connection URI used to open the database.
-		[Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
 		[ValidateScript(
 			{ $_.IsAbsoluteUri -and ($_.Scheme -in "mariadb", "mysql") -and $_.UserInfo.Contains(":") },
 			ErrorMessage = "The specified connection URI is invalid."
@@ -269,7 +269,7 @@ function Optimize-MySqlTable {
 	[OutputType([string])]
 	param (
 		# The connection URI.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[uri] $Uri,
 
 		# The schema name.
@@ -313,11 +313,11 @@ function Restore-MySqlTable {
 	[OutputType([string])]
 	param (
 		# The connection URI.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[uri] $Uri,
 
 		# Specifies the path to an SQL dump.
-		[Parameter(Mandatory, ParameterSetName = "Path", Position = 1, ValueFromPipeline)]
+		[Parameter(Mandatory, ParameterSetName = "Path", Position = 2, ValueFromPipeline)]
 		[SupportsWildcards()]
 		[string[]] $Path,
 
@@ -368,11 +368,11 @@ function Set-MySqlCharset {
 	[SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
 	param (
 		# The connection URI.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[uri] $Uri,
 
 		# The name of the new character set.
-		[Parameter(Mandatory, Position = 1)]
+		[Parameter(Mandatory, Position = 2)]
 		[string] $Collation,
 
 		# The schema name.

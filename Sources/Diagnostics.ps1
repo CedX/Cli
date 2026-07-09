@@ -14,7 +14,7 @@ function Get-ExecutableArchitecture {
 	[OutputType([Architecture])]
 	param (
 		# The path of the executable to inspect.
-		[Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]
 		[ValidateScript({ Test-Path $_ -PathType Leaf }, ErrorMessage = "The specified file does not exist.")]
 		[string] $Path
 	)

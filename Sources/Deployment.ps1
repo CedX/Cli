@@ -9,7 +9,7 @@ function Install-Jdk {
 	[OutputType([string])]
 	param (
 		# The path to the output directory.
-		[Parameter(Position = 0)]
+		[Parameter(Position = 1)]
 		[ValidateScript({ Test-Path $_ -IsValid }, ErrorMessage = "The specified output path is invalid.")]
 		[string] $DestinationPath = $IsWindows ? "C:\Program Files\OpenJDK" : "/opt/openjdk",
 
@@ -52,7 +52,7 @@ function Install-Node {
 	[OutputType([string])]
 	param (
 		# The path to the output directory.
-		[Parameter(Position = 0)]
+		[Parameter(Position = 1)]
 		[ValidateScript({ Test-Path $_ -IsValid }, ErrorMessage = "The specified output path is invalid.")]
 		[string] $DestinationPath = $IsWindows ? "C:\Program Files\Node.js" : "/usr/local",
 
@@ -116,7 +116,7 @@ function Install-Php {
 	[OutputType([string])]
 	param (
 		# The path to the output directory.
-		[Parameter(Position = 0)]
+		[Parameter(Position = 1)]
 		[ValidateScript({ Test-Path $_ -IsValid }, ErrorMessage = "The specified output path is invalid.")]
 		[string] $DestinationPath = "C:\Program Files\PHP",
 
