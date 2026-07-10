@@ -8,10 +8,10 @@ Describe "ApplicationManifest" {
 	Context "Read" {
 		It "should support the JSON manifests" -ForEach "json", "psd1", "xml" {
 			$manifest = [ApplicationManifest]::Read("$PSScriptRoot/Fixtures/Manifest.$_")
-			$manifest.Description | Should -BeNullOrEmpty
-			$manifest.Environment | Should -BeNullOrEmpty
-			$manifest.Id | Should -BeExactly "MyApp"
-			$manifest.Name | Should -BeExactly "My Application 1.0"
+			Should-BeEmptyString $manifest.Description
+			Should-BeEmptyString $manifest.Environment
+			Should-BeString "MyApp" $manifest.Id -CaseSensitive
+			Should-BeString "My Application 1.0" $manifest.Name -CaseSensitive
 		}
 	}
 }
@@ -25,7 +25,7 @@ Describe "Get-NssmPath" {
 
 	It "should return the path of the ""nssm"" program according to the given process architecture" -ForEach "x64", "x86" {
 		$path = $_ | Get-NssmPath
-		$path | Should -BeLikeExactly ("*/Resources/Nssm/nssm.$_.exe" -replace "/", ($IsWindows ? "\" : "/"))
-		$path | Should -Exist
+		Should-BeLikeString ("*/Resources/Nssm/nssm.$_.exe" -replace "/", ($IsWindows ? "\" : "/")) $path -CaseSensitive
+		Should-BeTrue (Test-Path $path)
 	}
 }

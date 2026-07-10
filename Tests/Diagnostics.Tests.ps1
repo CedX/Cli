@@ -6,6 +6,6 @@ Describe "Get-ExecutableArchitecture" {
 	BeforeAll { . "$PSScriptRoot/../Sources/Diagnostics.ps1" }
 
 	It "should return the architecture of the given executable" -ForEach "x64", "x86" {
-		"$PSScriptRoot/../Resources/Nssm/nssm.$_.exe" | Get-ExecutableArchitecture | Should -Be $_
+		Should-Be $_ ("$PSScriptRoot/../Resources/Nssm/nssm.$_.exe" | Get-ExecutableArchitecture)
 	}
 }
