@@ -1,5 +1,8 @@
 # Changelog
 
+## Version [5.4.0](https://github.com/CedX/Cli/compare/v5.3.0...v5.4.0)
+- Ported some [PowerShell](https://learn.microsoft.com/en-us/powershell) types to [C#](https://learn.microsoft.com/en-us/dotnet/csharp) to improve startup performance.
+
 ## Version [5.3.0](https://github.com/CedX/Cli/compare/v5.2.0...v5.3.0)
 - Updated the package dependencies.
 
