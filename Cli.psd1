@@ -1,5 +1,5 @@
 @{
-	ModuleVersion = "5.3.0"
+	ModuleVersion = "5.4.0"
 	PowerShellVersion = "7.6"
 	RootModule = "Sources/Main.psm1"
 
@@ -28,6 +28,7 @@
 	)
 
 	RequiredAssemblies = @(
+		"Binaries/Belin.Cli.dll"
 		"Binaries/Microsoft.Extensions.DependencyInjection.Abstractions.dll"
 		"Binaries/Microsoft.Extensions.Logging.Abstractions.dll"
 		"Binaries/MySqlConnector.dll"
