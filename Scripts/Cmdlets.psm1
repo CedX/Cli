@@ -44,7 +44,7 @@ function Publish-PSGalleryModule {
 	Copy-Item $root/Cli.psd1 $output/Belin.Cli.psd1
 	Copy-Item $root/*.md $output
 	Copy-Item $root/Resources, $root/Sources $output -Recurse
-	Remove-Item $output/Sources/*.csproj, $output/Sources/obj -Recurse
+	Remove-Item $output/Sources/*.cs*, $output/Sources/obj -Recurse
 	$module.RequiredAssemblies.ForEach{ "$root/$_" } | Copy-Item -Destination $output/Binaries
 
 	$output = "$root/Temp/PSGallery"
