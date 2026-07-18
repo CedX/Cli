@@ -1,12 +1,10 @@
+using namespace Belin.Cli.MySql
 using namespace MySqlConnector
 using namespace System.Collections.Generic
 using namespace System.Data
 using namespace System.Diagnostics.CodeAnalysis
 using namespace System.IO
 using namespace System.Web
-using module ./MySql/MySqlColumn.psm1
-using module ./MySql/MySqlSchema.psm1
-using module ./MySql/MySqlTable.psm1
 
 <#
 .SYNOPSIS
@@ -290,7 +288,7 @@ function Optimize-MySqlTable {
 		}
 
 		foreach ($tableObject in $tables) {
-			"Optimizing: $($tableObject.QualifiedName())"
+			"Optimizing: $($tableObject.QualifiedName)"
 			Invoke-SqlNonQuery $connection -Command "OPTIMIZE TABLE $($tableObject.GetQualifiedName($true))" | Out-Null
 		}
 	}
@@ -395,7 +393,7 @@ function Set-MySqlCharset {
 		}
 
 		foreach ($tableObject in $tables) {
-			"Processing: $($tableObject.QualifiedName())"
+			"Processing: $($tableObject.QualifiedName)"
 			$charset = ($Collation -split "_")[0]
 			$sql = "
 				SET foreign_key_checks = 0;
@@ -450,7 +448,7 @@ function Set-MySqlEngine {
 		}
 
 		foreach ($tableObject in $tables) {
-			"Processing: $($tableObject.QualifiedName())"
+			"Processing: $($tableObject.QualifiedName)"
 			$sql = "
 				SET foreign_key_checks = 0;
 				ALTER TABLE $($tableObject.GetQualifiedName($true)) ENGINE = $Engine;

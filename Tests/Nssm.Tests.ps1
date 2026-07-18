@@ -1,3 +1,4 @@
+using assembly ../Binaries/Belin.Cli.dll
 using module ../Sources/Nssm/ApplicationManifest.psm1
 
 <#
