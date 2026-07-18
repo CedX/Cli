@@ -119,7 +119,7 @@ function Get-MySqlCollation {
 #>
 function Get-MySqlColumn {
 	[CmdletBinding()]
-	[OutputType([MySqlColumn])]
+	[OutputType([Belin.Cli.MySql.MySqlColumn])]
 	param (
 		# The connection to the data source.
 		[Parameter(Mandatory, Position = 1)]
@@ -171,7 +171,7 @@ function Get-MySqlEngine {
 #>
 function Get-MySqlSchema {
 	[CmdletBinding()]
-	[OutputType([MySqlSchema])]
+	[OutputType([Belin.Cli.MySql.MySqlSchema])]
 	param (
 		# The connection to the data source.
 		[Parameter(Mandatory, Position = 1)]
@@ -193,7 +193,7 @@ function Get-MySqlSchema {
 #>
 function Get-MySqlTable {
 	[CmdletBinding()]
-	[OutputType([MySqlTable])]
+	[OutputType([Belin.Cli.MySql.MySqlTable])]
 	param (
 		# The connection to the data source.
 		[Parameter(Mandatory, Position = 1)]
