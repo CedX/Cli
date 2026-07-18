@@ -1,5 +1,5 @@
+using namespace Belin.Cli
 using namespace System.IO
-using module ./Architecture.psm1
 
 <#
 .SYNOPSIS
@@ -11,7 +11,7 @@ using module ./Architecture.psm1
 #>
 function Get-ExecutableArchitecture {
 	[CmdletBinding()]
-	[OutputType([Architecture])]
+	[OutputType([Belin.Cli.Architecture])]
 	param (
 		# The path of the executable to inspect.
 		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]

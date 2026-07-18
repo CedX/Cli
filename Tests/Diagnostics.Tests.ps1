@@ -1,3 +1,5 @@
+using assembly ../Binaries/Belin.Cli.dll
+
 <#
 .SYNOPSIS
 	Tests the features of the `Get-ExecutableArchitecture` cmdlet.

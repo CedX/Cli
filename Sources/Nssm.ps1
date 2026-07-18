@@ -1,6 +1,6 @@
+using namespace Belin.Cli
 using namespace System.Diagnostics.CodeAnalysis
 using namespace System.Management.Automation
-using module ./Architecture.psm1
 using module ./Nssm/DotNetApplication.psm1
 using module ./Nssm/NodeApplication.psm1
 using module ./Nssm/PowerShellApplication.psm1
