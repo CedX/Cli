@@ -76,7 +76,7 @@ function ConvertTo-Encoding {
 			if (-not $bytes) { continue }
 
 			$isText = $extension -and ($extension.Substring(1) -in $Script:TextExtensions)
-			if ((-not $isText) -and ([Array]::IndexOf[byte]($bytes, 0, 0, [Math]::Min($bytes.Count, 8000)) -gt 0)) { continue }
+			if ((-not $isText) -and ([array]::IndexOf[byte]($bytes, 0, 0, [Math]::Min($bytes.Count, 8000)) -gt 0)) { continue }
 
 			"Converting: $file"
 			Set-Content $file.FullName ([Encoding]::Convert($sourceEncoding, $destinationEncoding, $bytes)) -AsByteStream
