@@ -421,11 +421,11 @@ function Set-MySqlEngine {
 	[SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
 	param (
 		# The connection URI.
-		[Parameter(Mandatory, Position = 0)]
+		[Parameter(Mandatory, Position = 1)]
 		[uri] $Uri,
 
 		# The name of the new storage engine.
-		[Parameter(Mandatory, Position = 1)]
+		[Parameter(Mandatory, Position = 2)]
 		[string] $Engine,
 
 		# The schema name.
