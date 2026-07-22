@@ -39,7 +39,7 @@ class NodeApplication: Application {
 	#>
 	[string] EntryPoint() {
 		if ($this.EntryPath) { return $this.EntryPath }
-		throw [EntryPointNotFoundException] "Unable to resolve the application entry point."
+		throw [EntryPointNotFoundException]::new("Unable to resolve the application entry point.")
 	}
 
 	<#

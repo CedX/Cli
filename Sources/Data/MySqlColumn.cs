@@ -1,4 +1,4 @@
-namespace Belin.Cli.MySql;
+namespace Belin.Cli.Data;
 
 using System.ComponentModel.DataAnnotations.Schema;
 

@@ -19,7 +19,7 @@ function Install-Jdk {
 	)
 
 	if (-not (Test-IsPrivilegedProcess $DestinationPath)) {
-		throw [UnauthorizedAccessException] "You must run this command in an elevated prompt."
+		throw [UnauthorizedAccessException]::new("You must run this command in an elevated prompt.")
 	}
 
 	$platform, $extension = switch ($true) {
@@ -65,7 +65,7 @@ function Install-Node {
 	$services = $nssmConfig.Keys.Where{ $_ -eq [Environment]::MachineName }.ForEach{ $nssmConfig.$_ }
 
 	if (-not (Test-IsPrivilegedProcess ($services ? "" : $DestinationPath))) {
-		throw [UnauthorizedAccessException] "You must run this command in an elevated prompt."
+		throw [UnauthorizedAccessException]::new("You must run this command in an elevated prompt.")
 	}
 
 	$platform, $extension = switch ($true) {
@@ -124,8 +124,8 @@ function Install-Php {
 		[switch] $RegisterEventSource
 	)
 
-	if (-not $IsWindows) { throw [PlatformNotSupportedException] "This command only supports the Windows platform." }
-	if (-not (Test-IsPrivilegedProcess $DestinationPath)) { throw [UnauthorizedAccessException] "You must run this command in an elevated prompt." }
+	if (-not $IsWindows) { throw [PlatformNotSupportedException]::new("This command only supports the Windows platform.") }
+	if (-not (Test-IsPrivilegedProcess $DestinationPath)) { throw [UnauthorizedAccessException]::new("You must run this command in an elevated prompt.") }
 
 	"Fetching the list of PHP releases..."
 	$response = Invoke-RestMethod "https://www.php.net/releases/?json"

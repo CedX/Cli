@@ -20,7 +20,7 @@ function Get-ExecutableArchitecture {
 	)
 
 	begin {
-		if (-not $IsWindows) { throw [PlatformNotSupportedException] "This command only supports the Windows platform." }
+		if (-not $IsWindows) { throw [PlatformNotSupportedException]::new("This command only supports the Windows platform.") }
 	}
 
 	process {
@@ -33,7 +33,7 @@ function Get-ExecutableArchitecture {
 			switch ($reader.ReadUInt16()) {
 				0x014C { return [Architecture]::x86 }
 				0x8664 { return [Architecture]::x64 }
-				default { throw [NotSupportedException] "Unsupported machine type: 0x{0:X4}" -f $_ }
+				default { throw [NotSupportedException]::new("Unsupported machine type: 0x{0:X4}" -f $_) }
 			}
 		}
 		finally {

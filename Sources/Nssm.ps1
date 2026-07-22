@@ -54,8 +54,8 @@ function New-NssmService {
 	)
 
 	begin {
-		if (-not $IsWindows) { throw [PlatformNotSupportedException] "This command only supports the Windows platform." }
-		if (-not (Test-IsPrivilegedProcess)) { throw [UnauthorizedAccessException] "You must run this command in an elevated prompt." }
+		if (-not $IsWindows) { throw [PlatformNotSupportedException]::new("This command only supports the Windows platform.") }
+		if (-not (Test-IsPrivilegedProcess)) { throw [UnauthorizedAccessException]::new("You must run this command in an elevated prompt.") }
 	}
 
 	process {
@@ -63,11 +63,11 @@ function New-NssmService {
 			((Test-Path "$Path/Sources/Server/*.cs") -or (Test-Path "$Path/Sources/*.cs")) { [DotNetApplication] $Path; break }
 			((Test-Path "$Path/Sources/Server/*.ps1") -or (Test-Path "$Path/Sources/*.ps1")) { [PowerShellApplication] $Path; break }
 			((Test-Path "$Path/Sources/Server/*.ts") -or (Test-Path "$Path/Sources/*.ts")) { [NodeApplication] $Path; break }
-			default { throw [NotSupportedException] "The application type could not be determined." }
+			default { throw [NotSupportedException]::new("The application type could not be determined.") }
 		}
 
 		if (Get-Service $application.Manifest.Id -ErrorAction Ignore) {
-			throw [InvalidOperationException] "The service ""$($application.Manifest.Id)"" already exists."
+			throw [InvalidOperationException]::new("The service ""$($application.Manifest.Id)"" already exists.")
 		}
 
 		$properties = [ordered]@{
@@ -121,8 +121,8 @@ function Remove-NssmService {
 	)
 
 	begin {
-		if (-not $IsWindows) { throw [PlatformNotSupportedException] "This command only supports the Windows platform." }
-		if (-not (Test-IsPrivilegedProcess)) { throw [UnauthorizedAccessException] "You must run this command in an elevated prompt." }
+		if (-not $IsWindows) { throw [PlatformNotSupportedException]::new("This command only supports the Windows platform.") }
+		if (-not (Test-IsPrivilegedProcess)) { throw [UnauthorizedAccessException]::new("You must run this command in an elevated prompt.") }
 	}
 
 	process {
@@ -130,11 +130,11 @@ function Remove-NssmService {
 			((Test-Path "$Path/Sources/Server/*.cs") -or (Test-Path "$Path/Sources/*.cs")) { [DotNetApplication] $Path; break }
 			((Test-Path "$Path/Sources/Server/*.ps1") -or (Test-Path "$Path/Sources/*.ps1")) { [PowerShellApplication] $Path; break }
 			((Test-Path "$Path/Sources/Server/*.ts") -or (Test-Path "$Path/Sources/*.ts")) { [NodeApplication] $Path; break }
-			default { throw [NotSupportedException] "The application type could not be determined." }
+			default { throw [NotSupportedException]::new("The application type could not be determined.") }
 		}
 
 		if (-not (Get-Service $application.Manifest.Id -ErrorAction Ignore)) {
-			throw [InvalidOperationException] "The service ""$($application.Manifest.Id)"" does not exist."
+			throw [InvalidOperationException]::new("The service ""$($application.Manifest.Id)"" does not exist.")
 		}
 		else {
 			Stop-Service $application.Manifest.Id

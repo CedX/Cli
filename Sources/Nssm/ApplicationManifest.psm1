@@ -48,7 +48,7 @@ class ApplicationManifest {
 			".json" { Get-Content $Path -Raw | ConvertFrom-Json; break }
 			".psd1" { Import-PowerShellDataFile $Path; break }
 			".xml" { ([xml] (Get-Content $Path -Raw)).Configuration; break }
-			default { throw [NotSupportedException] "The ""$_"" file format is not supported." }
+			default { throw [NotSupportedException]::new("The ""$_"" file format is not supported.") }
 		}
 
 		return [ApplicationManifest]@{

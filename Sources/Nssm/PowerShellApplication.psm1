@@ -36,7 +36,7 @@ class PowerShellApplication: Application {
 	#>
 	[string] EntryPoint() {
 		if ($this.EntryPath) { return "-ExecutionPolicy Bypass -File ""$($this.EntryPath)"" -NoLogo -NoProfile -NonInteractive" }
-		throw [EntryPointNotFoundException] "Unable to resolve the application entry point."
+		throw [EntryPointNotFoundException]::new("Unable to resolve the application entry point.")
 	}
 
 	<#

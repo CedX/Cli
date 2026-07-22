@@ -40,7 +40,7 @@ class Application {
 		}
 
 		if (-not $this.Manifest.Id) {
-			throw [EntryPointNotFoundException] "Unable to locate the application manifest."
+			throw [EntryPointNotFoundException]::new("Unable to locate the application manifest.")
 		}
 	}
 
