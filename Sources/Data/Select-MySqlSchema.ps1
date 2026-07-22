@@ -1,5 +1,5 @@
-﻿using namespace Belin.Cli.Data
-using namespace System.Data
+﻿using namespace System.Data
+using module ./MySqlSchema.psm1
 
 <#
 .SYNOPSIS
@@ -9,7 +9,7 @@ using namespace System.Data
 #>
 function Select-MySqlSchema {
 	[CmdletBinding()]
-	[OutputType([Belin.Cli.Data.MySqlSchema])]
+	[OutputType([MySqlSchema])]
 	param (
 		# The connection to the data source.
 		[Parameter(Mandatory, Position = 1)]

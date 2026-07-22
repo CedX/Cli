@@ -1,6 +1,6 @@
-﻿using namespace Belin.Cli.Data
-using namespace System.Collections.Generic
+﻿using namespace System.Collections.Generic
 using namespace System.Web
+using module ./MySqlSchema.psm1
 
 <#
 .SYNOPSIS

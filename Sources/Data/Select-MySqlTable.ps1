@@ -1,5 +1,6 @@
-﻿using namespace Belin.Cli.Data
-using namespace System.Data
+﻿using namespace System.Data
+using module ./MySqlSchema.psm1
+using module ./MySqlTable.psm1
 
 <#
 .SYNOPSIS

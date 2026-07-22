@@ -1,4 +1,5 @@
-﻿using namespace Belin.Cli.Data
+﻿using module ./MySqlSchema.psm1
+using module ./MySqlTable.psm1
 
 <#
 .SYNOPSIS
@@ -32,7 +33,7 @@ function Optimize-MySqlTable {
 		}
 
 		foreach ($tableObject in $tables) {
-			"Optimizing: $($tableObject.QualifiedName)"
+			"Optimizing: $($tableObject.QualifiedName())"
 			Invoke-SqlNonQuery $connection -Command "OPTIMIZE TABLE $($tableObject.GetQualifiedName($true))" | Out-Null
 		}
 	}

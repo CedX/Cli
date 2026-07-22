@@ -1,4 +1,4 @@
-﻿using namespace Belin.Cli.Diagnostics
+﻿using module ../Diagnostics/Architecture.psm1
 
 <#
 .SYNOPSIS

@@ -1,4 +1,4 @@
-﻿using namespace Belin.Cli.Data
+﻿using module ./MySqlSchema.psm1
 
 <#
 .SYNOPSIS

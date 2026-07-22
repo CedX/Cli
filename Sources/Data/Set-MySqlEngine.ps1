@@ -1,5 +1,6 @@
-﻿using namespace Belin.Cli.Data
-using namespace System.Diagnostics.CodeAnalysis
+﻿using namespace System.Diagnostics.CodeAnalysis
+using module ./MySqlSchema.psm1
+using module ./MySqlTable.psm1
 
 <#
 .SYNOPSIS
@@ -40,7 +41,7 @@ function Set-MySqlEngine {
 		}
 
 		foreach ($tableObject in $tables) {
-			"Processing: $($tableObject.QualifiedName)"
+			"Processing: $($tableObject.QualifiedName())"
 			$sql = "
 				SET foreign_key_checks = 0;
 				ALTER TABLE $($tableObject.GetQualifiedName($true)) ENGINE = $Engine;

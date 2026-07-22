@@ -1,5 +1,6 @@
-﻿using namespace Belin.Cli.Data
-using namespace System.Data
+﻿using namespace System.Data
+using module ./MySqlColumn.psm1
+using module ./MySqlTable.psm1
 
 <#
 .SYNOPSIS
@@ -11,7 +12,7 @@ using namespace System.Data
 #>
 function Select-MySqlColumn {
 	[CmdletBinding()]
-	[OutputType([Belin.Cli.Data.MySqlColumn])]
+	[OutputType([MySqlColumn])]
 	param (
 		# The connection to the data source.
 		[Parameter(Mandatory, Position = 1)]

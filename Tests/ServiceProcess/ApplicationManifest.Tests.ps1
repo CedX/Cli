@@ -1,5 +1,4 @@
-﻿using assembly ../../Binaries/Belin.Cli.dll
-using module ../../Sources/ServiceProcess/ApplicationManifest.psm1
+﻿using module ../../Sources/ServiceProcess/ApplicationManifest.psm1
 
 <#
 .SYNOPSIS
