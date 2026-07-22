@@ -38,7 +38,7 @@ function Backup-MySqlTable {
 	}
 
 	process {
-		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Get-MySqlSchema $connection)
+		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Select-MySqlSchema $connection)
 		foreach ($schemaObject in $schemas) {
 			"Exporting: $($Table.Count -eq 1 ? "$($schemaObject.Name).$($Table[0])" : $schemaObject.Name)"
 			Export-MySqlDump $schemaObject -Path $Path -Table $Table -Uri $Uri
@@ -90,132 +90,6 @@ function Export-MySqlDump {
 	$arguments.Add($Schema.Name)
 	$arguments.AddRange($Table)
 	mysqldump @arguments
-}
-
-<#
-.SYNOPSIS
-	Gets the list of all collations.
-.OUTPUTS
-	The list of all collations.
-#>
-function Get-MySqlCollation {
-	[CmdletBinding()]
-	[OutputType([string])]
-	param (
-		# The connection to the data source.
-		[Parameter(Mandatory, Position = 1)]
-		[IDbConnection] $Connection
-	)
-
-	$records = Invoke-SqlQuery $Connection -Command "SHOW COLLATION"
-	$records.ForEach{ $_.Collation }
-}
-
-<#
-.SYNOPSIS
-	Gets the list of columns contained in the specified table.
-.OUTPUTS
-	The columns contained in the specified table.
-#>
-function Get-MySqlColumn {
-	[CmdletBinding()]
-	[OutputType([Belin.Cli.MySql.MySqlColumn])]
-	param (
-		# The connection to the data source.
-		[Parameter(Mandatory, Position = 1)]
-		[IDbConnection] $Connection,
-
-		# The database table.
-		[Parameter(Mandatory, Position = 2, ValueFromPipeline)]
-		[MySqlTable] $Table
-	)
-
-	process {
-		$sql = "
-			SELECT *
-			FROM information_schema.COLUMNS
-			WHERE TABLE_SCHEMA = @Schema AND TABLE_NAME = @Name
-			ORDER BY ORDINAL_POSITION"
-
-		Invoke-SqlQuery $Connection -As ([MySqlColumn]) -Command $sql -Parameters @{
-			Name = $Table.Name
-			Schema = $Table.Schema
-		}
-	}
-}
-
-<#
-.SYNOPSIS
-	Gets the list of all storage engines.
-.OUTPUTS
-	The list of all storage engines.
-#>
-function Get-MySqlEngine {
-	[CmdletBinding()]
-	[OutputType([string])]
-	param (
-		# The connection to the data source.
-		[Parameter(Mandatory, Position = 1)]
-		[IDbConnection] $Connection
-	)
-
-	$records = Invoke-SqlQuery $Connection -Command "SHOW ENGINES"
-	$records.ForEach{ $_.Engine }
-}
-
-<#
-.SYNOPSIS
-	Gets the list of schemas hosted by a database server.
-.OUTPUTS
-	The schemas hosted by the database server.
-#>
-function Get-MySqlSchema {
-	[CmdletBinding()]
-	[OutputType([Belin.Cli.MySql.MySqlSchema])]
-	param (
-		# The connection to the data source.
-		[Parameter(Mandatory, Position = 1)]
-		[IDbConnection] $Connection
-	)
-
-	Invoke-SqlQuery $Connection -As ([MySqlSchema]) -Command "
-		SELECT *
-		FROM information_schema.SCHEMATA
-		WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
-		ORDER BY SCHEMA_NAME"
-}
-
-<#
-.SYNOPSIS
-	Gets the list of tables contained in the specified schema.
-.OUTPUTS
-	The tables contained in the specified schema.
-#>
-function Get-MySqlTable {
-	[CmdletBinding()]
-	[OutputType([Belin.Cli.MySql.MySqlTable])]
-	param (
-		# The connection to the data source.
-		[Parameter(Mandatory, Position = 1)]
-		[IDbConnection] $Connection,
-
-		# The database schema.
-		[Parameter(Mandatory, Position = 2, ValueFromPipeline)]
-		[MySqlSchema] $Schema
-	)
-
-	process {
-		$sql = "
-			SELECT *
-			FROM information_schema.TABLES
-			WHERE TABLE_SCHEMA = @Name AND TABLE_TYPE = @Type
-			ORDER BY TABLE_NAME"
-
-		Invoke-SqlQuery $Connection -As ([MySqlTable]) -Command $sql -Parameters @{
-			Name = $Schema.Name
-			Type = [MySqlTableType]::BaseTable
-		}
-	}
 }
 
 <#
@@ -282,9 +156,9 @@ function Optimize-MySqlTable {
 	}
 
 	process {
-		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Get-MySqlSchema $connection)
+		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Select-MySqlSchema $connection)
 		$tables = foreach ($schemaObject in $schemas) {
-			$Table ? $Table.ForEach{ [MySqlTable]@{ Name = $_; Schema = $schemaObject.Name } } : @(Get-MySqlTable $connection $schemaObject)
+			$Table ? $Table.ForEach{ [MySqlTable]@{ Name = $_; Schema = $schemaObject.Name } } : @(Select-MySqlTable $connection $schemaObject)
 		}
 
 		foreach ($tableObject in $tables) {
@@ -356,6 +230,132 @@ function Restore-MySqlTable {
 
 <#
 .SYNOPSIS
+	Gets the list of all collations.
+.OUTPUTS
+	The list of all collations.
+#>
+function Select-MySqlCollation {
+	[CmdletBinding()]
+	[OutputType([string])]
+	param (
+		# The connection to the data source.
+		[Parameter(Mandatory, Position = 1)]
+		[IDbConnection] $Connection
+	)
+
+	$records = Invoke-SqlQuery $Connection -Command "SHOW COLLATION"
+	$records.ForEach{ $_.Collation }
+}
+
+<#
+.SYNOPSIS
+	Gets the list of columns contained in the specified table.
+.OUTPUTS
+	The columns contained in the specified table.
+#>
+function Select-MySqlColumn {
+	[CmdletBinding()]
+	[OutputType([Belin.Cli.MySql.MySqlColumn])]
+	param (
+		# The connection to the data source.
+		[Parameter(Mandatory, Position = 1)]
+		[IDbConnection] $Connection,
+
+		# The database table.
+		[Parameter(Mandatory, Position = 2, ValueFromPipeline)]
+		[MySqlTable] $Table
+	)
+
+	process {
+		$sql = "
+			SELECT *
+			FROM information_schema.COLUMNS
+			WHERE TABLE_SCHEMA = @Schema AND TABLE_NAME = @Name
+			ORDER BY ORDINAL_POSITION"
+
+		Invoke-SqlQuery $Connection -As ([MySqlColumn]) -Command $sql -Parameters @{
+			Name = $Table.Name
+			Schema = $Table.Schema
+		}
+	}
+}
+
+<#
+.SYNOPSIS
+	Gets the list of all storage engines.
+.OUTPUTS
+	The list of all storage engines.
+#>
+function Select-MySqlEngine {
+	[CmdletBinding()]
+	[OutputType([string])]
+	param (
+		# The connection to the data source.
+		[Parameter(Mandatory, Position = 1)]
+		[IDbConnection] $Connection
+	)
+
+	$records = Invoke-SqlQuery $Connection -Command "SHOW ENGINES"
+	$records.ForEach{ $_.Engine }
+}
+
+<#
+.SYNOPSIS
+	Gets the list of schemas hosted by a database server.
+.OUTPUTS
+	The schemas hosted by the database server.
+#>
+function Select-MySqlSchema {
+	[CmdletBinding()]
+	[OutputType([Belin.Cli.MySql.MySqlSchema])]
+	param (
+		# The connection to the data source.
+		[Parameter(Mandatory, Position = 1)]
+		[IDbConnection] $Connection
+	)
+
+	Invoke-SqlQuery $Connection -As ([MySqlSchema]) -Command "
+		SELECT *
+		FROM information_schema.SCHEMATA
+		WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
+		ORDER BY SCHEMA_NAME"
+}
+
+<#
+.SYNOPSIS
+	Gets the list of tables contained in the specified schema.
+.OUTPUTS
+	The tables contained in the specified schema.
+#>
+function Select-MySqlTable {
+	[CmdletBinding()]
+	[OutputType([Belin.Cli.MySql.MySqlTable])]
+	param (
+		# The connection to the data source.
+		[Parameter(Mandatory, Position = 1)]
+		[IDbConnection] $Connection,
+
+		# The database schema.
+		[Parameter(Mandatory, Position = 2, ValueFromPipeline)]
+		[MySqlSchema] $Schema
+	)
+
+	process {
+		$sql = "
+			SELECT *
+			FROM information_schema.TABLES
+			WHERE TABLE_SCHEMA = @Name AND TABLE_TYPE = @Type
+			ORDER BY TABLE_NAME"
+
+		Invoke-SqlQuery $Connection -As ([MySqlTable]) -Command $sql -Parameters @{
+			Name = $Schema.Name
+			Type = [MySqlTableType]::BaseTable
+		}
+	}
+}
+
+<#
+.SYNOPSIS
 	Alters the character set of MariaDB/MySQL tables.
 .OUTPUTS
 	The log messages.
@@ -382,14 +382,14 @@ function Set-MySqlCharset {
 
 	begin {
 		$connection = New-MySqlConnection $Uri
-		$collations = Get-MySqlCollation $connection
+		$collations = Select-MySqlCollation $connection
 		if ($Collation -notin $collations) { throw [ArgumentOutOfRangeException] "Collation" }
 	}
 
 	process {
-		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Get-MySqlSchema $connection)
+		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Select-MySqlSchema $connection)
 		$tables = foreach ($schemaObject in $schemas) {
-			$Table ? $Table.ForEach{ [MySqlTable]@{ Name = $_; Schema = $schemaObject.Name } } : @(Get-MySqlTable $connection $schemaObject)
+			$Table ? $Table.ForEach{ [MySqlTable]@{ Name = $_; Schema = $schemaObject.Name } } : @(Select-MySqlTable $connection $schemaObject)
 		}
 
 		foreach ($tableObject in $tables) {
@@ -437,14 +437,14 @@ function Set-MySqlEngine {
 
 	begin {
 		$connection = New-MySqlConnection $Uri
-		$engines = Get-MySqlEngine $connection
+		$engines = Select-MySqlEngine $connection
 		if ($Engine -notin $engines) { throw [ArgumentOutOfRangeException] "Engine" }
 	}
 
 	process {
-		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Get-MySqlSchema $connection)
+		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Select-MySqlSchema $connection)
 		$tables = foreach ($schemaObject in $schemas) {
-			$Table ? $Table.ForEach{ [MySqlTable]@{ Name = $_; Schema = $schemaObject.Name } } : @(Get-MySqlTable $connection $schemaObject)
+			$Table ? $Table.ForEach{ [MySqlTable]@{ Name = $_; Schema = $schemaObject.Name } } : @(Select-MySqlTable $connection $schemaObject)
 		}
 
 		foreach ($tableObject in $tables) {
