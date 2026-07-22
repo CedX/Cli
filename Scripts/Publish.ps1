@@ -1,12 +1,7 @@
 using module ./Cmdlets.psm1
-
-if ($Release) { & "$PSScriptRoot/Default.ps1" }
-else {
-	"The ""-Release"" switch must be set!"
-	exit 1
-}
+& "$PSScriptRoot/Default.ps1"
 
 "Publishing the package..."
 $version = (Import-PowerShellDataFile Cli.psd1).ModuleVersion
-New-GitTag "v$version"
+# New-GitTag "v$version"
 Publish-PSGalleryModule

@@ -1,4 +1,4 @@
-& "$PSScriptRoot/Build.ps1"
+& "$PSScriptRoot/Assets.ps1"
 
 "Running the test suite..."
 pwsh -Command {
