@@ -1,4 +1,4 @@
-using namespace Belin.Cli
+﻿using namespace Belin.Cli.Diagnostics
 using namespace System.IO
 
 <#
@@ -11,7 +11,7 @@ using namespace System.IO
 #>
 function Get-ExecutableArchitecture {
 	[CmdletBinding()]
-	[OutputType([Belin.Cli.Architecture])]
+	[OutputType([Belin.Cli.Diagnostics.Architecture])]
 	param (
 		# The path of the executable to inspect.
 		[Parameter(Mandatory, Position = 1, ValueFromPipeline)]

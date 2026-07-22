@@ -1,4 +1,4 @@
-namespace Belin.Cli;
+namespace Belin.Cli.Diagnostics;
 
 /// <summary>
 /// Represents an enumeration of instruction set architectures.
