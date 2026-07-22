@@ -34,7 +34,7 @@ function Publish-PSGalleryModule {
 	$output = "$root/Temp/PSGallery"
 	New-Item $output -ItemType Directory | Out-Null
 	Compress-PSResource $root/Temp/PSModule $output
-	# foreach ($package in Get-Item $output/*.nupkg) { Publish-PSResource -ApiKey $Env:PSGALLERY_API_KEY -NupkgPath $package -Repository PSGallery }
+	foreach ($package in Get-Item $output/*.nupkg) { Publish-PSResource -ApiKey $Env:PSGALLERY_API_KEY -NupkgPath $package -Repository PSGallery }
 }
 
 <#

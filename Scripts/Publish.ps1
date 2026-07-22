@@ -3,5 +3,5 @@ using module ./Cmdlets.psm1
 
 "Publishing the package..."
 $version = (Import-PowerShellDataFile Cli.psd1).ModuleVersion
-# New-GitTag "v$version"
+New-GitTag "v$version"
 Publish-PSGalleryModule
