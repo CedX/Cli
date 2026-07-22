@@ -6,6 +6,10 @@ using namespace System.Diagnostics.CodeAnalysis
 <#
 .SYNOPSIS
 	Creates a new MariaDB/MySQL database connection.
+.INPUTS
+	The connection URI used to open the database.
+.OUTPUTS
+	The newly created database connection.
 #>
 function New-MySqlConnection {
 	[CmdletBinding()]
@@ -63,6 +67,8 @@ function Select-MySqlCollation {
 <#
 .SYNOPSIS
 	Gets the list of columns contained in the specified table.
+.INPUTS
+	The database table.
 .OUTPUTS
 	The columns contained in the specified table.
 #>
@@ -137,6 +143,8 @@ function Select-MySqlSchema {
 <#
 .SYNOPSIS
 	Gets the list of tables contained in the specified schema.
+.INPUTS
+	The database schema.
 .OUTPUTS
 	The tables contained in the specified schema.
 #>
