@@ -18,6 +18,6 @@ function Get-NssmPath {
 	)
 
 	process {
-		Join-Path $PSScriptRoot "../../Resources/Nssm/nssm.$Architecture.exe" -Resolve
+		Join-Path $PSScriptRoot "../../Resources/ServiceProcess/nssm.$Architecture.exe" -Resolve
 	}
 }
