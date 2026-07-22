@@ -2,6 +2,21 @@ using namespace System.Diagnostics.CodeAnalysis
 
 <#
 .SYNOPSIS
+	Builds the .NET solution and all of its dependencies.
+#>
+function Build-DotNetSolution {
+	param (
+		# The configuration to use for generating the project.
+		[Parameter(Position = 1)]
+		[string] $Configuration
+	)
+
+	$argumentList = $Configuration ? "--configuration", $Configuration : @()
+	dotnet build @argumentList
+}
+
+<#
+.SYNOPSIS
 	Creates a new Git tag.
 #>
 function New-GitTag {
@@ -29,12 +44,21 @@ function Publish-PSGalleryModule {
 	Copy-Item $root/Cli.psd1 $output/Belin.Cli.psd1
 	Copy-Item $root/*.md $output
 	Copy-Item $root/Resources, $root/Sources $output -Recurse
+	Remove-Item $output/Sources/*.cs*, $output/Sources/obj -Recurse
 	$module.RequiredAssemblies.ForEach{ "$root/$_" } | Copy-Item -Destination $output/Binaries
 
 	$output = "$root/Temp/PSGallery"
 	New-Item $output -ItemType Directory | Out-Null
 	Compress-PSResource $root/Temp/PSModule $output
 	foreach ($package in Get-Item $output/*.nupkg) { Publish-PSResource -ApiKey $Env:PSGALLERY_API_KEY -NupkgPath $package -Repository PSGallery }
+}
+
+<#
+.SYNOPSIS
+	Checks whether an update is available for the NuGet packages.
+#>
+function Test-NuGetPackageUpdate {
+	dotnet package list --outdated
 }
 
 <#
