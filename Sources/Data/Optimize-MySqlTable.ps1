@@ -1,6 +1,4 @@
-﻿using module ./MySqlTable.psm1
-
-<#
+﻿<#
 .SYNOPSIS
 	Optimizes a set of MariaDB/MySQL tables.
 .OUTPUTS
@@ -28,7 +26,7 @@ function Optimize-MySqlTable {
 	process {
 		$schemas = $Schema ? $Schema.ForEach{ New-MySqlSchema $_ } : @(Select-MySqlSchema $connection)
 		$tables = foreach ($schemaObject in $schemas) {
-			$Table ? $Table.ForEach{ [MySqlTable]@{ Name = $_; Schema = $schemaObject.Name } } : @(Select-MySqlTable $connection $schemaObject)
+			$Table ? $Table.ForEach{ New-MySqlTable -Schema $schemaObject.Name -Name $_ } : @(Select-MySqlTable $connection $schemaObject)
 		}
 
 		foreach ($tableObject in $tables) {
