@@ -1,5 +1,4 @@
-﻿using module ./MySqlSchema.psm1
-using module ./MySqlTable.psm1
+﻿using module ./MySqlTable.psm1
 
 <#
 .SYNOPSIS
@@ -27,7 +26,7 @@ function Optimize-MySqlTable {
 	}
 
 	process {
-		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Select-MySqlSchema $connection)
+		$schemas = $Schema ? $Schema.ForEach{ New-MySqlSchema $_ } : @(Select-MySqlSchema $connection)
 		$tables = foreach ($schemaObject in $schemas) {
 			$Table ? $Table.ForEach{ [MySqlTable]@{ Name = $_; Schema = $schemaObject.Name } } : @(Select-MySqlTable $connection $schemaObject)
 		}

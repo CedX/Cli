@@ -1,6 +1,4 @@
-﻿using module ./MySqlSchema.psm1
-
-<#
+﻿<#
 .SYNOPSIS
 	Backups a set of MariaDB/MySQL tables.
 .OUTPUTS
@@ -32,7 +30,7 @@ function Backup-MySqlTable {
 	}
 
 	process {
-		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Select-MySqlSchema $connection)
+		$schemas = $Schema ? $Schema.ForEach{ New-MySqlSchema $_ } : @(Select-MySqlSchema $connection)
 		foreach ($schemaObject in $schemas) {
 			"Exporting: $($Table.Count -eq 1 ? "$($schemaObject.Name).$($Table[0])" : $schemaObject.Name)"
 			Export-MySqlDump $schemaObject -Path $Path -Table $Table -Uri $Uri
