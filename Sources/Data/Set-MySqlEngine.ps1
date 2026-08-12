@@ -1,4 +1,5 @@
 ﻿using namespace System.Diagnostics.CodeAnalysis
+using module ./MySqlSchema.psm1
 using module ./MySqlTable.psm1
 
 <#
@@ -34,7 +35,7 @@ function Set-MySqlEngine {
 	}
 
 	process {
-		$schemas = $Schema ? $Schema.ForEach{ New-MySqlSchema $_ } : @(Select-MySqlSchema $connection)
+		$schemas = $Schema ? $Schema.ForEach{ [MySqlSchema]@{ Name = $_ } } : @(Select-MySqlSchema $connection)
 		$tables = foreach ($schemaObject in $schemas) {
 			$Table ? $Table.ForEach{ [MySqlTable]@{ Name = $_; Schema = $schemaObject.Name } } : @(Select-MySqlTable $connection $schemaObject)
 		}
