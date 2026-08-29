@@ -1,4 +1,5 @@
 ﻿using namespace System.Diagnostics.CodeAnalysis
+using namespace System.Management.Automation
 using module ./Architecture.psm1
 using module ./ServiceProcess/DotNetApplication.psm1
 using module ./ServiceProcess/NodeApplication.psm1
