@@ -1,4 +1,69 @@
-using namespace System.ComponentModel.DataAnnotations.Schema
+﻿using namespace System.ComponentModel.DataAnnotations.Schema
+
+<#
+.SYNOPSIS
+	Provides the metadata of a table column.
+#>
+[Table("COLUMNS")]
+class MySqlColumn {
+
+	<#
+	.SYNOPSIS
+		The column name.
+	#>
+	[Column("COLUMN_NAME")]
+	[string] $Name = ""
+
+	<#
+	.SYNOPSIS
+		The column position.
+	#>
+	[Column("ORDINAL_POSITION")]
+	[int] $Position
+
+	<#
+	.SYNOPSIS
+		The schema containing this column.
+	#>
+	[Column("TABLE_SCHEMA")]
+	[string] $Schema = ""
+
+	<#
+	.SYNOPSIS
+		The table containing this column.
+	#>
+	[Column("TABLE_NAME")]
+	[string] $Table = ""
+}
+
+<#
+.SYNOPSIS
+	Provides the metadata of a database schema.
+#>
+[Table("SCHEMATA")]
+class MySqlSchema {
+
+	<#
+	.SYNOPSIS
+		The default character set.
+	#>
+	[Column("DEFAULT_CHARACTER_SET_NAME")]
+	[string] $Charset = ""
+
+	<#
+	.SYNOPSIS
+		The default collation.
+	#>
+	[Column("DEFAULT_COLLATION_NAME")]
+	[string] $Collation = ""
+
+	<#
+	.SYNOPSIS
+		The schema name.
+	#>
+	[Column("SCHEMA_NAME")]
+	[string] $Name = ""
+}
 
 <#
 .SYNOPSIS

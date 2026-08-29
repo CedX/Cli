@@ -1,9 +1,7 @@
 ﻿using namespace MySqlConnector
 using namespace System.Data
 using namespace System.Diagnostics.CodeAnalysis
-using module ./MySqlColumn.psm1
-using module ./MySqlSchema.psm1
-using module ./MySqlTable.psm1
+using module ./InformationSchema.psm1
 
 <#
 .SYNOPSIS
