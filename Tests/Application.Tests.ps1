@@ -1,4 +1,4 @@
-﻿using module ../../Sources/ServiceProcess/ApplicationManifest.psm1
+﻿using module ../Sources/Application.psm1
 
 <#
 .SYNOPSIS
@@ -7,7 +7,7 @@
 Describe "ApplicationManifest" {
 	Context "Read" {
 		It "should support the JSON manifests" -ForEach "json", "psd1", "xml" {
-			$manifest = [ApplicationManifest]::Read("$PSScriptRoot/../Fixtures/Manifest.$_")
+			$manifest = [ApplicationManifest]::Read("$PSScriptRoot/Fixtures/Manifest.$_")
 			Should-BeEmptyString $manifest.Description
 			Should-BeEmptyString $manifest.Environment
 			Should-BeString "MyApp" $manifest.Id -CaseSensitive

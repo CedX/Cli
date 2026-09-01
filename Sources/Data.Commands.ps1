@@ -1,7 +1,7 @@
 ﻿using namespace System.Collections.Generic
 using namespace System.Diagnostics.CodeAnalysis
 using namespace System.Web
-using module ./Data/InformationSchema.psm1
+using module ./InformationSchema.psm1
 
 <#
 .SYNOPSIS

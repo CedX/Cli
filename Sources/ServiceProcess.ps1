@@ -1,7 +1,7 @@
 ﻿using namespace System.Diagnostics.CodeAnalysis
 using namespace System.Management.Automation
+using module ./Application.psm1
 using module ./Architecture.psm1
-using module ./ServiceProcess/Application.psm1
 
 <#
 .SYNOPSIS
