@@ -9,7 +9,7 @@ such as database management, service management and software installation.
 ## Quick start
 Install the latest version of **Belin CLI** with [PSResourceGet](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.psresourceget/) package manager:
 
-```shell
+```powershell
 Install-PSResource Belin.Cli
 ```
 

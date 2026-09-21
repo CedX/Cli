@@ -4,7 +4,7 @@
 Before installing **Belin CLI**, you need to make sure you have [PowerShell](https://learn.microsoft.com/en-us/powershell) up and running.  
 You can verify if you're already good to go with the following command:
 
-```shell
+```powershell
 pwsh --version
 # PowerShell 7.6.0
 ```
