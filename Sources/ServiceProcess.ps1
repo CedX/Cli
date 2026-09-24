@@ -54,13 +54,15 @@ function New-NssmService {
 	begin {
 		if (-not $IsWindows) { throw [PlatformNotSupportedException]::new("This command only supports the Windows platform.") }
 		if (-not (Test-IsPrivilegedProcess)) { throw [UnauthorizedAccessException]::new("You must run this command in an elevated prompt.") }
+		$prefix = Join-Path $Path Sources
 	}
 
 	process {
 		$application = switch ($true) {
-			((Test-Path "$Path/Sources/Server/*.cs") -or (Test-Path "$Path/Sources/*.cs")) { [DotNetApplication]::new($Path); break }
-			((Test-Path "$Path/Sources/Server/*.ps1") -or (Test-Path "$Path/Sources/*.ps1")) { [PowerShellApplication]::new($Path); break }
-			((Test-Path "$Path/Sources/Server/*.ts") -or (Test-Path "$Path/Sources/*.ts")) { [NodeApplication]::new($Path); break }
+			((Test-Path "$prefix/Server/*.cs") -or (Test-Path "$prefix/*.cs")) { [DotNetApplication]::new($Path); break }
+			((Test-Path "$prefix/Server/*.fs") -or (Test-Path "$prefix/*.fs")) { [DotNetApplication]::new($Path); break }
+			((Test-Path "$prefix/Server/*.ps1") -or (Test-Path "$prefix/*.ps1")) { [PowerShellApplication]::new($Path); break }
+			((Test-Path "$prefix/Server/*.ts") -or (Test-Path "$prefix/*.ts")) { [NodeApplication]::new($Path); break }
 			default { throw [NotSupportedException]::new("The application type could not be determined.") }
 		}
 
@@ -121,13 +123,15 @@ function Remove-NssmService {
 	begin {
 		if (-not $IsWindows) { throw [PlatformNotSupportedException]::new("This command only supports the Windows platform.") }
 		if (-not (Test-IsPrivilegedProcess)) { throw [UnauthorizedAccessException]::new("You must run this command in an elevated prompt.") }
+		$prefix = Join-Path $Path Sources
 	}
 
 	process {
 		$application = switch ($true) {
-			((Test-Path "$Path/Sources/Server/*.cs") -or (Test-Path "$Path/Sources/*.cs")) { [DotNetApplication]::new($Path); break }
-			((Test-Path "$Path/Sources/Server/*.ps1") -or (Test-Path "$Path/Sources/*.ps1")) { [PowerShellApplication]::new($Path); break }
-			((Test-Path "$Path/Sources/Server/*.ts") -or (Test-Path "$Path/Sources/*.ts")) { [NodeApplication]::new($Path); break }
+			((Test-Path "$prefix/Server/*.cs") -or (Test-Path "$prefix/*.cs")) { [DotNetApplication]::new($Path); break }
+			((Test-Path "$prefix/Server/*.fs") -or (Test-Path "$prefix/*.fs")) { [DotNetApplication]::new($Path); break }
+			((Test-Path "$prefix/Server/*.ps1") -or (Test-Path "$prefix/*.ps1")) { [PowerShellApplication]::new($Path); break }
+			((Test-Path "$prefix/Server/*.ts") -or (Test-Path "$prefix/*.ts")) { [NodeApplication]::new($Path); break }
 			default { throw [NotSupportedException]::new("The application type could not be determined.") }
 		}
 

@@ -154,7 +154,7 @@ class DotNetApplication: Application {
 		The path to the application root directory.
 	#>
 	DotNetApplication([string] $Path): base($Path) {
-		if ($file = Get-Item "$($this.Path)/Sources/Server/*.csproj" -ErrorAction Ignore || Get-Item "$($this.Path)/Sources/*.csproj" -ErrorAction Ignore) {
+		if ($file = Get-Item "$($this.Path)/Sources/Server/*.*proj" -ErrorAction Ignore || Get-Item "$($this.Path)/Sources/*.*proj" -ErrorAction Ignore) {
 			$entryPoint = @{ AssemblyName = ""; Platforms = ""; OutDir = "" }
 
 			foreach ($propertyGroup in ([xml] (Get-Content $file.FullName -Raw)).Project.PropertyGroup) {
