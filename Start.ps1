@@ -24,7 +24,7 @@ $scriptBlock = {
 	$PSNativeCommandUseErrorActionPreference = $true
 
 	Import-Module "$scriptRoot/Cli.psd1"
-	$argumentList = $parameters.ForEach{ $_.Contains(" ") ? "'$_'" : $_ }
+	$argumentList = $parameters | ForEach-Object { $_ -like "* *" ? "'$_'" : $_ }
 	Invoke-Expression "$command $($argumentList -join " ")"
 }
 
