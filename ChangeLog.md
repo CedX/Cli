@@ -1,5 +1,9 @@
 # Changelog
 
+## Version [6.1.0](https://github.com/CedX/Cli/compare/v6.0.1...v6.1.0)
+- Added support for [F#](https://learn.microsoft.com/en-us/dotnet/fsharp) applications.
+- Restored the `NodeApplication` class.
+
 ## Version [6.0.1](https://github.com/CedX/Cli/compare/v6.0.0...v6.0.1)
 - Optimized the packaging.
 
