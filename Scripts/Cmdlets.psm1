@@ -45,12 +45,12 @@ function Publish-PSGalleryModule {
 	Copy-Item $root/*.md $output
 	Copy-Item $root/Resources, $root/Sources $output -Recurse
 	Remove-Item $output/Sources/*.cs*, $output/Sources/obj -Recurse
-	$module.RequiredAssemblies.ForEach{ "$root/$_" } | Copy-Item -Destination $output/Binaries
+	$module.RequiredAssemblies | ForEach-Object { "$root/$_" } | Copy-Item -Destination $output/Binaries
 
 	$output = "$root/Temp/PSGallery"
 	New-Item $output -ItemType Directory | Out-Null
 	Compress-PSResource $root/Temp/PSModule $output
-	foreach ($package in Get-Item $output/*.nupkg) { Publish-PSResource -ApiKey $Env:PSGALLERY_API_KEY -NupkgPath $package -Repository PSGallery }
+	Get-Item $output/*.nupkg | ForEach-Object { Publish-PSResource -ApiKey $Env:PSGALLERY_API_KEY -NupkgPath $_ -Repository PSGallery }
 }
 
 <#
