@@ -29,6 +29,8 @@
 
 	<ItemGroup>
 		<Compile Include="Architecture.fs" />
+		<Compile Include="Security.fs" />
+		<Compile Include="Deployment.fs" />
 		<Compile Include="InformationSchema.fs" />
 	</ItemGroup>
 </Project>
