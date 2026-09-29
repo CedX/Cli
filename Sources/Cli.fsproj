@@ -29,8 +29,13 @@
 
 	<ItemGroup>
 		<Compile Include="Architecture.fs" />
+		<Compile Include="Net.fs" />
 		<Compile Include="Security.fs" />
+		<Compile Include="Validation.fs" />
+
+		<Compile Include="Compression.fs" />
 		<Compile Include="Deployment.fs" />
+		<Compile Include="Diagnostics.fs" />
 		<Compile Include="InformationSchema.fs" />
 	</ItemGroup>
 </Project>
