@@ -28,13 +28,13 @@
 	)
 
 	RequiredAssemblies = @(
-		"Binaries/FSharp.Core.dll"
 		"Binaries/Microsoft.Extensions.DependencyInjection.Abstractions.dll"
 		"Binaries/Microsoft.Extensions.Logging.Abstractions.dll"
 		"Binaries/MySqlConnector.dll"
 	)
 
 	RequiredModules = @(
+		@{ ModuleName = "Belin.FSharp"; ModuleVersion = "10.1.401" }
 		@{ ModuleName = "Belin.Sql"; ModuleVersion = "3.3.0" }
 	)
 
