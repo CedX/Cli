@@ -12,7 +12,7 @@ type ValidateFileAttribute(errorMessage: string) =
   override _.Validate(arguments: obj, _: EngineIntrinsics) =
     let exists =
       match arguments with
-      | :? string as value -> File.Exists value
+      | :? string as path -> File.Exists path
       | _ -> false
 
     if not exists then raise (ValidationMetadataException errorMessage)
@@ -28,7 +28,7 @@ type ValidatePathAttribute(errorMessage: string) =
   override _.Validate(arguments: obj, _: EngineIntrinsics) =
     let isValid =
       match arguments with
-      | :? string as value -> invalidCharacters.All (fun character -> not (value.Contains character))
+      | :? string as path -> invalidCharacters.All (fun character -> not (path.Contains character))
       | _ -> false
 
     if not isValid then raise (ValidationMetadataException errorMessage)
