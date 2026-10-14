@@ -22,10 +22,10 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="$(AssemblyName).Tests" />
-		<PackageReference Update="FSharp.Core" Version="10.1.401" />
+		<PackageReference Update="FSharp.Core" Version="10.1.402" />
 		<PackageReference Include="Belin.Sql" Version="6.0.0" />
 		<PackageReference Include="MySqlConnector" Version="2.6.2" />
-		<PackageReference Include="System.Management.Automation" Version="7.6.6" />
+		<PackageReference Include="System.Management.Automation" Version="7.6.7" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -34,6 +34,7 @@
 		<Compile Include="Security.fs" />
 		<Compile Include="Validation.fs" />
 
+		<Compile Include="Application.fs" />
 		<Compile Include="Compression.fs" />
 		<Compile Include="Deployment.fs" />
 		<Compile Include="Diagnostics.fs" />
