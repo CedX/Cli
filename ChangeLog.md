@@ -1,7 +1,7 @@
 # Changelog
 
-## Version [7.0.0](https://github.com/CedX/Cli/compare/v6.1.0...v7.0.0)
-- Ported the cmdlets to [F#](https://learn.microsoft.com/en-us/dotnet/fsharp).
+## Version [2026.11.0](https://github.com/CedX/Cli/compare/v6.1.0...v2026.11.0)
+- Breaking change: ported the source code to [F#](https://learn.microsoft.com/en-us/dotnet/fsharp).
 - Added the `Install-Gitea` cmdlet.
 
 ## Version [6.1.0](https://github.com/CedX/Cli/compare/v6.0.1...v6.1.0)
