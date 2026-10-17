@@ -7,7 +7,8 @@ such as database management, service management and software installation.
 > **Use at your own risk!** No support will be provided.
 
 ## Quick start
-Install the latest version of **Belin CLI** with [PSResourceGet](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.psresourceget/) package manager:
+Install the latest version of **Belin CLI**
+with [PSResourceGet](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.psresourceget) package manager:
 
 ```powershell
 Install-PSResource Belin.Cli
@@ -16,6 +17,4 @@ Install-PSResource Belin.Cli
 For detailed instructions, see the [installation guide](Installation.md).
 
 ## Usage
-- [Database management](Modules/DatabaseManagement.md)
-- [Service management](Modules/ServiceManagement.md)
-- [Software installation](Modules/SoftwareInstallation.md)
+TODO To be doumented!
