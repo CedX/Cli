@@ -50,12 +50,15 @@ type InstallNode() =
   /// Downloads the PHP release corresponding to the specified version.
   /// Returns the path to the downloaded archive.
   member private this.DownloadArchive(version: Version): Task<FileInfo> = task {
-    let vs = if version >= Version "8.4.0" then "vs17" else "vs16"
-    let architecture = (string Architecture.Current).ToLowerInvariant()
-    let file = $"php-{version}-nts-Win32-{vs}-{architecture}.zip"
+    let operatingSystem, fileExtension =
+      if OperatingSystem.IsMacOS() then "darwin", "tar.gz"
+      elif OperatingSystem.IsWindows() then "win", "zip"
+      else "linux", "tar.xz"
+
+    let file = $"node-v{version}-{operatingSystem}-x64.{fileExtension}"
     InformationRecord($@"Downloading file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
 
-    let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://downloads.php.net/~windows/releases/archives/{file}"
+    let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://nodejs.org/dist/v{version}/{file}"
     let tempFile = Path.GetTempFileName()
     do! File.WriteAllBytesAsync(tempFile, bytes)
     return FileInfo tempFile
