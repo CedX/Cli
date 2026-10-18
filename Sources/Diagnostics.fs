@@ -6,7 +6,7 @@ open System.IO
 open System.Management.Automation
 open System.Runtime.Versioning
 
-/// Contains operations interacting with system processes.
+/// Contains operations for interacting with system processes.
 module Diagnostics =
 
   /// Returns the architecture of the specified Windows executable.
