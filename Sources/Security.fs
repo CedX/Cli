@@ -14,6 +14,6 @@ module Security =
     | Some value ->
       if Environment.IsPrivilegedProcess then true
       else
-        let homeDirectory = DirectoryInfo (Environment.GetFolderPath Environment.SpecialFolder.Personal)
+        let homeDirectory = Environment.SpecialFolder.Personal |> Environment.GetFolderPath |> DirectoryInfo
         let targetDirectory = DirectoryInfo value
         targetDirectory.Root.Name <> homeDirectory.Root.Name || targetDirectory.FullName.StartsWith homeDirectory.FullName

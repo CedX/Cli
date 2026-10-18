@@ -10,10 +10,10 @@
 	GUID = "b489d27c-f48e-49b1-b1d4-c99752f2c828"
 
 	AliasesToExport = @()
-	CmdletsToExport = @()
+	FunctionsToExport = @()
 	VariablesToExport = @()
 
-	FunctionsToExport = @(
+	CmdletsToExport = @(
 		"Backup-MySqlTable"
 		"ConvertTo-Encoding"
 		"Install-Jdk"
