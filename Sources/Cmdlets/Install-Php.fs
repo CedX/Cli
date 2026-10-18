@@ -65,6 +65,9 @@ type InstallPhp() =
       this.StartWebServer serviceController
       if this.RegisterEventSource.IsPresent then this.RegisterEventLog(version, destinationPath)
 
+    let executable = if OperatingSystem.IsWindows() then "php.exe" else "php"
+    this.WriteObject (Diagnostics.getExecutableVersion (Path.Join(destinationPath, executable)))
+
   /// Downloads the PHP release corresponding to the specified version.
   /// Returns the path to the downloaded ZIP archive.
   member private this.DownloadArchive(version: Version): Task<FileInfo> = task {
