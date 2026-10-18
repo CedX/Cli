@@ -3,7 +3,7 @@ namespace Belin.Cli
 open System.IO
 
 /// Contains operations for working with service applications.
-module internal ServiceProcess =
+module ServiceProcess =
 
   /// The path to the resource directory.
   let private resources: string =

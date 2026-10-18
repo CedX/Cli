@@ -34,10 +34,10 @@
 		<!-- <Compile Include="Application.fs" /> -->
 		<Compile Include="Architecture.fs" />
 		<!-- <Compile Include="Compression.fs" /> -->
+		<Compile Include="Data.InformationSchema.fs" />
 		<!-- <Compile Include="Deployment.fs" /> -->
-		<!-- <Compile Include="Diagnostics.fs" /> -->
-		<Compile Include="InformationSchema.fs" />
-		<Compile Include="Net.fs" />
+		<Compile Include="Diagnostics.fs" />
+		<Compile Include="Net.Http.fs" />
 		<Compile Include="Security.fs" />
 		<Compile Include="ServiceProcess.fs" />
 		<Compile Include="Text.fs" />

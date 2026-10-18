@@ -8,9 +8,9 @@ open System.IO
 type ServiceProcessTests() =
 
   [<TestMethod>]
-  [<DataRow(Architecture.X64)>]
-  [<DataRow(Architecture.X86)>]
-  member _.GetNssmPath(architecture: Architecture) =
+  [<DataRow(Architecture.X64, "nssm.x64.exe")>]
+  [<DataRow(Architecture.X86, "nssm.x86.exe")>]
+  member _.GetNssmPath(architecture: Architecture, executable: string) =
     let path = ServiceProcess.getNssmPath architecture
-    path |> Should.endWith ($"/Resources/ServiceProcess/nssm.{(string architecture).ToLowerInvariant()}.exe".Replace('/', Path.DirectorySeparatorChar))
+    path |> Should.endWith ($"/Resources/ServiceProcess/{executable}".Replace('/', Path.DirectorySeparatorChar))
     path |> File.Exists |> Should.beTrue
