@@ -1,12 +1,13 @@
 namespace Belin.Cli.Cmdlets
 
 open Belin.Cli
+open System
 open System.IO
 open System.Management.Automation
 open System.Text
 
 /// Converts the encoding of input files.
-[<Cmdlet(VerbsData.ConvertTo, "Encoding", DefaultParameterSetName = "Path"); OutputType(typeof<string>)>]
+[<Cmdlet(VerbsData.ConvertTo, "Encoding", DefaultParameterSetName = "Path"); OutputType(typeof<Void>)>]
 type ConvertToEncoding() =
   inherit PSCmdlet()
 
@@ -35,8 +36,7 @@ type ConvertToEncoding() =
   member val Recurse = SwitchParameter false with get, set
 
   /// Performs execution of this command.
-  override this.ProcessRecord () =
-    let commandName = "ConvertTo-Encoding"
+  override this.ProcessRecord() =
     let sourceEncoding = if this.Encoding.ToLowerInvariant() = "latin1" then Encoding.UTF8 else Encoding.Latin1
     let targetEncoding = Encoding.GetEncoding this.Encoding
 
@@ -58,5 +58,5 @@ type ConvertToEncoding() =
       match Text.readAllBytes file with
       | None -> ()
       | Some bytes ->
-        InformationRecord($"Converting: {file}", commandName) |> this.WriteInformation
+        InformationRecord($"Converting: {file}", nameof this.ProcessRecord) |> this.WriteInformation
         File.WriteAllBytes(file.FullName, Encoding.Convert(sourceEncoding, targetEncoding, bytes))

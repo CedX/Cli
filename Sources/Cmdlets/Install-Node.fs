@@ -5,9 +5,16 @@ open System
 open System.Management.Automation
 open System.Net.Http
 
+/// Represents a Node.js release.
+type NodeRelease = {
+
+  /// The version number.
+  Version: string
+}
+
 /// Downloads and installs the latest Node.js release.
 /// Returns the output from the `node --version` command.
-[<Cmdlet(VerbsLifecycle.Install, "Node"); OutputType(typeof<string>)>]
+[<Cmdlet(VerbsLifecycle.Install, "Node"); OutputType(typeof<Void>)>]
 type InstallNode() =
   inherit Cmdlet()
 
@@ -27,5 +34,7 @@ type InstallNode() =
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
-    let commandName = "Install-Node"
+    ()
+
+  member private _.FetchLatestVersion() =
     ()

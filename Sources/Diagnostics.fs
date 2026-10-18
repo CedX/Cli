@@ -1,7 +1,9 @@
 namespace Belin.Cli
 
 open System
+open System.Diagnostics
 open System.IO
+open System.Management.Automation
 open System.Runtime.Versioning
 
 /// Contains operations interacting with system processes.
@@ -9,7 +11,7 @@ module Diagnostics =
 
   /// Returns the architecture of the specified Windows executable.
   [<SupportedOSPlatform("windows")>]
-  let getExecutableArchitecture (path: string) =
+  let getExecutableArchitecture (path: string): Architecture =
     use stream = File.OpenRead path
     use reader = new BinaryReader(stream)
 
@@ -20,8 +22,15 @@ module Diagnostics =
     | 0x8664us -> Architecture.X64
     | value -> raise (NotSupportedException (sprintf "Unsupported machine type: 0x%X" value))
 
-  /// Runs the specified executable with the `--version` argument.
-  /// Returns the standard output of the underlying process.
-  let getExecutableVersion (path: string) =
-    // let startInfo = Proces
-    ()
+  /// Runs the specified command with the `--version` argument, and returns its standard output.
+  let getExecutableVersion (command: string): string =
+    let startInfo = ProcessStartInfo(command, CreateNoWindow = true, RedirectStandardOutput = true, arguments = ["--version"])
+    let message = $"{startInfo.FileName} {startInfo.Arguments}"
+
+    match Process.Start startInfo with
+    | null -> raise (ApplicationFailedException message)
+    | startedProcess ->
+      let standardOutput = startedProcess.StandardOutput.ReadToEnd().Trim()
+      startedProcess.WaitForExit()
+      if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException message)
+      standardOutput
