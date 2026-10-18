@@ -14,11 +14,11 @@ module internal Text =
     typeof<Architecture>.Assembly.Location |> Path.GetDirectoryName |> fun name -> Path.Join(name, "../Resources/Text")
 
   /// The list of binary file extensions.
-  let binaryExtensions: string array =
+  let private binaryExtensions: string array =
     Path.Join(resources, "BinaryExtensions.json") |> File.ReadAllText |> JsonSerializer.Deserialize<string array> |> nonNull
 
   /// The list of text file extensions.
-  let textExtensions: string array =
+  let private textExtensions: string array =
     Path.Join(resources, "TextExtensions.json") |> File.ReadAllText |> JsonSerializer.Deserialize<string array> |> nonNull
 
   /// Returns a value indicating whether the specified file should be excluded from the processing.
