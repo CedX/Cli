@@ -17,6 +17,21 @@ function Build-DotNetSolution {
 
 <#
 .SYNOPSIS
+	Invokes the .NET test runner.
+#>
+function Invoke-DotNetTest {
+	param (
+		# The path to the settings file to use for running the tests.
+		[ValidateScript({ Test-Path $_ -PathType Leaf }, ErrorMessage = "The specified settings file does not exist.")]
+		[string] $Settings
+	)
+
+	$argumentList = $Settings ? "--settings", $Settings : @()
+	dotnet test @argumentList
+}
+
+<#
+.SYNOPSIS
 	Invokes the FSharpLint static analyzer.
 #>
 function Invoke-FSharpLint {
