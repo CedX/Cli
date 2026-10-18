@@ -8,7 +8,7 @@ open System.Net.Http
 module Http =
 
   /// The assembly version.
-  let private version = typeof<Architecture>.Assembly.GetName().Version |> nonNull
+  let private version = nonNull (typeof<Architecture>.Assembly.GetName().Version)
 
   /// Creates a new HTTP client.
   let newClient(): HttpClient =
