@@ -19,8 +19,8 @@ type GiteaRelease = {
 
 /// Downloads and installs the latest Gitea release.
 /// Returns the output from the `gitea --version` command.
-[<Cmdlet(VerbsLifecycle.Install, "Node"); OutputType(typeof<string>)>]
-type InstallNode() =
+[<Cmdlet(VerbsLifecycle.Install, "Gitea"); OutputType(typeof<string>)>]
+type InstallGitea() =
   inherit PSCmdlet()
 
   /// The HTTP client used to download the archive.
