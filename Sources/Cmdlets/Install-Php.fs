@@ -15,7 +15,7 @@ open System.Threading.Tasks
 type PhpRelease = {
 
   /// The version number.
-  Version: Version
+  Version: string
 }
 
 /// Downloads and installs the latest PHP release.
@@ -56,20 +56,21 @@ type InstallPhp() =
     let file = this.DownloadArchive(version).GetAwaiter().GetResult()
 
     use serviceController = new ServiceController "W3SVC"
-    if Environment.IsPrivilegedProcess then this.StopWebServer serviceController
+    if Environment.IsPrivilegedProcess then this.StopService serviceController
 
     InformationRecord($@"Extracting file ""{file.Name}"" into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     Compression.ExpandZipArchive(file.FullName, destinationPath)
 
     if Environment.IsPrivilegedProcess then
-      this.StartWebServer serviceController
+      this.StartService serviceController
       if this.RegisterEventSource.IsPresent then this.RegisterEventLog(version, destinationPath)
 
-    let executable = if OperatingSystem.IsWindows() then "php.exe" else "php"
-    this.WriteObject (Diagnostics.getExecutableVersion (Path.Join(destinationPath, executable)))
+    let executable = Path.Join(destinationPath, if OperatingSystem.IsWindows() then "php.exe" else "bin/php")
+    if not (OperatingSystem.IsWindows()) then IO.makeFileExecutable executable
+    executable |> Diagnostics.getExecutableVersion |> this.WriteObject
 
   /// Downloads the PHP release corresponding to the specified version.
-  /// Returns the path to the downloaded ZIP archive.
+  /// Returns the path to the downloaded archive.
   member private this.DownloadArchive(version: Version): Task<FileInfo> = task {
     let vs = if version >= Version "8.4.0" then "vs17" else "vs16"
     let architecture = (string Architecture.Current).ToLowerInvariant()
@@ -77,9 +78,9 @@ type InstallPhp() =
     InformationRecord($@"Downloading file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
 
     let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://downloads.php.net/~windows/releases/archives/{file}"
-    let path = Path.GetTempFileName()
-    do! File.WriteAllBytesAsync(path, bytes)
-    return FileInfo path
+    let tempFile = Path.GetTempFileName()
+    do! File.WriteAllBytesAsync(tempFile, bytes)
+    return FileInfo tempFile
   }
 
   /// Fetches the latest version number of PHP releases.
@@ -87,7 +88,7 @@ type InstallPhp() =
     InformationRecord("Fetching the list of PHP releases...", nameof this.FetchLatestVersion) |> this.WriteInformation
     match! (nonNull httpClient).GetFromJsonAsync<Dictionary<string, PhpRelease>> "https://www.php.net/releases/?json" with
     | null -> return raise (HttpRequestException "Unable to fetch the list of PHP releases.")
-    | releases -> return releases |> Seq.head |> _.Value.Version
+    | releases -> return releases |> Seq.head |> fun release -> Version.Parse release.Value.Version
   }
 
   /// Registers the PHP interpreter with the event log.
@@ -97,16 +98,16 @@ type InstallPhp() =
     Registry.SetValue(key, "EventMessageFile", Path.Join(phpDirectory, $"php{phpVersion.Major}.dll"), RegistryValueKind.String)
     Registry.SetValue(key, "TypesSupported", 7, RegistryValueKind.DWord)
 
-  /// Starts the IIS web server.
-  member private this.StartWebServer(serviceController: ServiceController) =
+  /// Starts the IIS service.
+  member private this.StartService(serviceController: ServiceController) =
     if serviceController.Status = ServiceControllerStatus.Stopped then
-      InformationRecord("Starting the IIS web server...", nameof this.StartWebServer) |> this.WriteInformation
+      InformationRecord("Starting the IIS service...", nameof this.StartService) |> this.WriteInformation
       serviceController.Start()
       serviceController.WaitForStatus ServiceControllerStatus.Running
 
-  /// Stops the IIS web server.
-  member private this.StopWebServer(serviceController: ServiceController) =
+  /// Stops the IIS service.
+  member private this.StopService(serviceController: ServiceController) =
     if serviceController.Status = ServiceControllerStatus.Running then
-      InformationRecord("Stopping the IIS web server...", nameof this.StopWebServer) |> this.WriteInformation
+      InformationRecord("Stopping the IIS service...", nameof this.StopService) |> this.WriteInformation
       serviceController.Stop()
       serviceController.WaitForStatus ServiceControllerStatus.Stopped
