@@ -7,12 +7,11 @@ open System.Runtime.Versioning
 module IO =
 
   /// The Unix file mode of an executable file.
-  let private executePermissions =
+  let private executePermission =
     UnixFileMode.UserRead ||| UnixFileMode.UserExecute ||| UnixFileMode.UserExecute
     ||| UnixFileMode.GroupRead ||| UnixFileMode.GroupExecute
     ||| UnixFileMode.OtherRead ||| UnixFileMode.OtherExecute
 
   /// Sets the execute permission on the specified file.
   [<UnsupportedOSPlatform("windows")>]
-  let makeFileExecutable (path: string) =
-    File.SetUnixFileMode(path, executePermissions)
+  let makeFileExecutable (path: string) = File.SetUnixFileMode(path, executePermission)
