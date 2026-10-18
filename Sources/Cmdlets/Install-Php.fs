@@ -1,22 +1,35 @@
 namespace Belin.Cli.Cmdlets
 
 open Belin.Cli
+open Microsoft.Win32
 open System
+open System.Collections.Generic
+open System.IO
 open System.Management.Automation
 open System.Net.Http
+open System.Net.Http.Json
+open System.ServiceProcess
+open System.Threading.Tasks
+
+/// Represents a PHP release.
+type PhpRelease = {
+
+  /// The version number.
+  Version: Version
+}
 
 /// Downloads and installs the latest PHP release.
 /// Returns the output from the `php --version` command.
 [<Cmdlet(VerbsLifecycle.Install, "Php"); OutputType(typeof<string>)>]
 type InstallPhp() =
-  inherit Cmdlet()
+  inherit PSCmdlet()
 
   /// The HTTP client used to download the archive.
   let mutable httpClient: HttpClient | null = null
 
   /// The path to the output directory.
   [<Parameter(Position = 1); ValidatePath("The specified output path is invalid.")>]
-  member val DestinationPath = @"C:\Program Files\PHP" with get, set
+  member val DestinationPath = if OperatingSystem.IsWindows() then @"C:\Program Files\PHP" else "/usr/local" with get, set
 
   /// Value indicating whether to register the PHP interpreter with the event log.
   [<Parameter()>]
@@ -30,14 +43,67 @@ type InstallPhp() =
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
-    let commandName = "Install-Php"
     if not (OperatingSystem.IsWindows()) then
       let ex = PlatformNotSupportedException "This command only supports the Windows platform."
       ErrorRecord(ex, "PlatformNotSupported", ErrorCategory.InvalidOperation, Environment.OSVersion) |> this.ThrowTerminatingError
 
-    if not (Security.isPrivilegedProcess (Some this.DestinationPath)) then
+    let destinationPath = this.GetUnresolvedProviderPathFromPSPath this.DestinationPath
+    if not (Security.canWriteTo destinationPath) then
       let ex = UnauthorizedAccessException "You must run this command in an elevated prompt."
-      ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, this.DestinationPath) |> this.ThrowTerminatingError
+      ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, destinationPath) |> this.ThrowTerminatingError
 
-    InformationRecord("Fetching the list of PHP releases...", commandName) |> this.WriteInformation
-    ()
+    let version = this.FetchLatestVersion().GetAwaiter().GetResult()
+    let file = this.DownloadArchive(version).GetAwaiter().GetResult()
+
+    use serviceController = new ServiceController "W3SVC"
+    if Environment.IsPrivilegedProcess then this.StopWebServer serviceController
+
+    InformationRecord($@"Extracting file ""{file.Name}"" into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    Compression.ExpandZipArchive(file.FullName, destinationPath)
+
+    if Environment.IsPrivilegedProcess then
+      this.StartWebServer serviceController
+      if this.RegisterEventSource.IsPresent then this.RegisterEventLog(version, destinationPath)
+
+  /// Downloads the PHP release corresponding to the specified version.
+  /// Returns the path to the downloaded ZIP archive.
+  member private this.DownloadArchive(version: Version): Task<FileInfo> = task {
+    let vs = if version >= Version "8.4.0" then "vs17" else "vs16"
+    let architecture = (string Architecture.Current).ToLowerInvariant()
+    let file = $"php-{version}-nts-Win32-{vs}-{architecture}.zip"
+    InformationRecord($@"Downloading file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
+
+    let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://downloads.php.net/~windows/releases/archives/{file}"
+    let path = Path.GetTempFileName()
+    do! File.WriteAllBytesAsync(path, bytes)
+    return FileInfo path
+  }
+
+  /// Fetches the latest version number of PHP releases.
+  member private this.FetchLatestVersion(): Task<Version> = task {
+    InformationRecord("Fetching the list of PHP releases...", nameof this.FetchLatestVersion) |> this.WriteInformation
+    match! (nonNull httpClient).GetFromJsonAsync<Dictionary<string, PhpRelease>> "https://www.php.net/releases/?json" with
+    | null -> return raise (HttpRequestException "Unable to fetch the list of PHP releases.")
+    | releases -> return releases |> Seq.head |> _.Value.Version
+  }
+
+  /// Registers the PHP interpreter with the event log.
+  member private this.RegisterEventLog(phpVersion: Version, phpDirectory: string) =
+    InformationRecord("Registering the PHP interpreter with the event log...", nameof this.RegisterEventLog) |> this.WriteInformation
+    let key = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Application\PHP-{phpVersion}"
+    Registry.SetValue(key, "EventMessageFile", Path.Join(phpDirectory, $"php{phpVersion.Major}.dll"), RegistryValueKind.String)
+    Registry.SetValue(key, "TypesSupported", 7, RegistryValueKind.DWord)
+
+  /// Starts the IIS web server.
+  member private this.StartWebServer(serviceController: ServiceController) =
+    if serviceController.Status = ServiceControllerStatus.Stopped then
+      InformationRecord("Starting the IIS web server...", nameof this.StartWebServer) |> this.WriteInformation
+      serviceController.Start()
+      serviceController.WaitForStatus ServiceControllerStatus.Running
+
+  /// Stops the IIS web server.
+  member private this.StopWebServer(serviceController: ServiceController) =
+    if serviceController.Status = ServiceControllerStatus.Running then
+      InformationRecord("Stopping the IIS web server...", nameof this.StopWebServer) |> this.WriteInformation
+      serviceController.Stop()
+      serviceController.WaitForStatus ServiceControllerStatus.Stopped

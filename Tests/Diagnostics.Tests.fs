@@ -3,6 +3,7 @@ namespace Belin.Cli
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open System
 open System.IO
+open System.Text.RegularExpressions
 
 /// Tests the features of the `Diagnostics` module.
 [<TestClass>]
@@ -12,5 +13,8 @@ type DiagnosticsTests() =
   [<DataRow("nssm.x64.exe", Architecture.X64)>]
   [<DataRow("nssm.x86.exe", Architecture.X86)>]
   member _.GetExecutableArchitecture(executable: string, expected: Architecture) =
-    let path = Path.Join(AppContext.BaseDirectory, $"../Resources/ServiceProcess/{executable}")
-    path |> Diagnostics.getExecutableArchitecture |> Should.be expected
+    Path.Join(AppContext.BaseDirectory, $"../Resources/ServiceProcess/{executable}") |> Diagnostics.getExecutableArchitecture |> Should.be expected
+
+  [<TestMethod>]
+  member _.GetExecutableVersion() =
+    "dotnet" |> Diagnostics.getExecutableVersion |> Should.matchRegex (Regex @"^\d+\.\d+\.\d+$")

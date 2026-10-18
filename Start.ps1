@@ -21,6 +21,7 @@ param (
 $scriptBlock = {
 	param ([string] $scriptRoot, [string] $command, [string[]] $parameters)
 	$ErrorActionPreference = "Stop"
+	$InformationPreference = "Continue"
 	$PSNativeCommandUseErrorActionPreference = $true
 
 	Import-Module "$scriptRoot/Cli.psd1"

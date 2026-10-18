@@ -1,6 +1,7 @@
 namespace Belin.Cli
 
 open Microsoft.VisualStudio.TestTools.UnitTesting
+open System.Text.RegularExpressions
 
 /// Contains assertions for working with unit tests.
 [<RequireQualifiedAccess>]
@@ -46,6 +47,10 @@ module internal Should =
   let inline endWith (expectedSuffix: string) (value: string) =
     Assert.EndsWith(expectedSuffix, value)
 
+  /// Tests whether the specified string matches the given regular expression.
+  let inline matchRegex (pattern: Regex) (value: string) =
+    Assert.MatchesRegex(pattern, value)
+
   /// Tests whether the specified values are unequal.
   let inline notBe (notExpected: 'T) (actual: 'T) =
     Assert.AreNotEqual<'T>(notExpected, actual)
@@ -53,6 +58,10 @@ module internal Should =
   /// Tests whether the specified object is not `null`.
   let inline notBeNull (value: objnull) =
     Assert.IsNotNull value
+
+  /// Tests whether the specified string does not match the given regular expression.
+  let inline notMatchRegex (pattern: Regex) (value: string) =
+    Assert.DoesNotMatchRegex(pattern, value)
 
   /// Tests whether the specified string begins with the given prefix.
   let inline startWith (expectedPrefix: string) (value: string) =
