@@ -7,7 +7,7 @@ open System.Text
 open System.Text.Json
 
 /// Contains operations for working with text files.
-module internal Text =
+module Text =
 
   /// The path to the resource directory.
   let private resources: string =
