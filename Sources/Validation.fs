@@ -1,7 +1,6 @@
 namespace Belin.Cli
 
 open System.IO
-open System.Linq
 open System.Management.Automation
 
 /// Validates that the specified path is an existing file.
@@ -28,7 +27,7 @@ type ValidatePathAttribute(errorMessage: string) =
   override _.Validate(arguments: obj, _: EngineIntrinsics) =
     let isValid =
       match arguments with
-      | :? string as path -> invalidCharacters.All (fun character -> not (path.Contains character))
+      | :? string as path -> invalidCharacters |> Array.exists path.Contains
       | _ -> false
 
     if not isValid then raise (ValidationMetadataException errorMessage)

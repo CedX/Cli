@@ -34,10 +34,11 @@
 		<Compile Include="Security.fs" />
 		<Compile Include="Validation.fs" />
 
-		<Compile Include="Application.fs" />
-		<Compile Include="Compression.fs" />
-		<Compile Include="Deployment.fs" />
-		<Compile Include="Diagnostics.fs" />
+		<!-- <Compile Include="Application.fs" /> -->
+		<!-- <Compile Include="Compression.fs" /> -->
+		<!-- <Compile Include="Deployment.fs" /> -->
+		<!-- <Compile Include="Diagnostics.fs" /> -->
 		<Compile Include="InformationSchema.fs" />
+		<Compile Include="Text.fs" />
 	</ItemGroup>
 </Project>

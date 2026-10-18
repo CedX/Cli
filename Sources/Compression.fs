@@ -22,7 +22,9 @@ module Compression =
 
     match Process.Start startInfo with
     | null -> raise (ApplicationFailedException startInfo.FileName)
-    | proc -> proc.WaitForExit(); if proc.ExitCode <> 0 then raise (ApplicationFailedException startInfo.FileName)
+    | startedProcess ->
+      startedProcess.WaitForExit()
+      if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException startInfo.FileName)
 
   /// Extracts the specified ZIP archive into a given directory.
   let expandZipArchive (path: string) (destinationPath: string) (skip: int option) =
