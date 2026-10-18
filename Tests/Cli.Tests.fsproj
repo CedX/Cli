@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Company>Cedric-Belin.fr</Company>
+		<Copyright>© Cédric Belin</Copyright>
+		<Description>PowerShell cmdlets for common administrative tasks, such as database management, service management and software installation.</Description>
+		<Product>Belin CLI</Product>
+		<Version>2026.11.0</Version>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AssemblyName>Belin.Cli.Tests</AssemblyName>
+		<BaseOutputPath>obj</BaseOutputPath>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<OutDir>../Binaries</OutDir>
+		<RootNamespace>Belin.Cli</RootNamespace>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<TargetFramework>net10.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MSTest" Version="4.5.1" />
+		<ProjectReference Include="../Sources/Cli.fsproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="AssemblyInfo.fs" />
+		<Compile Include="Should.fs" />
+		<Compile Include="*.Tests.fs" />
+	</ItemGroup>
+</Project>

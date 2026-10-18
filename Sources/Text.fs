@@ -6,22 +6,52 @@ open System.Management.Automation
 open System.Text
 open System.Text.Json
 
+/// Contains operations for working with text files.
+module internal Text =
+
+  /// The path to the resource directory.
+  let private resources: string =
+    typeof<Architecture>.Assembly.Location |> Path.GetDirectoryName |> fun name -> Path.Join(name, "../Resources/Text")
+
+  /// The list of binary file extensions.
+  let binaryExtensions: string array =
+    Path.Join(resources, "BinaryExtensions.json") |> File.ReadAllText |> JsonSerializer.Deserialize<string array> |> nonNull
+
+  /// The list of text file extensions.
+  let textExtensions: string array =
+    Path.Join(resources, "TextExtensions.json") |> File.ReadAllText |> JsonSerializer.Deserialize<string array> |> nonNull
+
+  /// Returns a value indicating whether the specified file should be excluded from the processing.
+  let isExcludedFile (file: FileInfo) (excludedFolders: string array): bool =
+    let mutable directory = file.Directory
+    let mutable isExcluded = false
+
+    while not isExcluded && not (isNull directory) do
+      let folder = nonNull directory
+      directory <- folder.Parent
+      isExcluded <- excludedFolders |> Array.contains folder.Name
+
+    isExcluded
+
+  /// Reads the contents of the specified text file into a byte array.
+  /// Returns `None` if the given file is a binary file.
+  let readAllText (file: FileInfo): (byte array) option =
+    let extension = file.Extension.ToLowerInvariant()
+    if extension.Length > 0 && binaryExtensions |> Array.contains extension then
+      None
+    elif extension.Length > 0 && textExtensions |> Array.contains extension then
+      let bytes = File.ReadAllBytes file.FullName
+      if bytes.Length > 0 then Some bytes else None
+    else
+      match File.ReadAllBytes file.FullName with
+      | [||] -> None
+      | bytes when Array.IndexOf(bytes, 0uy, 0, Math.Min(bytes.Length, 8_000)) < 0 -> Some bytes
+      | _ -> None
+
 /// Converts the encoding of input files.
 [<Cmdlet(VerbsData.ConvertTo, "Encoding", DefaultParameterSetName = "Path"); OutputType(typeof<string>)>]
 type ConvertToEncoding() =
   inherit PSCmdlet()
-
-  /// The path to the resource directory.
-  static let resources: string =
-    typeof<ConvertToEncoding>.Assembly.Location |> Path.GetDirectoryName |> fun name -> Path.Join(name, "../Resources/Text")
-
-  /// The list of binary file extensions.
-  static let binaryExtensions: string array =
-    Path.Join(resources, "BinaryExtensions.json") |> File.ReadAllText |> JsonSerializer.Deserialize<string array> |> nonNull
-
-  /// The list of text file extensions.
-  static let textExtensions: string array =
-    Path.Join(resources, "TextExtensions.json") |> File.ReadAllText |> JsonSerializer.Deserialize<string array> |> nonNull
 
   /// The path of the files to convert.
   [<Parameter(Mandatory = true, ParameterSetName = "Path", Position = 1, ValueFromPipeline = true); SupportsWildcards>]
@@ -65,38 +95,11 @@ type ConvertToEncoding() =
     let files =
       scriptBlock.Invoke(arguments.ToArray())
       |> Seq.map (fun psObject -> psObject.BaseObject :?> FileInfo)
-      |> Seq.filter (fun file -> not (this.IsExcludedFile file))
+      |> Seq.filter (fun file -> not (Text.isExcludedFile file this.Exclude))
 
     for file in files do
-      match ConvertToEncoding.ReadAllText file with
+      match Text.readAllText file with
       | None -> ()
       | Some bytes ->
         InformationRecord($"Converting: {file}", commandName) |> this.WriteInformation
         File.WriteAllBytes(file.FullName, Encoding.Convert(sourceEncoding, targetEncoding, bytes))
-
-  /// Returns a value indicating whether the specified file should be excluded from the processing.
-  member private this.IsExcludedFile(file: FileInfo): bool =
-    let mutable directory = file.Directory
-    let mutable isExcluded = false
-
-    while not isExcluded && not (isNull directory) do
-      let folder = nonNull directory
-      directory <- folder.Parent
-      isExcluded <- this.Exclude |> Array.contains folder.Name
-
-    isExcluded
-
-  /// Reads the contents of the specified text file into a byte array.
-  /// Returns `None` if the given file is a binary file.
-  static member private ReadAllText(file: FileInfo): (byte array) option =
-    let extension = file.Extension.ToLowerInvariant()
-    if extension.Length > 0 && binaryExtensions |> Array.contains extension then
-      None
-    elif extension.Length > 0 && textExtensions |> Array.contains extension then
-      let bytes = File.ReadAllBytes file.FullName
-      if bytes.Length > 0 then Some bytes else None
-    else
-      match File.ReadAllBytes file.FullName with
-      | [||] -> None
-      | bytes when Array.IndexOf(bytes, 0uy, 0, Math.Min(bytes.Length, 8_000)) < 0 -> Some bytes
-      | _ -> None
