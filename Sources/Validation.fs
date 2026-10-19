@@ -27,7 +27,7 @@ type ValidatePathAttribute(errorMessage: string) =
   override _.Validate(arguments: obj, _: EngineIntrinsics) =
     let isValid =
       match arguments with
-      | :? string as path -> invalidCharacters |> Array.exists path.Contains
+      | :? string as path -> not (invalidCharacters |> Array.exists path.Contains)
       | _ -> false
 
     if not isValid then raise (ValidationMetadataException errorMessage)
