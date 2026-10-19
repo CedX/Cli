@@ -16,6 +16,7 @@
 	CmdletsToExport = @(
 		"Backup-MySqlTable"
 		"ConvertTo-Encoding"
+		"Install-Gitea"
 		"Install-Jdk"
 		"Install-Node"
 		"Install-Php"

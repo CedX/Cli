@@ -38,13 +38,13 @@ type InstallJdk() =
       ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, destinationPath) |> this.ThrowTerminatingError
 
     let archive = this.DownloadArchive(this.Version).GetAwaiter().GetResult()
+    let executable = Path.Join(destinationPath, if Platform.IsWindows then @"bin\java.exe" else "bin/java")
 
     InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     match archive.Extension with
     | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath, skip = 1)
     | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)
 
-    let executable = Path.Join(destinationPath, if Platform.IsWindows then @"bin\java.exe" else "bin/java")
     if not Platform.IsWindows then IO.makeFileExecutable executable
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
 
@@ -52,15 +52,15 @@ type InstallJdk() =
   /// Returns the path to the downloaded archive.
   member private this.DownloadArchive(version: int): Task<FileInfo> = task {
     let platform, extension =
-      if Platform.IsMacOS then "macOS", "tar.gz"
-      elif Platform.IsWindows then "windows", "zip"
-      else "linux", "tar.gz"
+      if Platform.IsMacOS then "macOS", ".tar.gz"
+      elif Platform.IsWindows then "windows", ".zip"
+      else "linux", ".tar.gz"
 
-    let file = $"microsoft-jdk-{version}-{platform}-x64.{extension}"
+    let file = $"microsoft-jdk-{version}-{platform}-x64{extension}"
     InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
 
     let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://aka.ms/download-jdk/{file}"
-    let tempFile = $"{Path.GetTempFileName()}.{extension}"
+    let tempFile = $"{Path.GetTempFileName()}{extension}"
     do! File.WriteAllBytesAsync(tempFile, bytes)
     return FileInfo tempFile
   }
