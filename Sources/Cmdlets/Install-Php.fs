@@ -54,19 +54,19 @@ type InstallPhp() =
 
     let version = this.FetchLatestVersion().GetAwaiter().GetResult()
     let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
+    let executable = Path.Join(destinationPath, if Platform.IsWindows then "php.exe" else "bin/php")
 
     use serviceController = new ServiceController "W3SVC"
     if Environment.IsPrivilegedProcess then this.StopService serviceController
 
     InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     Compression.ExpandZipArchive(archive.FullName, destinationPath)
+    if not Platform.IsWindows then IO.makeFileExecutable executable
 
     if Environment.IsPrivilegedProcess then
       this.StartService serviceController
       if this.RegisterEventSource.IsPresent then this.RegisterEventLog(version, destinationPath)
 
-    let executable = Path.Join(destinationPath, if Platform.IsWindows then "php.exe" else "bin/php")
-    if not Platform.IsWindows then IO.makeFileExecutable executable
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
 
   /// Downloads the PHP release corresponding to the specified version.

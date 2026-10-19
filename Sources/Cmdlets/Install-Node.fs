@@ -43,6 +43,7 @@ type InstallNode() =
 
     let version = this.FetchLatestVersion().GetAwaiter().GetResult()
     let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
+    let executable = Path.Join(destinationPath, if Platform.IsWindows then "node.exe" else "bin/node")
 
     InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     match archive.Extension with
@@ -50,25 +51,24 @@ type InstallNode() =
     | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)
 
     if not Platform.IsWindows then
+      IO.makeFileExecutable executable
       ["CHANGELOG.md"; "LICENSE"; "README.md"] |> List.iter (fun file -> Path.Join(destinationPath, file) |> File.Delete)
 
-    let executable = Path.Join(destinationPath, if Platform.IsWindows then "node.exe" else "bin/node")
-    if not Platform.IsWindows then IO.makeFileExecutable executable
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
 
   /// Downloads the Node.js release corresponding to the specified version.
   /// Returns the path to the downloaded archive.
   member private this.DownloadArchive(version: Version): Task<FileInfo> = task {
     let platform, extension =
-      if Platform.IsMacOS then "darwin", "tar.gz"
-      elif Platform.IsWindows then "win", "zip"
-      else "linux", "tar.xz"
+      if Platform.IsMacOS then "darwin", ".tar.gz"
+      elif Platform.IsWindows then "win", ".zip"
+      else "linux", ".tar.gz"
 
-    let file = $"node-v{version}-{platform}-x64.{extension}"
+    let file = $"node-v{version}-{platform}-x64{extension}"
     InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
 
     let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://nodejs.org/dist/v{version}/{file}"
-    let tempFile = $"{Path.GetTempFileName()}.{extension}"
+    let tempFile = $"{Path.GetTempFileName()}{extension}"
     do! File.WriteAllBytesAsync(tempFile, bytes)
     return FileInfo tempFile
   }

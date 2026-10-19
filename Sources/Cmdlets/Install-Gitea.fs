@@ -44,26 +44,33 @@ type InstallGitea() =
       ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, destinationPath) |> this.ThrowTerminatingError
 
     let version = this.FetchLatestVersion().GetAwaiter().GetResult()
+    let binary = this.DownloadBinary(version).GetAwaiter().GetResult()
+    let executable = Path.Join(destinationPath, if Platform.IsWindows then "gitea.exe" else "gitea")
 
     use serviceController = new ServiceController "Gitea"
     if Environment.IsPrivilegedProcess then this.StopService serviceController
 
-    if Environment.IsPrivilegedProcess then this.StartService serviceController
-
-    let executable = Path.Join(destinationPath, if Platform.IsWindows then "gitea.exe" else "gitea")
+    InformationRecord($@"Moving the binary into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    Directory.CreateDirectory destinationPath |> ignore<DirectoryInfo>
+    File.Copy(binary.FullName, executable, overwrite = true)
     if not Platform.IsWindows then IO.makeFileExecutable executable
+
+    if Environment.IsPrivilegedProcess then this.StartService serviceController
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
 
   /// Downloads the Gitea release corresponding to the specified version.
-  /// Returns the path to the downloaded archive.
-  member private this.DownloadArchive(version: Version): Task<FileInfo> = task {
-    let vs = if version >= Version "8.4.0" then "vs17" else "vs16"
-    let architecture = (string Architecture.Current).ToLowerInvariant()
-    let file = $"php-{version}-nts-Win32-{vs}-{architecture}.zip"
-    InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
+  /// Returns the path to the downloaded binary.
+  member private this.DownloadBinary(version: Version): Task<FileInfo> = task {
+    let platform, extension =
+      if Platform.IsMacOS then "darwin", ""
+      elif Platform.IsWindows then "windows", ".exe"
+      else "linux", ""
 
-    let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://downloads.php.net/~windows/releases/archives/{file}"
-    let tempFile = $"{Path.GetTempFileName()}{Path.GetExtension file}"
+    let file = $"gitea-{version}-{platform}-amd64{extension}"
+    InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadBinary) |> this.WriteInformation
+
+    let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://dl.gitea.com/gitea/{version}/{file}"
+    let tempFile = $"{Path.GetTempFileName()}{extension}"
     do! File.WriteAllBytesAsync(tempFile, bytes)
     return FileInfo tempFile
   }
