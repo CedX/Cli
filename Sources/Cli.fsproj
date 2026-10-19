@@ -33,7 +33,6 @@
 		<!-- <Compile Include="Application.fs" /> -->
 		<Compile Include="Architecture.fs" />
 		<Compile Include="Data.fs" />
-		<Compile Include="Data.InformationSchema.fs" />
 		<Compile Include="Diagnostics.fs" />
 		<Compile Include="IO.fs" />
 		<Compile Include="Net.fs" />

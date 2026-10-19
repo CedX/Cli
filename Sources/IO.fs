@@ -13,14 +13,16 @@ type Compression =
   static member ExpandTarArchive(path: string, destinationPath: string, ?skip: int) =
     Directory.CreateDirectory destinationPath |> ignore<DirectoryInfo>
 
-    let startInfo = ProcessStartInfo("tar", CreateNoWindow = true, arguments = [
+    let arguments = [
       "--directory"; destinationPath
       "--extract"
       "--file"; path
       "--strip-components"; string (defaultArg skip 0)
-    ])
+    ]
 
+    let startInfo = ProcessStartInfo("tar", CreateNoWindow = true, arguments = arguments)
     let message = $"{startInfo.FileName} {startInfo.Arguments}"
+
     match Process.Start startInfo with
     | null -> raise (ApplicationFailedException message)
     | startedProcess ->
