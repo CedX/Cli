@@ -2,7 +2,9 @@
 
 ## Version [2026.11.0](https://github.com/CedX/Cli/compare/v6.1.0...v2026.11.0)
 - Breaking change: ported the source code to [F#](https://learn.microsoft.com/en-us/dotnet/fsharp).
+- Breaking change: removed the `-Config` parameter from the `Install-Node` cmdlet.
 - Added the `Install-Gitea` cmdlet.
+- Switched to a year-based versioning.
 
 ## Version [6.1.0](https://github.com/CedX/Cli/compare/v6.0.1...v6.1.0)
 - Added support for [F#](https://learn.microsoft.com/en-us/dotnet/fsharp) applications.
