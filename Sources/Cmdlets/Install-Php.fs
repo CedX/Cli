@@ -29,7 +29,7 @@ type InstallPhp() =
 
   /// The path to the output directory.
   [<Parameter(Position = 1); ValidatePath("The specified output path is invalid.")>]
-  member val DestinationPath = if OperatingSystem.IsWindows() then @"C:\Program Files\PHP" else "/usr/local" with get, set
+  member val DestinationPath = if Platform.IsWindows then @"C:\Program Files\PHP" else "/usr/local" with get, set
 
   /// Value indicating whether to register the PHP interpreter with the event log.
   [<Parameter()>]
@@ -43,7 +43,7 @@ type InstallPhp() =
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
-    if not (OperatingSystem.IsWindows()) then
+    if not Platform.IsWindows then
       let ex = PlatformNotSupportedException "This command only supports the Windows platform."
       ErrorRecord(ex, "PlatformNotSupported", ErrorCategory.InvalidOperation, Environment.OSVersion) |> this.ThrowTerminatingError
 
@@ -53,20 +53,20 @@ type InstallPhp() =
       ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, destinationPath) |> this.ThrowTerminatingError
 
     let version = this.FetchLatestVersion().GetAwaiter().GetResult()
-    let file = this.DownloadArchive(version).GetAwaiter().GetResult()
+    let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
 
     use serviceController = new ServiceController "W3SVC"
     if Environment.IsPrivilegedProcess then this.StopService serviceController
 
-    InformationRecord($@"Extracting file ""{file.Name}"" into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
-    Compression.ExpandZipArchive(file.FullName, destinationPath)
+    InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    Compression.ExpandZipArchive(archive.FullName, destinationPath)
 
     if Environment.IsPrivilegedProcess then
       this.StartService serviceController
       if this.RegisterEventSource.IsPresent then this.RegisterEventLog(version, destinationPath)
 
-    let executable = Path.Join(destinationPath, if OperatingSystem.IsWindows() then "php.exe" else "bin/php")
-    if not (OperatingSystem.IsWindows()) then IO.makeFileExecutable executable
+    let executable = Path.Join(destinationPath, if Platform.IsWindows then "php.exe" else "bin/php")
+    if not Platform.IsWindows then IO.makeFileExecutable executable
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
 
   /// Downloads the PHP release corresponding to the specified version.
@@ -75,10 +75,10 @@ type InstallPhp() =
     let vs = if version >= Version "8.4.0" then "vs17" else "vs16"
     let architecture = (string Architecture.Current).ToLowerInvariant()
     let file = $"php-{version}-nts-Win32-{vs}-{architecture}.zip"
-    InformationRecord($@"Downloading file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
+    InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
 
     let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://downloads.php.net/~windows/releases/archives/{file}"
-    let tempFile = Path.GetTempFileName()
+    let tempFile = $"{Path.GetTempFileName()}.zip"
     do! File.WriteAllBytesAsync(tempFile, bytes)
     return FileInfo tempFile
   }

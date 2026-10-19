@@ -38,5 +38,5 @@ type Compression =
         if entryPath.Length = 0 then entryPath <- "/"
 
         let fullPath = Path.Join(destinationPath, entryPath)
-        if fullPath[-1] = '/' then Directory.CreateDirectory fullPath |> ignore<DirectoryInfo>
+        if fullPath[fullPath.Length - 1] = '/' then Directory.CreateDirectory fullPath |> ignore<DirectoryInfo>
         else entry.ExtractToFile(fullPath, overwrite = true)
