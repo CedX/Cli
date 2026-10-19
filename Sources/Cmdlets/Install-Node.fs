@@ -42,6 +42,15 @@ type InstallNode() =
       ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, destinationPath) |> this.ThrowTerminatingError
 
     let version = this.FetchLatestVersion().GetAwaiter().GetResult()
+    let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
+
+    InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    match archive.Extension with
+    | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath, skip = 1)
+    | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)
+
+    if not Platform.IsWindows then
+      ["CHANGELOG.md"; "LICENSE"; "README.md"] |> List.iter (fun file -> Path.Join(destinationPath, file) |> File.Delete)
 
     let executable = Path.Join(destinationPath, if Platform.IsWindows then "node.exe" else "bin/node")
     if not Platform.IsWindows then IO.makeFileExecutable executable
