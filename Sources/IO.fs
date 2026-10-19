@@ -8,7 +8,7 @@ module IO =
 
   /// The Unix file mode of an executable file.
   let private executePermission =
-    UnixFileMode.UserRead ||| UnixFileMode.UserExecute ||| UnixFileMode.UserExecute
+    UnixFileMode.UserRead ||| UnixFileMode.UserWrite ||| UnixFileMode.UserExecute
     ||| UnixFileMode.GroupRead ||| UnixFileMode.GroupExecute
     ||| UnixFileMode.OtherRead ||| UnixFileMode.OtherExecute
 
