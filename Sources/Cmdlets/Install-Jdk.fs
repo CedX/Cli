@@ -18,7 +18,7 @@ type InstallJdk() =
 
   /// The path to the output directory.
   [<Parameter(Position = 1); ValidatePath("The specified output path is invalid.")>]
-  member val DestinationPath = if OperatingSystem.IsWindows() then @"C:\Program Files\OpenJDK" else "/opt/openjdk" with get, set
+  member val DestinationPath = if Platform.IsWindows then @"C:\Program Files\OpenJDK" else "/opt/openjdk" with get, set
 
   /// The major version of the Java development kit.
   [<Parameter; ValidateSet("11", "17", "21", "25")>]
@@ -37,40 +37,30 @@ type InstallJdk() =
       let ex = UnauthorizedAccessException "You must run this command in an elevated prompt."
       ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, destinationPath) |> this.ThrowTerminatingError
 
-    let platform, extension =
-      if OperatingSystem.IsMacOS() then "macOS", "tar.gz"
-      elif OperatingSystem.IsWindows() then "windows", "zip"
-      else "linux", "tar.gz"
+    let archive = this.DownloadArchive(this.Version).GetAwaiter().GetResult()
 
-    let file = $"microsoft-jdk-{this.Version}-{platform}-x64.{extension}"
+    InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    match archive.Extension with
+    | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath, skip = 1)
+    | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)
 
-    InformationRecord($"""Downloading file "{file}"...""", nameof this.ProcessRecord) |> this.WriteInformation
-    let bytes = (nonNull httpClient).GetByteArrayAsync($"https://aka.ms/download-jdk/{file}").GetAwaiter().GetResult()
-    let outputFile = Path.GetTempFileName()
-    File.WriteAllBytes(outputFile, bytes)
-
-    InformationRecord($"""Extracting file "{file}" into directory "{destinationPath}"...""", nameof this.ProcessRecord) |> this.WriteInformation
-    match extension with
-    | "zip" -> Compression.ExpandZipArchive(outputFile, destinationPath, skip = 1)
-    | _ -> Compression.ExpandTarArchive(outputFile, destinationPath, skip = 1)
-
-    let executable = Path.Join(destinationPath, if OperatingSystem.IsWindows() then "java.exe" else "bin/java")
-    if not (OperatingSystem.IsWindows()) then IO.makeFileExecutable executable
+    let executable = Path.Join(destinationPath, if Platform.IsWindows then @"bin\java.exe" else "bin/java")
+    if not Platform.IsWindows then IO.makeFileExecutable executable
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
 
-  /// Downloads the PHP release corresponding to the specified version.
+  /// Downloads the OpenJDK release corresponding to the specified version.
   /// Returns the path to the downloaded archive.
   member private this.DownloadArchive(version: int): Task<FileInfo> = task {
-    let operatingSystem, fileExtension =
-      if OperatingSystem.IsMacOS() then "macOS", "tar.gz"
-      elif OperatingSystem.IsWindows() then "windows", "zip"
+    let platform, extension =
+      if Platform.IsMacOS then "macOS", "tar.gz"
+      elif Platform.IsWindows then "windows", "zip"
       else "linux", "tar.gz"
 
-    let file = $"microsoft-jdk-{version}-{operatingSystem}-x64.{fileExtension}"
-    InformationRecord($@"Downloading file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
+    let file = $"microsoft-jdk-{version}-{platform}-x64.{extension}"
+    InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
 
     let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://aka.ms/download-jdk/{file}"
-    let tempFile = Path.GetTempFileName()
+    let tempFile = $"{Path.GetTempFileName()}.{extension}"
     do! File.WriteAllBytesAsync(tempFile, bytes)
     return FileInfo tempFile
   }

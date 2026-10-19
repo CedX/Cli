@@ -28,7 +28,7 @@ type InstallGitea() =
 
   /// The path to the output directory.
   [<Parameter(Position = 1); ValidatePath("The specified output path is invalid.")>]
-  member val DestinationPath = if OperatingSystem.IsWindows() then @"C:\Gitea" else "/opt/gitea" with get, set
+  member val DestinationPath = if Platform.IsWindows then @"C:\Gitea" else "/opt/gitea" with get, set
 
   /// Performs initialization of command execution.
   override _.BeginProcessing() = httpClient <- Http.newClient()
@@ -50,20 +50,20 @@ type InstallGitea() =
 
     if Environment.IsPrivilegedProcess then this.StartService serviceController
 
-    let executable = Path.Join(destinationPath, if OperatingSystem.IsWindows() then "gitea.exe" else "gitea")
-    if not (OperatingSystem.IsWindows()) then IO.makeFileExecutable executable
+    let executable = Path.Join(destinationPath, if Platform.IsWindows then "gitea.exe" else "gitea")
+    if not Platform.IsWindows then IO.makeFileExecutable executable
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
 
-  /// Downloads the PHP release corresponding to the specified version.
+  /// Downloads the Gitea release corresponding to the specified version.
   /// Returns the path to the downloaded archive.
   member private this.DownloadArchive(version: Version): Task<FileInfo> = task {
     let vs = if version >= Version "8.4.0" then "vs17" else "vs16"
     let architecture = (string Architecture.Current).ToLowerInvariant()
     let file = $"php-{version}-nts-Win32-{vs}-{architecture}.zip"
-    InformationRecord($@"Downloading file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
+    InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
 
     let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://downloads.php.net/~windows/releases/archives/{file}"
-    let tempFile = Path.GetTempFileName()
+    let tempFile = $"{Path.GetTempFileName()}{Path.GetExtension file}"
     do! File.WriteAllBytesAsync(tempFile, bytes)
     return FileInfo tempFile
   }
