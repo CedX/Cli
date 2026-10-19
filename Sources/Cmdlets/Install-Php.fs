@@ -61,7 +61,7 @@ type InstallPhp() =
 
     InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     Compression.ExpandZipArchive(archive.FullName, destinationPath)
-    if not Platform.IsWindows then IO.makeFileExecutable executable
+    if not Platform.IsWindows then File.makeExecutable executable
 
     if Environment.IsPrivilegedProcess then
       this.StartService serviceController

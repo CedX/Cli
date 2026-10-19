@@ -45,7 +45,7 @@ type InstallJdk() =
     | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath, skip = 1)
     | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)
 
-    if not Platform.IsWindows then IO.makeFileExecutable executable
+    if not Platform.IsWindows then File.makeExecutable executable
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
 
   /// Downloads the OpenJDK release corresponding to the specified version.

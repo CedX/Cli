@@ -51,7 +51,7 @@ type InstallNode() =
     | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)
 
     if not Platform.IsWindows then
-      IO.makeFileExecutable executable
+      File.makeExecutable executable
       ["CHANGELOG.md"; "LICENSE"; "README.md"] |> List.iter (fun file -> Path.Join(destinationPath, file) |> File.Delete)
 
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
