@@ -1,7 +1,10 @@
 namespace Belin.Cli
 
+open Belin.Sql
 open MySqlConnector
 open System
+open System.Collections.Generic
+open System.Data
 open System.ComponentModel.DataAnnotations.Schema
 
 /// Contains operations for working with MySQL databases.
@@ -132,3 +135,27 @@ type MySqlTable() =
   member this.GetQualifiedName(escape: bool) =
     let escapeFn = if escape then (fun value -> $"`{value}`") else id
     $"{escapeFn this.Schema}.{escapeFn this.Name}"
+
+/// Contains operations for working with the MySQL information schema.
+module InformationSchema =
+
+  /// Gets the list of schemas hosted by a database server.
+  let getSchemas (connection: IDbConnection): MySqlSchema seq =
+    connection.Query<MySqlSchema> "
+      SELECT *
+      FROM information_schema.SCHEMATA
+      WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
+      ORDER BY SCHEMA_NAME"
+
+  /// Gets the list of tables contained in the specified schema.
+  let getTables (connection: IDbConnection, schema: MySqlSchema): MySqlTable seq =
+    let sql = "
+      SELECT *
+      FROM information_schema.TABLES
+      WHERE TABLE_SCHEMA = @Name AND TABLE_TYPE = @Type
+      ORDER BY TABLE_NAME"
+
+    connection.Query<MySqlTable>(sql, SqlParameterCollection([
+      SqlParameter("Name", schema.Name)
+      SqlParameter("Type", MySqlTableType.BaseTable)
+    ]))
