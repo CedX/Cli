@@ -1,7 +1,21 @@
 namespace Belin.Cli
 
+open System
 open System.IO
 open System.Management.Automation
+
+/// Validates that the specified URI provides a valid connection string.
+type ValidateConnectionUriAttribute(errorMessage: string) =
+  inherit ValidateArgumentsAttribute()
+
+  /// Verifies that the value of `arguments` is valid.
+  override _.Validate(arguments: obj, _: EngineIntrinsics) =
+    let isValid =
+      match arguments with
+      | :? Uri as uri -> uri.IsAbsoluteUri && (uri.Scheme = "mariadb" || uri.Scheme = "mysql")
+      | _ -> false
+
+    if not isValid then raise (ValidationMetadataException errorMessage)
 
 /// Validates that the specified path is an existing file.
 type ValidateFileAttribute(errorMessage: string) =
@@ -16,7 +30,7 @@ type ValidateFileAttribute(errorMessage: string) =
 
     if not exists then raise (ValidationMetadataException errorMessage)
 
-/// Validates that the specified path is valid.
+/// Validates that the specified path does not contain any invalid character.
 type ValidatePathAttribute(errorMessage: string) =
   inherit ValidateArgumentsAttribute()
 
