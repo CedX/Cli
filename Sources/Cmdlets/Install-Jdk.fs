@@ -9,7 +9,7 @@ open System.Threading.Tasks
 
 /// Downloads and installs the latest OpenJDK release.
 /// Returns the output from the `java --version` command.
-[<Cmdlet(VerbsLifecycle.Install, "Jdk"); OutputType(typeof<string>)>]
+[<Cmdlet(VerbsLifecycle.Install, "Jdk"); OutputType(typeof<string>); Sealed>]
 type InstallJdk() =
   inherit PSCmdlet()
 
@@ -24,11 +24,12 @@ type InstallJdk() =
   [<Parameter; ValidateSet("11", "17", "21", "25")>]
   member val Version = 25 with get, set
 
+  interface IDisposable with
+    /// Releases any resources associated with this object.
+    member _.Dispose() = match httpClient with null -> () | disposable -> disposable.Dispose()
+
   /// Performs initialization of command execution.
   override _.BeginProcessing() = httpClient <- Http.newClient()
-
-  /// Performs clean-up after the command execution.
-  override _.EndProcessing() = match httpClient with null -> () | value -> value.Dispose()
 
   /// Performs execution of this command.
   override this.ProcessRecord() =

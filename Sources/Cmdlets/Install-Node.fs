@@ -17,7 +17,7 @@ type NodeRelease = {
 
 /// Downloads and installs the latest Node.js release.
 /// Returns the output from the `node --version` command.
-[<Cmdlet(VerbsLifecycle.Install, "Node"); OutputType(typeof<string>)>]
+[<Cmdlet(VerbsLifecycle.Install, "Node"); OutputType(typeof<string>); Sealed>]
 type InstallNode() =
   inherit PSCmdlet()
 
@@ -28,11 +28,12 @@ type InstallNode() =
   [<Parameter(Position = 1); ValidatePath("The specified output path is invalid.")>]
   member val DestinationPath = if Platform.IsWindows then @"C:\Program Files\Node.js" else "/usr/local" with get, set
 
+  interface IDisposable with
+    /// Releases any resources associated with this object.
+    member _.Dispose() = match httpClient with null -> () | disposable -> disposable.Dispose()
+
   /// Performs initialization of command execution.
   override _.BeginProcessing() = httpClient <- Http.newClient()
-
-  /// Performs clean-up after the command execution.
-  override _.EndProcessing() = match httpClient with null -> () | value -> value.Dispose()
 
   /// Performs execution of this command.
   override this.ProcessRecord() =

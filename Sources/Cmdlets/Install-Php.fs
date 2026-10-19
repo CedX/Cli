@@ -20,7 +20,7 @@ type PhpRelease = {
 
 /// Downloads and installs the latest PHP release.
 /// Returns the output from the `php --version` command.
-[<Cmdlet(VerbsLifecycle.Install, "Php"); OutputType(typeof<string>)>]
+[<Cmdlet(VerbsLifecycle.Install, "Php"); OutputType(typeof<string>); Sealed>]
 type InstallPhp() =
   inherit PSCmdlet()
 
@@ -35,11 +35,12 @@ type InstallPhp() =
   [<Parameter()>]
   member val RegisterEventSource = SwitchParameter(isPresent = false) with get, set
 
+  interface IDisposable with
+    /// Releases any resources associated with this object.
+    member _.Dispose() = match httpClient with null -> () | disposable -> disposable.Dispose()
+
   /// Performs initialization of command execution.
   override _.BeginProcessing() = httpClient <- Http.newClient()
-
-  /// Performs clean-up after the command execution.
-  override _.EndProcessing() = match httpClient with null -> () | value -> value.Dispose()
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
