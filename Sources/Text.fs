@@ -39,7 +39,7 @@ module Text =
       None
     elif extension.Length > 0 && textExtensions |> Array.contains extension then
       let bytes = File.ReadAllBytes file.FullName
-      if bytes.Length > 0 then Some bytes else None
+      if Array.isEmpty bytes then None else Some bytes
     else
       match File.ReadAllBytes file.FullName with
       | [||] -> None
