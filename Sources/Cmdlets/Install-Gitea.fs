@@ -53,7 +53,7 @@ type InstallGitea() =
     InformationRecord($@"Moving the binary into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     Directory.CreateDirectory destinationPath |> ignore<DirectoryInfo>
     File.Copy(binary.FullName, executable, overwrite = true)
-    if not Platform.IsWindows then IO.makeFileExecutable executable
+    if not Platform.IsWindows then File.makeExecutable executable
 
     if Environment.IsPrivilegedProcess then this.StartService serviceController
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
