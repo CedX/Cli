@@ -57,14 +57,14 @@ type InstallPhp() =
     let executable = Path.Join(destinationPath, if Platform.IsWindows then "php.exe" else "bin/php")
 
     use serviceController = new ServiceController "W3SVC"
-    if Environment.IsPrivilegedProcess then this.StopService serviceController
+    if Environment.IsPrivilegedProcess then this |> ServiceProcess.stopService serviceController
 
     InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     Compression.ExpandZipArchive(archive.FullName, destinationPath)
     if not Platform.IsWindows then File.makeExecutable executable
 
     if Environment.IsPrivilegedProcess then
-      this.StartService serviceController
+      this |> ServiceProcess.startService serviceController
       if this.RegisterEventSource.IsPresent then this.RegisterEventLog(version, destinationPath)
 
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
@@ -97,17 +97,3 @@ type InstallPhp() =
     let key = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Application\PHP-{phpVersion}"
     Registry.SetValue(key, "EventMessageFile", Path.Join(phpDirectory, $"php{phpVersion.Major}.dll"), RegistryValueKind.String)
     Registry.SetValue(key, "TypesSupported", 7, RegistryValueKind.DWord)
-
-  /// Starts the IIS service.
-  member private this.StartService(serviceController: ServiceController) =
-    if serviceController.Status = ServiceControllerStatus.Stopped then
-      InformationRecord("Starting the IIS service...", nameof this.StartService) |> this.WriteInformation
-      serviceController.Start()
-      serviceController.WaitForStatus ServiceControllerStatus.Running
-
-  /// Stops the IIS service.
-  member private this.StopService(serviceController: ServiceController) =
-    if serviceController.Status = ServiceControllerStatus.Running then
-      InformationRecord("Stopping the IIS service...", nameof this.StopService) |> this.WriteInformation
-      serviceController.Stop()
-      serviceController.WaitForStatus ServiceControllerStatus.Stopped

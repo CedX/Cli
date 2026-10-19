@@ -48,14 +48,14 @@ type InstallGitea() =
     let executable = Path.Join(destinationPath, if Platform.IsWindows then "gitea.exe" else "gitea")
 
     use serviceController = new ServiceController "Gitea"
-    if Environment.IsPrivilegedProcess then this.StopService serviceController
+    if Environment.IsPrivilegedProcess then this |> ServiceProcess.stopService serviceController
 
     InformationRecord($@"Moving the binary into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     Directory.CreateDirectory destinationPath |> ignore<DirectoryInfo>
     File.Copy(binary.FullName, executable, overwrite = true)
     if not Platform.IsWindows then File.makeExecutable executable
 
-    if Environment.IsPrivilegedProcess then this.StartService serviceController
+    if Environment.IsPrivilegedProcess then this |> ServiceProcess.startService serviceController
     executable |> Diagnostics.getExecutableVersion |> this.WriteObject
 
   /// Downloads the Gitea release corresponding to the specified version.
@@ -82,17 +82,3 @@ type InstallGitea() =
     | null -> return raise (HttpRequestException "Unable to fetch the list of Gitea releases.")
     | releases -> return releases |> Seq.head |> fun release -> Version.Parse release.Value.Version
   }
-
-  /// Starts the Gitea service.
-  member private this.StartService(serviceController: ServiceController) =
-    if serviceController.Status = ServiceControllerStatus.Stopped then
-      InformationRecord("Starting the Gitea service...", nameof this.StartService) |> this.WriteInformation
-      serviceController.Start()
-      serviceController.WaitForStatus ServiceControllerStatus.Running
-
-  /// Stops the Gitea service.
-  member private this.StopService(serviceController: ServiceController) =
-    if serviceController.Status = ServiceControllerStatus.Running then
-      InformationRecord("Stopping the Gitea service...", nameof this.StopService) |> this.WriteInformation
-      serviceController.Stop()
-      serviceController.WaitForStatus ServiceControllerStatus.Stopped
