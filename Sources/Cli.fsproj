@@ -30,16 +30,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Include="Application.fs" />
-		<Compile Include="Architecture.fs" />
 		<Compile Include="Data.fs" />
 		<Compile Include="Diagnostics.fs" />
 		<Compile Include="IO.fs" />
+		<Compile Include="Management.fs" />
 		<Compile Include="Net.fs" />
 		<Compile Include="Security.fs" />
 		<Compile Include="ServiceProcess.fs" />
 		<Compile Include="Text.fs" />
 		<Compile Include="Validation.fs" />
 		<Compile Include="Cmdlets/*.fs" />
+		<Compile Include="Services/*.fs" />
 	</ItemGroup>
 </Project>
