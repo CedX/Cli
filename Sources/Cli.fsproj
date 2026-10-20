@@ -30,7 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<!-- <Compile Include="Application.fs" /> -->
+		<Compile Include="Application.fs" />
 		<Compile Include="Architecture.fs" />
 		<Compile Include="Data.fs" />
 		<Compile Include="Diagnostics.fs" />
