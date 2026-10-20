@@ -39,8 +39,11 @@ type SetMySqlEngine() =
   /// Performs initialization of command execution.
   override this.BeginProcessing() =
     let connection = MySqlConnection.OfUri(nonNull this.Uri)
-    if not (connection.GetEngines() |> Seq.contains this.Engine) then raise (ArgumentOutOfRangeException (nameof this.Engine))
     dbConnection <- connection
+
+    let normalizedEngine = this.Engine.ToLowerInvariant()
+    if not (connection.GetEngines() |> Seq.exists (fun engine -> engine.ToLowerInvariant() = normalizedEngine)) then
+      raise (ArgumentOutOfRangeException (nameof this.Engine))
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
@@ -50,11 +53,9 @@ type SetMySqlEngine() =
       else this.Schema |> Seq.map (fun schema -> MySqlSchema(Name = schema))
 
     let tables =
-      schemas
-      |> Seq.map (fun schema ->
+      schemas |> Seq.collect (fun schema ->
         if Array.isEmpty this.Table then InformationSchema.getTables(connection, schema)
         else this.Table |> Seq.map (fun table -> MySqlTable(Name = table, Schema = schema.Name)))
-      |> Seq.concat
 
     for table in tables do
       let sql = $"

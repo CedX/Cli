@@ -43,11 +43,9 @@ type OptimizeMySqlTable() =
       else this.Schema |> Seq.map (fun schema -> MySqlSchema(Name = schema))
 
     let tables =
-      schemas
-      |> Seq.map (fun schema ->
+      schemas |> Seq.collect (fun schema ->
         if Array.isEmpty this.Table then InformationSchema.getTables(connection, schema)
         else this.Table |> Seq.map (fun table -> MySqlTable(Name = table, Schema = schema.Name)))
-      |> Seq.concat
 
     for table in tables do
       InformationRecord($"Optimizing: {table.QualifiedName}", nameof this.ProcessRecord) |> this.WriteInformation

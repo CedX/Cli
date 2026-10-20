@@ -39,8 +39,11 @@ type SetMySqlCharset() =
   /// Performs initialization of command execution.
   override this.BeginProcessing() =
     let connection = MySqlConnection.OfUri(nonNull this.Uri)
-    if not (connection.GetCollations() |> Seq.contains this.Collation) then raise (ArgumentOutOfRangeException (nameof this.Collation))
     dbConnection <- connection
+
+    let normalizedCollation = this.Collation.ToLowerInvariant()
+    if not (connection.GetCollations() |> Seq.exists (fun collation -> collation.ToLowerInvariant() = normalizedCollation)) then
+      raise (ArgumentOutOfRangeException (nameof this.Collation))
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
@@ -50,11 +53,9 @@ type SetMySqlCharset() =
       else this.Schema |> Seq.map (fun schema -> MySqlSchema(Name = schema))
 
     let tables =
-      schemas
-      |> Seq.map (fun schema ->
+      schemas |> Seq.collect (fun schema ->
         if Array.isEmpty this.Table then InformationSchema.getTables(connection, schema)
         else this.Table |> Seq.map (fun table -> MySqlTable(Name = table, Schema = schema.Name)))
-      |> Seq.concat
 
     for table in tables do
       let sql = $"
