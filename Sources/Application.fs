@@ -13,7 +13,7 @@ open System.Xml.Serialization
 type ApplicationManifest =
   {
     /// The application description.
-    Description: string
+    mutable Description: string
 
     /// The application environment.
     Environment: string
@@ -22,7 +22,7 @@ type ApplicationManifest =
     Id: string
 
     /// The application name.
-    Name: string
+    mutable Name: string
   }
 
   /// Creates a new instance with default values.
@@ -82,7 +82,81 @@ type Application(path: string) as this =
   member val Manifest = ApplicationManifest.Default with get, set
 
   /// The path to the application root directory.
-  member val Path = "" with get, set
+  member val Path = path with get, set
 
   /// The program used to run this application.
   abstract Program: string with get
+
+/// Represents a .NET application.
+type DotNetApplication(path: string) =
+  inherit Application(path)
+
+  /// The path of the application entry point.
+  let mutable entryPath = ""
+
+  /// The entry point of this application.
+  override _.EntryPoint =
+    if entryPath.Length > 0 then entryPath
+    else raise (EntryPointNotFoundException "Unable to resolve the application entry point.")
+
+  /// The name of the environment variable storing the application environment.
+  override _.EnvironmentVariable = "DOTNET_ENVIRONMENT"
+
+  /// The program used to run this application.
+  override _.Program = if Platform.IsWindows then "dotnet.exe" else "dotnet"
+
+/// Represents a Node.js application.
+type NodeApplication(path: string) =
+  inherit Application(path)
+
+  /// The path of the application entry point.
+  let mutable entryPath = ""
+
+  /// The entry point of this application.
+  override _.EntryPoint =
+    if entryPath.Length > 0 then entryPath
+    else raise (EntryPointNotFoundException "Unable to resolve the application entry point.")
+
+  /// The name of the environment variable storing the application environment.
+  override _.EnvironmentVariable = "NODE_ENV"
+
+  /// The program used to run this application.
+  override _.Program = if Platform.IsWindows then "node.exe" else "node"
+
+/// Represents a PowerShell application.
+type PowerShellApplication(path: string) as this =
+  inherit Application(path)
+
+  /// The path of the application entry point.
+  let mutable entryPath = ""
+
+  do
+    let moduleManifest =
+      Directory.EnumerateFiles(this.Path, "*.psd1")
+      |> Seq.filter (fun file ->
+        let name = Path.GetFileNameWithoutExtension file
+        name <> "PSModules" && name <> "PSScriptAnalyzerSettings")
+      |> Seq.tryHead
+
+    match moduleManifest with
+    | None -> ()
+    | Some filePath ->
+      let scriptBlock = ScriptBlock.Create $"Import-PowerShellDataFile '{filePath}'"
+
+      let manifest = scriptBlock.Invoke() |> Seq.head |> fun psObject -> psObject.BaseObject :?> IDictionary
+      if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- string manifest["Description"]
+      if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- Path.GetFileNameWithoutExtension filePath |> defaultIfNull ""
+
+      let rootModule = string manifest["RootModule"]
+      if not (String.IsNullOrWhiteSpace rootModule) then entryPath <- Path.Join(this.Path, rootModule) |> Path.GetFullPath
+
+  /// The entry point of this application.
+  override _.EntryPoint =
+    if entryPath.Length > 0 then $@"-ExecutionPolicy Bypass -File ""{entryPath}"" -NoLogo -NoProfile -NonInteractive"
+    else raise (EntryPointNotFoundException "Unable to resolve the application entry point.")
+
+  /// The name of the environment variable storing the application environment.
+  override _.EnvironmentVariable = "PODE_ENVIRONMENT"
+
+  /// The program used to run this application.
+  override _.Program = if Platform.IsWindows then "pwsh.exe" else "pwsh"
