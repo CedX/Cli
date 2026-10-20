@@ -10,7 +10,7 @@ type RestoreMySqlTable() =
   inherit Cmdlet()
 
   /// The connection URI.
-  [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri("The specified connection URI is invalid.")>]
+  [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]
   member val Uri: Uri | null = null with get, set
 
   /// Specifies the path to an SQL dump.

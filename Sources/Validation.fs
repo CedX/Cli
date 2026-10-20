@@ -5,7 +5,7 @@ open System.IO
 open System.Management.Automation
 
 /// Validates that the specified URI provides a valid connection string.
-type ValidateConnectionUriAttribute(errorMessage: string) =
+type ValidateConnectionUriAttribute() =
   inherit ValidateArgumentsAttribute()
 
   /// Verifies that the value of `arguments` is valid.
@@ -15,7 +15,7 @@ type ValidateConnectionUriAttribute(errorMessage: string) =
       | :? Uri as uri -> uri.IsAbsoluteUri && (uri.Scheme = "mariadb" || uri.Scheme = "mysql")
       | _ -> false
 
-    if not isValid then raise (ValidationMetadataException errorMessage)
+    if not isValid then raise (ValidationMetadataException "The specified connection URI is invalid.")
 
 /// Validates that the specified path is an existing file.
 type ValidateFileAttribute(errorMessage: string) =

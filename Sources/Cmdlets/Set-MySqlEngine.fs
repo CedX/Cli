@@ -17,7 +17,7 @@ type SetMySqlEngine() =
   let mutable dbConnection: IDbConnection | null = null
 
   /// The connection URI.
-  [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri("The specified connection URI is invalid.")>]
+  [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]
   member val Uri: Uri | null = null with get, set
 
   /// The name of the new storage engine.
