@@ -2,6 +2,7 @@ namespace Belin.Cli
 
 open System
 open System.Collections
+open System.Collections.Generic
 open System.IO
 open System.Management.Automation
 open System.Text.Json
@@ -105,12 +106,44 @@ type DotNetApplication(path: string) =
   /// The program used to run this application.
   override _.Program = if Platform.IsWindows then "dotnet.exe" else "dotnet"
 
+/// Represents the contents of a `package.json` file.
+type NodePackage = {
+
+  /// The dictionary of package commands.
+  Bin: Dictionary<string, string> option
+
+  /// The package description.
+  Description: string
+
+  /// The package name.
+  Name: string
+}
+
 /// Represents a Node.js application.
-type NodeApplication(path: string) =
+type NodeApplication(path: string) as this =
   inherit Application(path)
 
   /// The path of the application entry point.
   let mutable entryPath = ""
+
+  do
+    let packageJson = Path.Join(this.Path, "package.json")
+    let packageManifest =
+      match File.Exists packageJson with
+      | false -> None
+      | true ->
+        let package = JsonSerializer.Deserialize<NodePackage>(File.ReadAllText packageJson, JsonSerializerOptions.Web)
+        Some (package |> defaultIfNull { Bin = None; Description = ""; Name = "" })
+
+    match packageManifest with
+    | None -> ()
+    | Some package ->
+      if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- package.Description
+      if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- package.Name
+      match package.Bin with
+      | None -> ()
+      | Some dictionary when dictionary.Count = 0 -> ()
+      | Some dictionary -> entryPath <- Path.GetFullPath(dictionary |> Seq.head |> _.Value, this.Path)
 
   /// The entry point of this application.
   override _.EntryPoint =
@@ -141,14 +174,15 @@ type PowerShellApplication(path: string) as this =
     match moduleManifest with
     | None -> ()
     | Some filePath ->
-      let scriptBlock = ScriptBlock.Create $"Import-PowerShellDataFile '{filePath}'"
-
-      let manifest = scriptBlock.Invoke() |> Seq.head |> fun psObject -> psObject.BaseObject :?> IDictionary
-      if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- string manifest["Description"]
-      if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- Path.GetFileNameWithoutExtension filePath |> defaultIfNull ""
+      let manifest =
+        ScriptBlock.Create($"Import-PowerShellDataFile '{filePath}'").Invoke()
+        |> Seq.head
+        |> fun psObject -> psObject.BaseObject :?> IDictionary
 
       let rootModule = string manifest["RootModule"]
-      if not (String.IsNullOrWhiteSpace rootModule) then entryPath <- Path.Join(this.Path, rootModule) |> Path.GetFullPath
+      if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- string manifest["Description"]
+      if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- Path.GetFileNameWithoutExtension filePath |> defaultIfNull ""
+      if not (String.IsNullOrWhiteSpace rootModule) then entryPath <- Path.GetFullPath(rootModule, this.Path)
 
   /// The entry point of this application.
   override _.EntryPoint =

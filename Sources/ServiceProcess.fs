@@ -12,8 +12,8 @@ module ServiceProcess =
     typeof<Architecture>.Assembly.Location |> Path.GetDirectoryName |> fun name -> Path.Join(name, "../Resources/ServiceProcess")
 
   /// Returns th absolute path of the `nssm` program according to the specified process architecture.
-  let getNssmPath (architecture: Architecture) =
-    Path.Join(resources, $"nssm.{(string architecture).ToLowerInvariant()}.exe") |> Path.GetFullPath
+  let getNssmPath (architecture: Architecture): string =
+    Path.GetFullPath($"nssm.{(string architecture).ToLowerInvariant()}.exe", resources)
 
   /// Starts the service managed by the specified controller.
   let startService (serviceController: ServiceController) (cmdlet: Cmdlet) =
