@@ -26,14 +26,6 @@ type ApplicationManifest() =
   /// The application name.
   member val Name = "" with get, set
 
-  /// Creates a new application manifest from the specified dictionary.
-  static member OfDictionary(dictionary: IDictionary) = ApplicationManifest(
-    Description = (match dictionary["Description"] with :? string as value -> value | _ -> ""),
-    Environment = (match dictionary["Environment"] with :? string as value -> value | _ -> ""),
-    Id = (match dictionary["Id"] with :? string as value -> value | _ -> ""),
-    Name = (match dictionary["Name"] with :? string as value -> value | _ -> "")
-  )
-
   /// Reads the application manifest located at the specified path.
   static member Read(path: string): ApplicationManifest =
     let emptyManifest = ApplicationManifest()
@@ -47,6 +39,14 @@ type ApplicationManifest() =
       ApplicationManifest.ParsePowerShellDataFile path |> ApplicationManifest.OfDictionary
     | _ ->
       emptyManifest
+
+  /// Creates a new application manifest from the specified dictionary.
+  static member private OfDictionary(dictionary: IDictionary) = ApplicationManifest(
+    Description = (match dictionary["Description"] with :? string as value -> value | _ -> ""),
+    Environment = (match dictionary["Environment"] with :? string as value -> value | _ -> ""),
+    Id = (match dictionary["Id"] with :? string as value -> value | _ -> ""),
+    Name = (match dictionary["Name"] with :? string as value -> value | _ -> "")
+  )
 
   /// Parses the PowerShell data file located at the specified path.
   static member private ParsePowerShellDataFile(path: string): Hashtable =
