@@ -2,6 +2,7 @@ namespace Belin.Cli.Cmdlets
 
 open Belin.Cli
 open Belin.Cli.MySql
+open Belin.Sql
 open MySqlConnector
 open System
 open System.Data
@@ -36,4 +37,30 @@ type SetMySqlCharset() =
     member _.Dispose() = match dbConnection with null -> () | disposable -> disposable.Dispose()
 
   /// Performs initialization of command execution.
-  override this.BeginProcessing() = dbConnection <- MySqlConnection.OfUri(nonNull this.Uri)
+  override this.BeginProcessing() =
+    let connection = MySqlConnection.OfUri(nonNull this.Uri)
+    if not (connection.GetCollations() |> Seq.contains this.Collation) then raise (ValidationMetadataException "TODO")
+    dbConnection <- connection
+
+  /// Performs execution of this command.
+  override this.ProcessRecord() =
+    let connection = nonNull dbConnection
+    let schemas =
+      if Array.isEmpty this.Schema then InformationSchema.getSchemas connection
+      else this.Schema |> Seq.map (fun schema -> MySqlSchema(Name = schema))
+
+    let tables =
+      schemas
+      |> Seq.map (fun schema ->
+        if Array.isEmpty this.Table then InformationSchema.getTables(connection, schema)
+        else this.Table |> Seq.map (fun table -> MySqlTable(Name = table, Schema = schema.Name)))
+      |> Seq.concat
+
+    for table in tables do
+      let sql = $"
+        SET foreign_key_checks = 0;
+        ALTER TABLE {table.GetQualifiedName(escape = true)} CONVERT TO CHARACTER SET {Array.head (this.Collation.Split '_')} COLLATE {this.Collation};
+        SET foreign_key_checks = 1;"
+
+      InformationRecord($"Processing: {table.QualifiedName}", nameof this.ProcessRecord) |> this.WriteInformation
+      connection.Execute sql |> ignore<int>

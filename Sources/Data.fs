@@ -3,40 +3,8 @@ namespace Belin.Cli
 open Belin.Sql
 open MySqlConnector
 open System
-open System.Collections.Generic
 open System.Data
 open System.ComponentModel.DataAnnotations.Schema
-
-/// Contains operations for working with MySQL databases.
-module MySql =
-
-  /// The list of local host addresses.
-  let private localHosts = [| "::1"; "127.0.0.1"; "localhost" |]
-
-  /// Provides extension members for MySQL connections.
-  type MySqlConnection with
-
-    /// Creates a new MySQL connection from the specified connection URI.
-    static member OfUri(connectionUri: Uri): MySqlConnection =
-      let userId, password =
-        match connectionUri.UserInfo.Split(':', 2) with
-        | [||] -> "root", ""
-        | [| userName |] -> Uri.UnescapeDataString userName, ""
-        | parts -> Uri.UnescapeDataString parts[0], Uri.UnescapeDataString parts[1]
-
-      let database = connectionUri.AbsolutePath.Trim '/'
-      let builder = MySqlConnectionStringBuilder(
-        Server = connectionUri.Host,
-        Port = (if connectionUri.IsDefaultPort then 3306u else uint connectionUri.Port),
-        Database = (if database.Length > 0 then database else "information_schema"),
-        UserID = userId,
-        Password = password,
-        ConvertZeroDateTime = true,
-        Pooling = false,
-        UseCompression = not (localHosts |> Array.contains connectionUri.Host)
-      )
-
-      new MySqlConnection(string builder)
 
 /// Defines the storage engine of a table.
 module MySqlTableEngine =
@@ -69,6 +37,13 @@ module MySqlTableType =
   let View = "VIEW"
 
 /// Provides the metadata of a table column.
+type MySqlCollation() =
+
+  /// The collation name.
+  [<Column("Collation")>]
+  member val Name = "" with get, set
+
+/// Provides the metadata of a table column.
 [<Table("COLUMNS")>]
 type MySqlColumn() =
 
@@ -87,6 +62,13 @@ type MySqlColumn() =
   /// The table containing this column.
   [<Column("TABLE_NAME")>]
   member val Table = "" with get, set
+
+/// Provides the metadata of a table column.
+type MySqlEngine() =
+
+  /// The engine name.
+  [<Column("Engine")>]
+  member val Name = "" with get, set
 
 /// Provides the metadata of a database schema.
 [<Table("SCHEMATA")>]
@@ -139,6 +121,19 @@ type MySqlTable() =
 /// Contains operations for working with the MySQL information schema.
 module InformationSchema =
 
+  /// Gets the list of columns contained in the specified table.
+  let getColumns (connection: IDbConnection, table: MySqlTable): MySqlColumn seq =
+    let sql = "
+      SELECT *
+      FROM information_schema.COLUMNS
+      WHERE TABLE_SCHEMA = @Schema AND TABLE_NAME = @Name
+      ORDER BY ORDINAL_POSITION"
+
+    connection.Query<MySqlColumn>(sql, SqlParameterCollection([
+      SqlParameter("Name", table.Name)
+      SqlParameter("Schema", table.Schema)
+    ]))
+
   /// Gets the list of schemas hosted by a database server.
   let getSchemas (connection: IDbConnection): MySqlSchema seq =
     connection.Query<MySqlSchema> "
@@ -159,3 +154,42 @@ module InformationSchema =
       SqlParameter("Name", schema.Name)
       SqlParameter("Type", MySqlTableType.BaseTable)
     ]))
+
+/// Contains operations for working with MySQL databases.
+module MySql =
+
+  /// The list of local host addresses.
+  let private localHosts = [| "::1"; "127.0.0.1"; "localhost" |]
+
+  /// Provides extension members for MySQL connections.
+  type MySqlConnection with
+
+    /// Creates a new MySQL connection from the specified connection URI.
+    static member OfUri(connectionUri: Uri): MySqlConnection =
+      let userId, password =
+        match connectionUri.UserInfo.Split(':', 2) with
+        | [||] -> "root", ""
+        | [| userName |] -> Uri.UnescapeDataString userName, ""
+        | parts -> Uri.UnescapeDataString parts[0], Uri.UnescapeDataString parts[1]
+
+      let database = connectionUri.AbsolutePath.Trim '/'
+      let builder = MySqlConnectionStringBuilder(
+        Server = connectionUri.Host,
+        Port = (if connectionUri.IsDefaultPort then 3306u else uint connectionUri.Port),
+        Database = (if database.Length > 0 then database else "information_schema"),
+        UserID = userId,
+        Password = password,
+        ConvertZeroDateTime = true,
+        Pooling = false,
+        UseCompression = not (localHosts |> Array.contains connectionUri.Host)
+      )
+
+      new MySqlConnection(string builder)
+
+    /// Gets the list of all collations.
+    member this.GetCollations(): string seq =
+      this.Query<MySqlCollation> "SHOW COLLATION" |> Seq.map _.Name
+
+    /// Gets the list of all storage engines.
+    member this.GetEngines(): string seq =
+      this.Query<MySqlEngine> "SHOW ENGINES" |> Seq.map _.Name
