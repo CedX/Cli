@@ -159,7 +159,7 @@ module InformationSchema =
 module MySql =
 
   /// The list of local host addresses.
-  let private localHosts = [| "::1"; "127.0.0.1"; "localhost" |]
+  let LocalHosts = [| "::1"; "127.0.0.1"; "localhost" |]
 
   /// Provides extension members for MySQL connections.
   type MySqlConnection with
@@ -169,7 +169,7 @@ module MySql =
       let userId, password =
         match connectionUri.UserInfo.Split(':', 2) with
         | [||] -> "root", ""
-        | [| userName |] -> Uri.UnescapeDataString userName, ""
+        | [| userId |] -> Uri.UnescapeDataString userId, ""
         | parts -> Uri.UnescapeDataString parts[0], Uri.UnescapeDataString parts[1]
 
       let database = connectionUri.AbsolutePath.Trim '/'
@@ -181,7 +181,7 @@ module MySql =
         Password = password,
         ConvertZeroDateTime = true,
         Pooling = false,
-        UseCompression = not (localHosts |> Array.contains connectionUri.Host)
+        UseCompression = not (LocalHosts |> Array.contains connectionUri.Host)
       )
 
       new MySqlConnection(string builder)

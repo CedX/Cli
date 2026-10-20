@@ -28,3 +28,7 @@ type RestoreMySqlTable() =
   /// Value indicating whether to process the input path recursively.
   [<Parameter>]
   member val Recurse = SwitchParameter false with get, set
+
+  /// Performs execution of this command.
+  override this.ProcessRecord() =
+    ()

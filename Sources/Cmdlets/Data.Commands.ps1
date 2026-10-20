@@ -83,7 +83,7 @@ function Export-MySqlDump {
 		"--user=$userName"
 	)
 
-	if ($Uri.Host -notin "::1", "127.0.0.1", "localhost") { $arguments.Add("--compress") }
+	if not (MySql.LocalHosts |> Array.contains connectionUri.Host) then arguments.Add "--compress"
 	$arguments.Add($Schema.Name)
 	$arguments.AddRange($Table)
 	mysqldump @arguments
@@ -139,7 +139,7 @@ function Restore-MySqlTable {
 				"--user=$userName"
 			)
 
-			if ($Uri.Host -notin "::1", "127.0.0.1", "localhost") { $arguments.Add("--compress") }
+			if not (MySql.LocalHosts |> Array.contains connectionUri.Host) then arguments.Add "--compress"
 			mysql @arguments
 		}
 	}

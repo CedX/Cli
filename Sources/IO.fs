@@ -20,7 +20,7 @@ type Compression =
       "--strip-components"; string (defaultArg skip 0)
     ]
 
-    let startInfo = ProcessStartInfo("tar", CreateNoWindow = true, arguments = arguments)
+    let startInfo = ProcessStartInfo("tar", arguments, CreateNoWindow = true)
     let message = $"{startInfo.FileName} {startInfo.Arguments}"
 
     match Process.Start startInfo with

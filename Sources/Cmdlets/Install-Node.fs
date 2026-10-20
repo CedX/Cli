@@ -77,7 +77,7 @@ type InstallNode() =
   /// Fetches the latest version number of Node.js releases.
   member private this.FetchLatestVersion(): Task<Version> = task {
     InformationRecord("Fetching the list of Node.js releases...", nameof this.FetchLatestVersion) |> this.WriteInformation
-    match! (nonNull httpClient).GetFromJsonAsync<List<NodeRelease>> "https://nodejs.org/dist/index.json" with
+    match! (nonNull httpClient).GetFromJsonAsync<NodeRelease list> "https://nodejs.org/dist/index.json" with
     | null -> return raise (HttpRequestException "Unable to fetch the list of Node.js releases.")
-    | releases -> return releases |> Seq.head |> fun release -> Version.Parse release.Version[1..]
+    | releases -> return releases |> List.head |> fun release -> Version.Parse release.Version[1..]
   }

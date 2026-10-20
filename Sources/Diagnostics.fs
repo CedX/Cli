@@ -24,13 +24,13 @@ module Diagnostics =
 
   /// Runs the specified command with the `--version` argument, and returns its standard output.
   let getExecutableVersion (command: string): string =
-    let startInfo = ProcessStartInfo(command, CreateNoWindow = true, RedirectStandardOutput = true, arguments = ["--version"])
+    let startInfo = ProcessStartInfo(command, ["--version"], CreateNoWindow = true, RedirectStandardOutput = true)
     let message = $"{startInfo.FileName} {startInfo.Arguments}"
 
     match Process.Start startInfo with
     | null -> raise (ApplicationFailedException message)
     | startedProcess ->
-      let standardOutput = startedProcess.StandardOutput.ReadToEnd().Trim()
+      let stdout = startedProcess.StandardOutput.ReadToEnd().Trim()
       startedProcess.WaitForExit()
       if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException message)
-      standardOutput
+      stdout
