@@ -39,7 +39,7 @@ type SetMySqlCharset() =
   /// Performs initialization of command execution.
   override this.BeginProcessing() =
     let connection = MySqlConnection.OfUri(nonNull this.Uri)
-    if not (connection.GetCollations() |> Seq.contains this.Collation) then raise (ValidationMetadataException "TODO")
+    if not (connection.GetCollations() |> Seq.contains this.Collation) then raise (ArgumentOutOfRangeException (nameof this.Collation))
     dbConnection <- connection
 
   /// Performs execution of this command.

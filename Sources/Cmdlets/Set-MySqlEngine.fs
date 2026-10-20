@@ -39,7 +39,7 @@ type SetMySqlEngine() =
   /// Performs initialization of command execution.
   override this.BeginProcessing() =
     let connection = MySqlConnection.OfUri(nonNull this.Uri)
-    if not (connection.GetEngines() |> Seq.contains this.Engine) then raise (ValidationMetadataException "TODO")
+    if not (connection.GetEngines() |> Seq.contains this.Engine) then raise (ArgumentOutOfRangeException (nameof this.Engine))
     dbConnection <- connection
 
   /// Performs execution of this command.
