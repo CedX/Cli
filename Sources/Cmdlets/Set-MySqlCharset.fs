@@ -43,7 +43,8 @@ type SetMySqlCharset() =
 
     let normalizedCollation = this.Collation.ToLowerInvariant()
     if not (connection.GetCollations() |> Seq.exists (fun collation -> collation.ToLowerInvariant() = normalizedCollation)) then
-      raise (ArgumentOutOfRangeException (nameof this.Collation))
+      let ex = ArgumentOutOfRangeException (nameof this.Collation)
+      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Collation) |> this.ThrowTerminatingError
 
   /// Performs execution of this command.
   override this.ProcessRecord() =

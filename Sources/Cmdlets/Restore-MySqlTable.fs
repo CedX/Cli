@@ -71,12 +71,15 @@ type RestoreMySqlTable() =
       ])
 
       if not (LocalHosts |> Array.contains connectionUri.Host) then arguments.Add "--compress"
-      let startInfo = ProcessStartInfo("mysql", arguments, CreateNoWindow = true, RedirectStandardError = true)
-      let message = $"{startInfo.FileName} {startInfo.Arguments}"
 
+      let startInfo = ProcessStartInfo("mysql", arguments, CreateNoWindow = true, RedirectStandardError = true)
       match Process.Start startInfo with
-      | null -> raise (ApplicationFailedException message)
+      | null ->
+          let ex = ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}"
+          ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo) |> this.ThrowTerminatingError
       | startedProcess ->
         let stderr = startedProcess.StandardError.ReadToEnd().Trim()
         startedProcess.WaitForExit()
-        if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException stderr)
+        if startedProcess.ExitCode <> 0 then
+          let ex = ApplicationFailedException stderr
+          ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo) |> this.ThrowTerminatingError

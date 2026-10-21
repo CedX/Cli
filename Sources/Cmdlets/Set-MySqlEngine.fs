@@ -43,7 +43,8 @@ type SetMySqlEngine() =
 
     let normalizedEngine = this.Engine.ToLowerInvariant()
     if not (connection.GetEngines() |> Seq.exists (fun engine -> engine.ToLowerInvariant() = normalizedEngine)) then
-      raise (ArgumentOutOfRangeException (nameof this.Engine))
+      let ex = ArgumentOutOfRangeException (nameof this.Engine)
+      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Engine) |> this.ThrowTerminatingError
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
