@@ -17,14 +17,14 @@ type ApplicationManifestTests() =
       manifest.Id |> Should.be "MyApp"
       manifest.Name |> Should.be "My Application 1.0"
 
-/// Tests the features of the `ServiceProcess` module.
+/// Tests the features of the `Nssm` module.
 [<TestClass>]
-type ServiceProcessTests() =
+type NssmTests() =
 
   [<TestMethod>]
   [<DataRow(Architecture.X64, "nssm.x64.exe")>]
   [<DataRow(Architecture.X86, "nssm.x86.exe")>]
-  member _.GetNssmPath(architecture: Architecture, executable: string) =
-    let path = ServiceProcess.getNssmPath architecture
+  member _.GetPath(architecture: Architecture, executable: string) =
+    let path = Nssm.getPath architecture
     path |> Should.endWith ($"/Resources/ServiceProcess/{executable}".Replace('/', Path.DirectorySeparatorChar))
     path |> File.Exists |> Should.beTrue

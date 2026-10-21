@@ -8,7 +8,7 @@ open System.IO
 module ServiceFactory =
 
   /// Creates a new service from the specified application directory.
-  let newService (path: string) =
+  let newService (path: string): Service =
     let sources =
       Directory.EnumerateFiles(Path.Join(path, "Sources/Server"))
       |> Seq.append (Directory.EnumerateFiles(Path.Join(path, "Sources")))

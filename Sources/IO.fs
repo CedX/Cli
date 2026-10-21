@@ -20,14 +20,13 @@ type Compression =
       "--strip-components"; string (defaultArg skip 0)
     ]
 
-    let startInfo = ProcessStartInfo("tar", arguments, CreateNoWindow = true)
-    let message = $"{startInfo.FileName} {startInfo.Arguments}"
-
+    let startInfo = ProcessStartInfo("tar", arguments, CreateNoWindow = true, RedirectStandardError = true)
     match Process.Start startInfo with
-    | null -> raise (ApplicationFailedException message)
+    | null -> raise (ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}")
     | startedProcess ->
+      let stderr = startedProcess.StandardError.ReadToEnd().Trim()
       startedProcess.WaitForExit()
-      if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException message)
+      if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException stderr)
 
   /// Extracts the specified ZIP archive into a given directory.
   static member ExpandZipArchive(path: string, destinationPath: string, ?skip: int) =

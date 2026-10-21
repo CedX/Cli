@@ -2,6 +2,7 @@ namespace Belin.Cli
 
 open System
 open System.Collections
+open System.Diagnostics
 open System.IO
 open System.Management.Automation
 open System.ServiceProcess
@@ -79,16 +80,32 @@ type Service(path: string) as this =
   /// The program used to run this service.
   abstract Program: string with get
 
-/// Contains operations for working with service applications.
-module ServiceProcess =
+/// Contains operations for working with the NSSM program.
+module Nssm =
 
   /// The path to the resource directory.
   let private resources: string =
     typeof<Architecture>.Assembly.Location |> Path.GetDirectoryName |> fun name -> Path.Join(name, "../Resources/ServiceProcess")
 
-  /// Returns th absolute path of the `nssm` program according to the specified process architecture.
-  let getNssmPath (architecture: Architecture): string =
+  /// Returns the absolute path of the `nssm` program according to the specified process architecture.
+  let getPath (architecture: Architecture): string =
     Path.GetFullPath($"nssm.{(string architecture).ToLowerInvariant()}.exe", resources)
+
+  /// Runs a NSSM command.
+  let private run (command: string) (service: string) (arguments: string seq) =
+    let startInfo = ProcessStartInfo("nssm", [command; service] |> Seq.append arguments, CreateNoWindow = true, RedirectStandardError = true)
+    match Process.Start startInfo with
+    | null -> raise (ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}")
+    | startedProcess ->
+      let stderr = startedProcess.StandardError.ReadToEnd().Trim()
+      startedProcess.WaitForExit()
+      if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException stderr)
+
+  /// Remove the NSSM service with the specified identifier.
+  let remove (service: string) = run "remove" service ["confirm"]
+
+/// Contains operations for working with service applications.
+module ServiceProcess =
 
   /// Starts the service managed by the specified controller.
   let startService (serviceController: ServiceController) (cmdlet: Cmdlet) =
@@ -103,3 +120,7 @@ module ServiceProcess =
       InformationRecord($"Stopping the {serviceController.ServiceName} service...", "ServiceProcess.stopService") |> cmdlet.WriteInformation
       serviceController.Stop()
       serviceController.WaitForStatus ServiceControllerStatus.Stopped
+
+  /// Gets a value indicating whether a service with the specified identifier exists.
+  let serviceExists (id: string): bool =
+    ServiceController.GetServices() |> Array.exists (fun service -> service.ServiceName = id)
