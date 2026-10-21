@@ -17,6 +17,19 @@ type ValidateConnectionUriAttribute() =
 
     if not isValid then raise (ValidationMetadataException "The specified connection URI is invalid.")
 
+/// Validates that the specified path is an existing directory.
+type ValidateDirectoryAttribute(errorMessage: string) =
+  inherit ValidateArgumentsAttribute()
+
+  /// Verifies that the value of `arguments` is valid.
+  override _.Validate(arguments: obj, _: EngineIntrinsics) =
+    let exists =
+      match arguments with
+      | :? string as path -> Directory.Exists path
+      | _ -> false
+
+    if not exists then raise (ValidationMetadataException errorMessage)
+
 /// Validates that the specified path is an existing file.
 type ValidateFileAttribute(errorMessage: string) =
   inherit ValidateArgumentsAttribute()
