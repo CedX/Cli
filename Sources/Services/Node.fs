@@ -28,12 +28,11 @@ type NodeService(path: string) as this =
   let mutable entryPath = ""
 
   do
-    let emptyManifest = { Bin = None; Description = ""; Name = "" }
     let manifestPath = Path.Join(this.Path, "package.json")
-
     match if File.Exists manifestPath then Some manifestPath else None with
     | None -> ()
     | Some filePath ->
+      let emptyManifest = { Bin = None; Description = ""; Name = "" }
       let manifest = JsonSerializer.Deserialize<NodePackage>(File.ReadAllText filePath, JsonSerializerOptions.Web) |> defaultIfNull emptyManifest
       if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- manifest.Description
       if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- manifest.Name

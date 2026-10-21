@@ -31,11 +31,9 @@ type ApplicationManifest() =
     match (nonNull (Path.GetExtension path)).ToLowerInvariant() with
     | ".config" | ".xml" ->
       use xmlReader = XmlReader.Create path
-      let manifest = XmlSerializer(typeof<ApplicationManifest>).Deserialize xmlReader
-      manifest :?> ApplicationManifest | null |> defaultIfNull emptyManifest
+      XmlSerializer(typeof<ApplicationManifest>).Deserialize xmlReader :?> ApplicationManifest | null |> defaultIfNull emptyManifest
     | ".json" ->
-      let manifest = JsonSerializer.Deserialize<ApplicationManifest>(File.ReadAllText path, JsonSerializerOptions.Web)
-      manifest |> defaultIfNull emptyManifest
+      JsonSerializer.Deserialize<ApplicationManifest>(File.ReadAllText path, JsonSerializerOptions.Web) |> defaultIfNull emptyManifest
     | ".psd1" ->
       path |> Automation.parsePowerShellDataFile |> ApplicationManifest.OfDictionary
     | _ ->
