@@ -28,7 +28,7 @@ type ApplicationManifest() =
   /// Reads the application manifest located at the specified path.
   static member Read(path: string): ApplicationManifest =
     let emptyManifest = ApplicationManifest()
-    match (nonNull (Path.GetExtension path)).ToLowerInvariant() with
+    match (Path.GetExtension path |> defaultIfNull "").ToLowerInvariant() with
     | ".config" | ".xml" ->
       use xmlReader = XmlReader.Create path
       XmlSerializer(typeof<ApplicationManifest>).Deserialize xmlReader :?> ApplicationManifest | null |> defaultIfNull emptyManifest

@@ -10,7 +10,7 @@ type ApplicationManifestTests() =
 
   [<TestMethod>]
   member _.Read() =
-    for file in Path.Join(AppContext.BaseDirectory, "../Tests/Fixtures") |> Directory.GetFiles do
+    for file in Path.Join(AppContext.BaseDirectory, "../Tests/Fixtures") |> Directory.EnumerateFiles do
       let manifest = ApplicationManifest.Read file
       Should.beEmpty manifest.Description
       Should.beEmpty manifest.Environment

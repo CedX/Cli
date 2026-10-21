@@ -39,7 +39,10 @@
 		<Compile Include="ServiceProcess.fs" />
 		<Compile Include="Text.fs" />
 		<Compile Include="Validation.fs" />
-		<Compile Include="Services/*.fs" />
+		<Compile Include="Services/DotNet.fs" />
+		<Compile Include="Services/Node.fs" />
+		<Compile Include="Services/PowerShell.fs" />
+		<Compile Include="Services/Factory.fs" />
 		<Compile Include="Cmdlets/*.fs" />
 	</ItemGroup>
 </Project>
