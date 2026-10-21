@@ -76,8 +76,8 @@ type BackupMySqlTable() =
     let startInfo = ProcessStartInfo("mysqldump", arguments, CreateNoWindow = true, RedirectStandardError = true)
     match Process.Start startInfo with
     | null ->
-        let ex = ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}"
-        ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo) |> this.ThrowTerminatingError
+      let ex = ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}"
+      ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo) |> this.ThrowTerminatingError
     | startedProcess ->
       let stderr = startedProcess.StandardError.ReadToEnd().Trim()
       startedProcess.WaitForExit()

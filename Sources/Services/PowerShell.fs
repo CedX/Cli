@@ -18,16 +18,13 @@ type PowerShellService(path: string) as this =
       |> Seq.filter (fun file ->
         let name = Path.GetFileNameWithoutExtension file
         name <> "PSModules" && name <> "PSScriptAnalyzerSettings")
-      |> Seq.tryHead
+      |> Seq.exactlyOne
 
-    match manifestPath with
-    | None -> ()
-    | Some filePath ->
-      let manifest = Automation.parsePowerShellDataFile filePath
-      let rootModule = string manifest["RootModule"]
-      if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- string manifest["Description"]
-      if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- Path.GetFileNameWithoutExtension filePath |> defaultIfNull ""
-      if not (String.IsNullOrWhiteSpace rootModule) then entryPoint <- Path.GetFullPath(rootModule, this.Path)
+    let manifest = Automation.parsePowerShellDataFile manifestPath
+    let rootModule = string manifest["RootModule"]
+    if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- string manifest["Description"]
+    if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- Path.GetFileNameWithoutExtension manifestPath |> defaultIfNull ""
+    if not (String.IsNullOrWhiteSpace rootModule) then entryPoint <- Path.GetFullPath(rootModule, this.Path)
 
   /// The entry point of this service.
   override val EntryPoint =

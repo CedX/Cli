@@ -56,13 +56,9 @@ type Service(path: string) as this =
       ["Sources/Server", "Sources"]
       |> Seq.collect (fun folder -> ["config"; "json"; "psd1"; "xml"] |> List.map (fun ext -> Path.Join(this.Path, $"{folder}/appsettings.{ext}")))
       |> Seq.filter File.Exists
-      |> Seq.tryHead
+      |> Seq.exactlyOne
 
-    this.Manifest <-
-      match manifestPath with
-      | None -> ApplicationManifest()
-      | Some filePath -> ApplicationManifest.Read filePath
-
+    this.Manifest <- ApplicationManifest.Read manifestPath
     if String.IsNullOrWhiteSpace this.Manifest.Id then raise (EntryPointNotFoundException "Unable to locate the service manifest.")
 
   /// The entry point of this service.

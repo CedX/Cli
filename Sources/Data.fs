@@ -36,7 +36,7 @@ module MySqlTableType =
   [<Literal>]
   let View = "VIEW"
 
-/// Provides the metadata of a table column.
+/// Represents a collation.
 type MySqlCollation() =
 
   /// The collation name.
@@ -63,7 +63,7 @@ type MySqlColumn() =
   [<Column("TABLE_NAME")>]
   member val Table = "" with get, set
 
-/// Provides the metadata of a table column.
+/// Represents a storage engine.
 type MySqlEngine() =
 
   /// The engine name.

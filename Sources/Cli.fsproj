@@ -39,7 +39,7 @@
 		<Compile Include="ServiceProcess.fs" />
 		<Compile Include="Text.fs" />
 		<Compile Include="Validation.fs" />
-		<Compile Include="Cmdlets/*.fs" />
 		<Compile Include="Services/*.fs" />
+		<Compile Include="Cmdlets/*.fs" />
 	</ItemGroup>
 </Project>

@@ -28,18 +28,18 @@ type NodeService(path: string) as this =
   let mutable entryPoint = ""
 
   do
-    let manifestPath = Path.Join(this.Path, "package.json")
-    match if File.Exists manifestPath then Some manifestPath else None with
+    let manifest =
+      Path.Join(this.Path, "package.json")
+      |> File.ReadAllText
+      |> fun json -> JsonSerializer.Deserialize<NodePackage>(json, JsonSerializerOptions.Web)
+      |> defaultIfNull { Bin = None; Description = ""; Name = "" }
+
+    if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- manifest.Description
+    if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- manifest.Name
+    match manifest.Bin with
     | None -> ()
-    | Some filePath ->
-      let emptyManifest = { Bin = None; Description = ""; Name = "" }
-      let manifest = JsonSerializer.Deserialize<NodePackage>(File.ReadAllText filePath, JsonSerializerOptions.Web) |> defaultIfNull emptyManifest
-      if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- manifest.Description
-      if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- manifest.Name
-      match manifest.Bin with
-      | None -> ()
-      | Some dictionary when dictionary.Count = 0 -> ()
-      | Some dictionary -> entryPoint <- dictionary |> Seq.head |> fun entry -> Path.GetFullPath(entry.Value, this.Path)
+    | Some dictionary when dictionary.Count = 0 -> ()
+    | Some dictionary -> entryPoint <- dictionary |> Seq.head |> fun entry -> Path.GetFullPath(entry.Value, this.Path)
 
   /// The entry point of this service.
   override val EntryPoint =

@@ -40,14 +40,14 @@ type InstallPhp() =
     member _.Dispose() = match httpClient with null -> () | disposable -> disposable.Dispose()
 
   /// Performs initialization of command execution.
-  override _.BeginProcessing() = httpClient <- Http.newClient()
-
-  /// Performs execution of this command.
-  override this.ProcessRecord() =
+  override this.BeginProcessing() =
+    httpClient <- Http.newClient()
     if not Platform.IsWindows then
       let ex = PlatformNotSupportedException "This command only supports the Windows platform."
       ErrorRecord(ex, "PlatformNotSupported", ErrorCategory.InvalidOperation, Environment.OSVersion) |> this.ThrowTerminatingError
 
+  /// Performs execution of this command.
+  override this.ProcessRecord() =
     let destinationPath = this.GetUnresolvedProviderPathFromPSPath this.DestinationPath
     if not (Security.canWriteTo destinationPath) then
       let ex = UnauthorizedAccessException "You must run this command in an elevated prompt."

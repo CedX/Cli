@@ -44,31 +44,28 @@ type DotNetService(path: string) as this =
     let manifestPath =
       Directory.EnumerateFiles(Path.Join(this.Path, "Sources/Server"), "*.*proj")
       |> Seq.append (Directory.EnumerateFiles(Path.Join(this.Path, "Sources"), "*.*proj"))
-      |> Seq.tryHead
+      |> Seq.exactlyOne
 
-    match manifestPath with
-    | None -> ()
-    | Some filePath ->
-      use xmlReader = XmlReader.Create filePath
-      let manifest = XmlSerializer(typeof<DotNetProject>).Deserialize xmlReader :?> DotNetProject | null |> defaultIfNull (DotNetProject())
+    use xmlReader = XmlReader.Create manifestPath
+    let manifest = XmlSerializer(typeof<DotNetProject>).Deserialize xmlReader :?> DotNetProject | null |> defaultIfNull (DotNetProject())
 
-      let mutable project = struct {| AssemblyName = ""; Platforms = ""; OutDir = "" |}
-      for propertyGroup in manifest.PropertyGroups do
-        if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- propertyGroup.Description
-        if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- propertyGroup.Product
-        if String.IsNullOrWhiteSpace project.AssemblyName then project <- {| project with AssemblyName = propertyGroup.AssemblyName |}
-        if String.IsNullOrWhiteSpace project.Platforms then project <- {| project with Platforms = propertyGroup.Platforms |}
-        if String.IsNullOrWhiteSpace project.OutDir && not (String.IsNullOrWhiteSpace propertyGroup.OutDir) then
-          project <- {| project with OutDir = Path.Join(Path.GetDirectoryName filePath, propertyGroup.OutDir) |}
+    let mutable project = struct {| AssemblyName = ""; Platforms = ""; OutDir = "" |}
+    for propertyGroup in manifest.PropertyGroups do
+      if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- propertyGroup.Description
+      if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- propertyGroup.Product
+      if String.IsNullOrWhiteSpace project.AssemblyName then project <- {| project with AssemblyName = propertyGroup.AssemblyName |}
+      if String.IsNullOrWhiteSpace project.Platforms then project <- {| project with Platforms = propertyGroup.Platforms |}
+      if String.IsNullOrWhiteSpace project.OutDir && not (String.IsNullOrWhiteSpace propertyGroup.OutDir) then
+        project <- {| project with OutDir = Path.Join(Path.GetDirectoryName manifestPath, propertyGroup.OutDir) |}
 
-      if String.IsNullOrWhiteSpace project.AssemblyName then
-        project <- {| project with AssemblyName = Path.GetFileNameWithoutExtension filePath |> defaultIfNull "" |}
-      if String.IsNullOrWhiteSpace project.OutDir then
-        project <- {| project with OutDir = Path.Join(this.Path, "Binaries") |}
+    if String.IsNullOrWhiteSpace project.AssemblyName then
+      project <- {| project with AssemblyName = Path.GetFileNameWithoutExtension manifestPath |> defaultIfNull "" |}
+    if String.IsNullOrWhiteSpace project.OutDir then
+      project <- {| project with OutDir = Path.Join(this.Path, "Binaries") |}
 
-      let assembly = Path.GetFullPath($"{project.AssemblyName}.dll", project.OutDir)
-      if File.Exists assembly then entryPoint <- assembly
-      if not (String.IsNullOrWhiteSpace project.Platforms) then this.Is32Bit <- project.Platforms.Split ';' |> Array.contains "x86"
+    let assembly = Path.GetFullPath($"{project.AssemblyName}.dll", project.OutDir)
+    if File.Exists assembly then entryPoint <- assembly
+    if not (String.IsNullOrWhiteSpace project.Platforms) then this.Is32Bit <- project.Platforms.Split ';' |> Array.contains "x86"
 
   /// The entry point of this service.
   override val EntryPoint =
