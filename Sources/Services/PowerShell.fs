@@ -13,14 +13,14 @@ type PowerShellService(path: string) as this =
   let mutable entryPath = ""
 
   do
-    let moduleManifest =
+    let manifestPath =
       Directory.EnumerateFiles(this.Path, "*.psd1")
       |> Seq.filter (fun file ->
         let name = Path.GetFileNameWithoutExtension file
         name <> "PSModules" && name <> "PSScriptAnalyzerSettings")
       |> Seq.tryHead
 
-    match moduleManifest with
+    match manifestPath with
     | None -> ()
     | Some filePath ->
       let manifest = Automation.parsePowerShellDataFile filePath

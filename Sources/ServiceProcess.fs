@@ -54,14 +54,14 @@ type ApplicationManifest() =
 type Service(path: string) as this =
   do
     this.Path <- path |> Path.GetFullPath |> Path.TrimEndingDirectorySeparator
-    let configFile =
+    let manifestPath =
       ["Sources/Server", "Sources"]
-      |> List.collect (fun folder -> ["config"; "json"; "psd1"; "xml"] |> List.map (fun ext -> Path.Join(this.Path, $"{folder}/appsettings.{ext}")))
-      |> List.filter File.Exists
-      |> List.tryHead
+      |> Seq.collect (fun folder -> ["config"; "json"; "psd1"; "xml"] |> List.map (fun ext -> Path.Join(this.Path, $"{folder}/appsettings.{ext}")))
+      |> Seq.filter File.Exists
+      |> Seq.tryHead
 
     this.Manifest <-
-      match configFile with
+      match manifestPath with
       | None -> ApplicationManifest()
       | Some filePath -> ApplicationManifest.Read filePath
 
