@@ -25,7 +25,7 @@ type NodeService(path: string) as this =
   inherit Service(path)
 
   /// The path of the service entry point.
-  let mutable entryPath = ""
+  let mutable entryPoint = ""
 
   do
     let manifestPath = Path.Join(this.Path, "package.json")
@@ -39,11 +39,11 @@ type NodeService(path: string) as this =
       match manifest.Bin with
       | None -> ()
       | Some dictionary when dictionary.Count = 0 -> ()
-      | Some dictionary -> entryPath <- Path.GetFullPath(dictionary |> Seq.head |> _.Value, this.Path)
+      | Some dictionary -> entryPoint <- dictionary |> Seq.head |> fun entry -> Path.GetFullPath(entry.Value, this.Path)
 
   /// The entry point of this service.
   override val EntryPoint =
-    if entryPath.Length > 0 then entryPath
+    if entryPoint.Length > 0 then entryPoint
     else raise (EntryPointNotFoundException "Unable to resolve the service entry point.")
 
   /// The name of the environment variable storing the service environment.
