@@ -36,5 +36,5 @@ type RemoveNssmService() =
 
     use serviceController = new ServiceController(service.Manifest.Id)
     this |> ServiceProcess.stopService serviceController
-    Nssm.remove service.Manifest.Id
+    Nssm.remove service
     InformationRecord($@"The service ""{service.Manifest.Id}"" has been successfully removed.", nameof this.ProcessRecord) |> this.WriteInformation

@@ -20,11 +20,13 @@ type PowerShellService(path: string) as this =
         name <> "PSModules" && name <> "PSScriptAnalyzerSettings")
       |> Seq.exactlyOne
 
-    let manifest = Automation.parsePowerShellDataFile manifestPath
-    let rootModule = string manifest["RootModule"]
-    if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- string manifest["Description"]
-    if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- Path.GetFileNameWithoutExtension manifestPath |> defaultIfNull ""
-    if not (String.IsNullOrWhiteSpace rootModule) then entryPoint <- Path.GetFullPath(rootModule, this.Path)
+    match Automation.parsePowerShellDataFile manifestPath with
+    | Error _ -> failwith ""
+    | Ok manifest ->
+      let rootModule = string manifest["RootModule"]
+      if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- string manifest["Description"]
+      if String.IsNullOrWhiteSpace this.Manifest.Name then this.Manifest.Name <- Path.GetFileNameWithoutExtension manifestPath |> defaultIfNull ""
+      if not (String.IsNullOrWhiteSpace rootModule) then entryPoint <- Path.GetFullPath(rootModule, this.Path)
 
   /// The entry point of this service.
   override val EntryPoint =

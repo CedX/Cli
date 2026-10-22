@@ -36,7 +36,7 @@ type ApplicationManifest() =
     | ".json" ->
       JsonSerializer.Deserialize<ApplicationManifest>(File.ReadAllText path, JsonSerializerOptions.Web) |> defaultIfNull emptyManifest
     | ".psd1" ->
-      path |> Automation.parsePowerShellDataFile |> ApplicationManifest.OfDictionary
+      path |> Automation.parsePowerShellDataFile |> Result.defaultValue (Hashtable()) |> ApplicationManifest.OfDictionary
     | _ ->
       emptyManifest
 
@@ -91,9 +91,15 @@ module Nssm =
   let getPath (architecture: Architecture): string =
     Path.GetFullPath($"nssm.{(string architecture).ToLowerInvariant()}.exe", resources)
 
+  /// The absolute path to the NSSM executable.
+  let private programPath =
+    Automation.getApplicationInfo "nssm"
+    |> Option.map (fun applicationInfo -> applicationInfo.Path)
+    |> Option.defaultValue (getPath Architecture.Current)
+
   /// Runs a NSSM command.
   let private run (command: string) (service: string) (arguments: string seq) =
-    let startInfo = ProcessStartInfo("nssm", [command; service] |> Seq.append arguments, CreateNoWindow = true, RedirectStandardError = true)
+    let startInfo = ProcessStartInfo(programPath, [command; service] |> Seq.append arguments, CreateNoWindow = true, RedirectStandardError = true)
     match Process.Start startInfo with
     | null -> raise (ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}")
     | startedProcess ->
@@ -101,11 +107,28 @@ module Nssm =
       startedProcess.WaitForExit()
       if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException stderr)
 
-  /// Remove the NSSM service with the specified identifier.
-  let remove (service: string) = run "remove" service ["confirm"]
+  /// Installs the specified service.
+  let install (service: Service) (programPath: string) =
+    run "install" service.Manifest.Id [programPath; service.EntryPoint]
+
+  /// Removes the specified service.
+  let remove (service: Service) =
+    run "remove" service.Manifest.Id ["confirm"]
+
+  /// Sets a property of the specified service.
+  let set (service: Service) (property: string) (value: string) =
+    run "set" service.Manifest.Id [property; value]
+
+  /// Sets the user account under which the specified service runs.
+  let setUserAccount (service: Service) (name: string) (password: string) =
+    run "set" service.Manifest.Id ["ObjectName"; name; password]
 
 /// Contains operations for working with service applications.
 module ServiceProcess =
+
+  /// Gets a value indicating whether a service with the specified identifier exists.
+  let serviceExists (id: string): bool =
+    ServiceController.GetServices() |> Array.exists (fun service -> service.ServiceName = id)
 
   /// Starts the service managed by the specified controller.
   let startService (serviceController: ServiceController) (cmdlet: Cmdlet) =
@@ -120,7 +143,3 @@ module ServiceProcess =
       InformationRecord($"Stopping the {serviceController.ServiceName} service...", "ServiceProcess.stopService") |> cmdlet.WriteInformation
       serviceController.Stop()
       serviceController.WaitForStatus ServiceControllerStatus.Stopped
-
-  /// Gets a value indicating whether a service with the specified identifier exists.
-  let serviceExists (id: string): bool =
-    ServiceController.GetServices() |> Array.exists (fun service -> service.ServiceName = id)

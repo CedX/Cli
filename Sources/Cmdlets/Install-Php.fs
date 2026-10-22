@@ -96,5 +96,5 @@ type InstallPhp() =
   member private this.RegisterEventLog(phpVersion: Version, phpDirectory: string) =
     InformationRecord("Registering the PHP interpreter with the event log...", nameof this.RegisterEventLog) |> this.WriteInformation
     let key = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Application\PHP-{phpVersion}"
-    Registry.SetValue(key, "EventMessageFile", Path.Join(phpDirectory, $"php{phpVersion.Major}.dll"), RegistryValueKind.String)
+    Registry.SetValue(key, "EventMessageFile", Path.GetFullPath($"php{phpVersion.Major}.dll", phpDirectory), RegistryValueKind.String)
     Registry.SetValue(key, "TypesSupported", 7, RegistryValueKind.DWord)

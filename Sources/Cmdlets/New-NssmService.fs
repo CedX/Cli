@@ -3,7 +3,9 @@ namespace Belin.Cli.Cmdlets
 open Belin.Cli
 open Belin.Cli.Services
 open System
+open System.IO
 open System.Management.Automation
+open System.ServiceProcess
 
 /// Registers a Windows service based on [NSSM](https://nssm.cc).
 [<Cmdlet(VerbsCommon.New, "NssmService"); OutputType(typeof<Void>)>]
@@ -13,6 +15,14 @@ type NewNssmService() =
   /// The path to the root directory of the web application.
   [<Parameter(Position = 1, ValueFromPipeline = true); ValidateDirectory("The specified directory does not exist.")>]
   member val Path = "" with get, set
+
+  /// The account used by the service as the logon account.
+  [<Parameter; Credential>]
+  member val Credential: PSCredential | null = null with get, set
+
+  /// Value indicating whether to start the service after its registration.
+  [<Parameter>]
+  member val Start = SwitchParameter false with get, set
 
   /// Performs initialization of command execution.
   override this.BeginProcessing() =
@@ -33,6 +43,39 @@ type NewNssmService() =
       let ex = InvalidOperationException $@"The service ""{service.Manifest.Id}"" already exists."
       ErrorRecord(ex, "InvalidOperation", ErrorCategory.InvalidOperation, service) |> this.WriteError
 
+    let properties = dict [
+      "AppDirectory", service.Path
+      "AppEnvironmentExtra", $"{service.EnvironmentVariable}={service.Manifest.Environment}"
+      "AppNoConsole", "1"
+      "AppStderr", Path.Join(service.Path, @"Temp\Error.log")
+      "AppStdout", Path.Join(service.Path, @"Temp\Output.log")
+      "Description", service.Manifest.Description
+      "DisplayName", service.Manifest.Name
+      "Start", "SERVICE_AUTO_START"
+    ]
 
+    let mutable program = Automation.getApplicationInfo service.Program
+    match program with
+    | None ->
+      let ex = FileNotFoundException $@"The program ""{service.Program}"" cannot be found."
+      ErrorRecord(ex, "FileNotFound", ErrorCategory.ObjectNotFound, service.Program) |> this.WriteError
+    | Some applicationInfo ->
+      let mutable programPath = applicationInfo.Path
+      if Platform.IsWindows && Environment.Is64BitOperatingSystem && service.Is32Bit then
+        programPath <- programPath.Replace(@"\Program Files\", @"\Program Files (x86)\")
 
-    ()
+      Nssm.install service programPath
+      for entry in properties do Nssm.set service entry.Key entry.Value
+
+      if this.Start.IsPresent then
+        use serviceController = new ServiceController(service.Manifest.Id)
+        this |> ServiceProcess.startService serviceController
+
+      match this.Credential with
+      | null -> ()
+      | credential ->
+        let password = if credential.Password.Length > 0 then credential.GetNetworkCredential().Password else ""
+        Nssm.setUserAccount service credential.UserName password
+
+      let created = if this.Start.IsPresent then "started" else "created"
+      InformationRecord($@"The service ""{service.Manifest.Id}"" has been successfully {created}.", nameof this.ProcessRecord) |> this.WriteInformation

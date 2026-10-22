@@ -54,7 +54,8 @@ function New-NssmService {
 			Start = "SERVICE_AUTO_START"
 		}
 
-		$programPath = (Get-Command $application.Program()).Path
+		# TODO add to the Service class !!!
+		$programPath = (Get-Command $application.Program).Path
 		if ($IsWindows -and [Environment]::Is64BitOperatingSystem -and $application.Is32Bit) {
 			$programPath = $programPath -replace "\\Program Files\\", "\Program Files (x86)\"
 		}
@@ -71,50 +72,5 @@ function New-NssmService {
 		if ($Start) { Start-Service $application.Manifest.Id }
 		$created = $Start ? "started" : "created"
 		"The service ""$($application.Manifest.Id)"" has been successfully $created."
-	}
-}
-
-<#
-.SYNOPSIS
-	Unregisters a Windows service based on [NSSM](https://nssm.cc).
-.INPUTS
-	The path to the root directory of the web application.
-.OUTPUTS
-	The log messages.
-#>
-function Remove-NssmService {
-	[CmdletBinding()]
-	[OutputType([string])]
-	[SuppressMessage("PSUseShouldProcessForStateChangingFunctions", "")]
-	param (
-		# The path to the root directory of the web application.
-		[Parameter(Position = 1, ValueFromPipeline)]
-		[ValidateScript({ Test-Path $_ -PathType Container }, ErrorMessage = "The specified directory does not exist.")]
-		[string] $Path = $PWD
-	)
-
-	begin {
-		if (-not $IsWindows) { throw [PlatformNotSupportedException]::new("This command only supports the Windows platform.") }
-		if (-not (Test-IsPrivilegedProcess)) { throw [UnauthorizedAccessException]::new("You must run this command in an elevated prompt.") }
-		$prefix = Join-Path $Path Sources
-	}
-
-	process {
-		$application = switch ($true) {
-			((Test-Path "$prefix/Server/*.cs") -or (Test-Path "$prefix/*.cs")) { [DotNetApplication]::new($Path); break }
-			((Test-Path "$prefix/Server/*.fs") -or (Test-Path "$prefix/*.fs")) { [DotNetApplication]::new($Path); break }
-			((Test-Path "$prefix/Server/*.ps1") -or (Test-Path "$prefix/*.ps1")) { [PowerShellApplication]::new($Path); break }
-			((Test-Path "$prefix/Server/*.ts") -or (Test-Path "$prefix/*.ts")) { [NodeApplication]::new($Path); break }
-			default { throw [NotSupportedException]::new("The application type could not be determined.") }
-		}
-
-		if (-not (Get-Service $application.Manifest.Id -ErrorAction Ignore)) {
-			throw [InvalidOperationException]::new("The service ""$($application.Manifest.Id)"" does not exist.")
-		}
-		else {
-			Stop-Service $application.Manifest.Id
-			Remove-Service $application.Manifest.Id
-			"The service ""$($application.Manifest.Id)"" has been successfully removed."
-		}
 	}
 }

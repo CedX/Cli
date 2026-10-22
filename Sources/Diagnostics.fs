@@ -11,7 +11,7 @@ type Architecture =
   | X64 = 1
   | X86 = 2
 
-/// COntains operations for working with architectures.
+/// Contains operations for working with architectures.
 module Architecture =
 
   /// The current architecture.

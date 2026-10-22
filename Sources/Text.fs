@@ -13,11 +13,11 @@ module Text =
 
   /// The list of binary file extensions.
   let private binaryExtensions: string array =
-    Path.Join(resources, "BinaryExtensions.json") |> File.ReadAllText |> JsonSerializer.Deserialize<string array> |> nonNull
+    Path.Join(resources, "BinaryExtensions.json") |> File.ReadAllText |> JsonSerializer.Deserialize<string array> |> defaultIfNull [||]
 
   /// The list of text file extensions.
   let private textExtensions: string array =
-    Path.Join(resources, "TextExtensions.json") |> File.ReadAllText |> JsonSerializer.Deserialize<string array> |> nonNull
+    Path.Join(resources, "TextExtensions.json") |> File.ReadAllText |> JsonSerializer.Deserialize<string array> |> defaultIfNull [||]
 
   /// Returns a value indicating whether the specified file should be excluded from the processing.
   let isExcludedFile (file: FileInfo) (excludedFolders: string array): bool =
