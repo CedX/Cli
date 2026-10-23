@@ -91,15 +91,9 @@ module Nssm =
   let getPath (architecture: Architecture): string =
     Path.GetFullPath($"nssm.{(string architecture).ToLowerInvariant()}.exe", resources)
 
-  /// The absolute path to the NSSM executable.
-  let private programPath =
-    Automation.getApplicationInfo "nssm"
-    |> Option.map (fun applicationInfo -> applicationInfo.Path)
-    |> Option.defaultValue (getPath Architecture.Current)
-
   /// Runs a NSSM command.
   let private run (command: string) (service: string) (arguments: string seq) =
-    let startInfo = ProcessStartInfo(programPath, [command; service] |> Seq.append arguments, CreateNoWindow = true, RedirectStandardError = true)
+    let startInfo = ProcessStartInfo("nssm", [command; service] |> Seq.append arguments, CreateNoWindow = true, RedirectStandardError = true)
     match Process.Start startInfo with
     | null -> raise (ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}")
     | startedProcess ->

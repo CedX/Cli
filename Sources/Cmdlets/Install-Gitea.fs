@@ -51,7 +51,7 @@ type InstallGitea() =
     use serviceController = new ServiceController "Gitea"
     if Environment.IsPrivilegedProcess then this |> ServiceProcess.stopService serviceController
 
-    InformationRecord($@"Moving the binary into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    InformationRecord($@"Moving the binary into the directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     Directory.CreateDirectory destinationPath |> ignore<DirectoryInfo>
     File.Copy(binary.FullName, executable, overwrite = true)
     if not Platform.IsWindows then File.makeExecutable executable

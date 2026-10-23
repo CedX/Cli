@@ -77,9 +77,3 @@ type DotNetService(path: string) as this =
 
   /// The program used to run this service.
   override val Program = if Platform.IsWindows then "dotnet.exe" else "dotnet"
-  // TODO
-  // override val Program =
-  //   let command = if Platform.IsWindows then "dotnet.exe" else "dotnet"
-  //   match Automation.getApplicationInfo command with
-  //   | None -> raise (EntryPointNotFoundException "Unable to resolve the service entry point.")
-  //   | Some applicationInfo -> applicationInfo.Path

@@ -60,7 +60,7 @@ type InstallPhp() =
     use serviceController = new ServiceController "W3SVC"
     if Environment.IsPrivilegedProcess then this |> ServiceProcess.stopService serviceController
 
-    InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    InformationRecord($@"Extracting the archive into the directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     Compression.ExpandZipArchive(archive.FullName, destinationPath)
     if not Platform.IsWindows then File.makeExecutable executable
 

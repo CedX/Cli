@@ -46,7 +46,7 @@ type InstallNode() =
     let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
     let executable = Path.Join(destinationPath, if Platform.IsWindows then "node.exe" else "bin/node")
 
-    InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    InformationRecord($@"Extracting the archive into the directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     match archive.Extension with
     | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath, skip = 1)
     | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)

@@ -19,6 +19,7 @@
 		"Install-Gitea"
 		"Install-Jdk"
 		"Install-Node"
+		"Install-Nssm"
 		"Install-Php"
 		"New-NssmService"
 		"Optimize-MySqlTable"

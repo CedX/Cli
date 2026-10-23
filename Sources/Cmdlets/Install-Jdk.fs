@@ -41,7 +41,7 @@ type InstallJdk() =
     let archive = this.DownloadArchive(this.Version).GetAwaiter().GetResult()
     let executable = Path.Join(destinationPath, if Platform.IsWindows then @"bin\java.exe" else "bin/java")
 
-    InformationRecord($@"Extracting the archive into directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    InformationRecord($@"Extracting the archive into the directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     match archive.Extension with
     | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath, skip = 1)
     | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)
