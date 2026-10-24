@@ -11,6 +11,18 @@ open System.ServiceProcess
 type RemoveNssmService() =
   inherit PSCmdlet()
 
+  /// Gets application information for the specified command.
+  let getApplicationInfo (command: string): ApplicationInfo option =
+    ScriptBlock.Create("Get-Command $_").Invoke [| command |]
+    |> Seq.map (fun psObject -> psObject.BaseObject :?> ApplicationInfo)
+    |> Seq.tryHead
+
+  /// The absolute path to the NSSM executable.
+  let nssmPath =
+    getApplicationInfo "nssm"
+    |> Option.map (fun applicationInfo -> applicationInfo.Path)
+    |> Option.defaultValue (Nssm.getPath Architecture.Current)
+
   /// The path to the root directory of the web application.
   [<Parameter(Position = 1, ValueFromPipeline = true); ValidateDirectory("The specified directory does not exist.")>]
   member val Path = "" with get, set
@@ -36,5 +48,5 @@ type RemoveNssmService() =
 
     use serviceController = new ServiceController(service.Manifest.Id)
     this |> ServiceProcess.stopService serviceController
-    Nssm.remove service
+    Nssm.run nssmPath "remove" service.Manifest.Id ["confirm"]
     InformationRecord($@"The service ""{service.Manifest.Id}"" has been successfully removed.", nameof this.ProcessRecord) |> this.WriteInformation

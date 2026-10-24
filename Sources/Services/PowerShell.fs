@@ -21,7 +21,7 @@ type PowerShellService(path: string) as this =
       |> Seq.exactlyOne
 
     match Automation.parsePowerShellDataFile manifestPath with
-    | Error _ -> failwith ""
+    | Error error -> raise (FormatException error)
     | Ok manifest ->
       let rootModule = string manifest["RootModule"]
       if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- string manifest["Description"]

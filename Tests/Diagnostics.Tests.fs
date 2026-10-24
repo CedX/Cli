@@ -17,4 +17,4 @@ type DiagnosticsTests() =
 
   [<TestMethod>]
   member _.GetExecutableVersion() =
-    "dotnet" |> Diagnostics.getExecutableVersion |> Should.matchRegex (Regex @"^\d+\.\d+\.\d+$")
+    "dotnet" |> Diagnostics.getExecutableVersion |> Should.matchRegex (Regex @"^\d+(\.\d+){2}$")

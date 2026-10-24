@@ -92,30 +92,14 @@ module Nssm =
     Path.GetFullPath($"nssm.{(string architecture).ToLowerInvariant()}.exe", resources)
 
   /// Runs a NSSM command.
-  let private run (command: string) (service: string) (arguments: string seq) =
-    let startInfo = ProcessStartInfo("nssm", [command; service] |> Seq.append arguments, CreateNoWindow = true, RedirectStandardError = true)
+  let run (nssmPath: string) (command: string) (service: string) (arguments: string seq) =
+    let startInfo = ProcessStartInfo(nssmPath, [command; service] |> Seq.append arguments, CreateNoWindow = true, RedirectStandardError = true)
     match Process.Start startInfo with
     | null -> raise (ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}")
     | startedProcess ->
       let stderr = startedProcess.StandardError.ReadToEnd().Trim()
       startedProcess.WaitForExit()
       if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException stderr)
-
-  /// Installs the specified service.
-  let install (service: Service) (programPath: string) =
-    run "install" service.Manifest.Id [programPath; service.EntryPoint]
-
-  /// Removes the specified service.
-  let remove (service: Service) =
-    run "remove" service.Manifest.Id ["confirm"]
-
-  /// Sets a property of the specified service.
-  let set (service: Service) (property: string) (value: string) =
-    run "set" service.Manifest.Id [property; value]
-
-  /// Sets the user account under which the specified service runs.
-  let setUserAccount (service: Service) (name: string) (password: string) =
-    run "set" service.Manifest.Id ["ObjectName"; name; password]
 
 /// Contains operations for working with service applications.
 module ServiceProcess =

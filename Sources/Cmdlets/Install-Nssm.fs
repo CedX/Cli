@@ -30,6 +30,7 @@ type InstallNssm() =
 
     InformationRecord($@"Copying the binary into the directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     let executable = Path.Join(destinationPath, if Platform.IsWindows then "nssm.exe" else "nssm")
+    Directory.CreateDirectory destinationPath |> ignore<DirectoryInfo>
     File.Copy(Nssm.getPath Architecture.Current, executable, overwrite = true)
 
     if not Platform.IsWindows then File.makeExecutable executable
