@@ -13,7 +13,7 @@ type RemoveNssmService() =
 
   /// Gets application information for the specified command.
   let getApplicationInfo (command: string): ApplicationInfo option =
-    ScriptBlock.Create("Get-Command $_").Invoke [| command |]
+    ScriptBlock.Create("Get-Command $args[0]").Invoke [| command |]
     |> Seq.map (fun psObject -> psObject.BaseObject :?> ApplicationInfo)
     |> Seq.tryHead
 
