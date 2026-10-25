@@ -22,11 +22,11 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="$(AssemblyName).Tests" />
-		<PackageReference Update="FSharp.Core" Version="10.1.402" />
+		<PackageReference Update="FSharp.Core" Version="10.1.403" />
 		<PackageReference Include="Belin.Sql" Version="2026.11.0" />
 		<PackageReference Include="MySqlConnector" Version="2.6.2" />
-		<PackageReference Include="System.Management.Automation" Version="7.6.8" />
-		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.13" />
+		<PackageReference Include="System.Management.Automation" Version="7.6.9" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.14" />
 	</ItemGroup>
 
 	<ItemGroup>
