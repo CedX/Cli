@@ -54,7 +54,7 @@ type Service(path: string) as this =
   do
     this.Path <- path |> Path.GetFullPath |> Path.TrimEndingDirectorySeparator
     let manifestPath =
-      ["Sources/Server", "Sources"]
+      ["Sources/Server"; "Sources"]
       |> Seq.collect (fun folder -> ["config"; "json"; "psd1"; "xml"] |> List.map (fun ext -> Path.Join(this.Path, $"{folder}/appsettings.{ext}")))
       |> Seq.filter File.Exists
       |> Seq.exactlyOne
