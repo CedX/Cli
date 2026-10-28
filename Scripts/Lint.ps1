@@ -1,7 +1,7 @@
 using module PSScriptAnalyzer
-using module ./Cmdlets.psm1
+using module ./Tools.psm1
 
-"Performing the static analysis of source code..."
-Invoke-FSharpLint Cli.slnx -Configuration Configuration/FSharpLint.json
-$PSScriptRoot, "Tests" | Invoke-ScriptAnalyzer -Recurse
-Test-ModuleManifest Cli.psd1 | Out-Null
+Write-Information "Performing the static analysis of source code..."
+dotnet fsharplint lint --lint-config Configuration/FSharpLint.json (Get-Solution)
+Invoke-ScriptAnalyzer $PSScriptRoot -Recurse
+Test-ModuleManifest (Get-Manifest) | Out-Null

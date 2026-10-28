@@ -23,7 +23,8 @@ type Compression =
     let startInfo = ProcessStartInfo("tar", arguments, CreateNoWindow = true, RedirectStandardError = true)
     match Process.Start startInfo with
     | null -> raise (ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}")
-    | startedProcess ->
+    | disposable ->
+      use startedProcess = disposable
       let stderr = startedProcess.StandardError.ReadToEnd().Trim()
       startedProcess.WaitForExit()
       if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException stderr)

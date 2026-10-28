@@ -78,7 +78,8 @@ type BackupMySqlTable() =
     | null ->
       let ex = ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}"
       ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo) |> this.ThrowTerminatingError
-    | startedProcess ->
+    | disposable ->
+      use startedProcess = disposable
       let stderr = startedProcess.StandardError.ReadToEnd().Trim()
       startedProcess.WaitForExit()
       if startedProcess.ExitCode <> 0 then

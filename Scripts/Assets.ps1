@@ -1,4 +1,4 @@
-"Deploying the assets..."
+Write-Information "Deploying the assets..."
 "Binary", "Text" | ForEach-Object {
 	$file = "$($_.ToLowerInvariant())-extensions"
 	$path = "sindresorhus/$file/main/$file.json"

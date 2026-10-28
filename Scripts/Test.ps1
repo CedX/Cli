@@ -1,4 +1,2 @@
-using module ./Cmdlets.psm1
-
-"Running the test suite..."
-Invoke-DotNetTest -Settings .runsettings
+Write-Information "Running the test suite..."
+dotnet test --settings .runsettings

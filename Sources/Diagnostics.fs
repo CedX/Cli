@@ -40,7 +40,8 @@ module Diagnostics =
 
     match Process.Start startInfo with
     | null -> raise (ApplicationFailedException message)
-    | startedProcess ->
+    | disposable ->
+      use startedProcess = disposable
       let stdout = startedProcess.StandardOutput.ReadToEnd().Trim()
       startedProcess.WaitForExit()
       if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException message)
