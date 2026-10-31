@@ -1,32 +1,35 @@
 #!/usr/bin/env pwsh
 param (
-	# The name of the cmdlet to run.
+	# The command to invoke.
 	[Parameter(Mandatory, Position = 1)]
 	[ArgumentCompleter({
 		param ([string] $commandName, [string] $parameterName, [string] $wordToComplete)
 		$module = Import-PowerShellDataFile "$PSScriptRoot/Cli.psd1"
-		($module.CmdletsToExport + $module.FunctionsToExport) -like "$wordToComplete*"
+		$cmdlets = $module.CmdletsToExport + $module.FunctionsToExport
+		$cmdlets -like "$wordToComplete*"
 	})]
 	[ValidateScript({
 		$module = Import-PowerShellDataFile "$PSScriptRoot/Cli.psd1"
-		($module.CmdletsToExport + $module.FunctionsToExport) -contains $_
+		$cmdlets = $module.CmdletsToExport + $module.FunctionsToExport
+		$cmdlets -contains $_
 	}, ErrorMessage = "The specified command does not exist.")]
 	[string] $Command,
 
-	# The parameters of the cmdlet to run.
-	[Parameter(Position = 2, ValueFromRemainingArguments)]
-	[string[]] $Parameters = @()
+	# The command arguments.
+	[Parameter(ValueFromRemainingArguments)]
+	[string[]] $Arguments = @()
 )
 
 $scriptBlock = {
-	param ([string] $scriptRoot, [string] $command, [string[]] $parameters)
+	param ([string] $scriptRoot, [string] $command, [string[]] $arguments)
+
 	$ErrorActionPreference = "Stop"
 	$InformationPreference = "Continue"
 	$PSNativeCommandUseErrorActionPreference = $true
 
 	Import-Module "$scriptRoot/Cli.psd1"
-	$argumentList = $parameters | ForEach-Object { $_ -like "* *" ? "'$_'" : $_ }
+	$argumentList = $arguments | ForEach-Object { $_ -like "* *" ? "'$_'" : $_ }
 	Invoke-Expression "$command $($argumentList -join " ")"
 }
 
-pwsh -Command $scriptBlock -args $PSScriptRoot, $Command, $Parameters
+pwsh -Command $scriptBlock -args $PSScriptRoot, $Command, $Arguments
