@@ -25,7 +25,7 @@ type ConvertToEncoding() =
 
   /// The list of folders to exclude from the processing.
   [<Parameter; ValidateNotNull>]
-  member val Exclude: string array = [| ".git"; "node_modules"; "obj"; "ps_modules"; "vendor" |] with get, set
+  member val Exclude: string array = [| ".git"; "fable_modules"; "node_modules"; "obj"; "ps_modules"; "vendor" |] with get, set
 
   /// A pattern used to filter the list of files to be processed.
   [<Parameter>]
