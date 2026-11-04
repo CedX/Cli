@@ -23,6 +23,10 @@ module internal Should =
   let inline beFalse (condition: bool) =
     Assert.IsFalse condition
 
+  /// Tests whether the specified object is `None`.
+  let inline beNone<'T> (option: 'T option) =
+    option |> Option.isNone |> Assert.IsTrue
+
   /// Tests whether the specified object is `null`.
   let inline beNull (value: objnull) =
     Assert.IsNull value
@@ -38,6 +42,16 @@ module internal Should =
   /// Tests whether two sequences contain equal elements in the same order.
   let inline beSequence (expected: 'T seq) (actual: 'T seq) =
     Assert.AreSequenceEqual(expected, actual)
+
+  /// Tests whether the specified object is not `None`.
+  let inline beSome<'T> (option: 'T option) =
+    option |> Option.isSome |> Assert.IsTrue
+
+  /// Tests whether the specified object is `Some expected` value.
+  let inline beSomeValue<'T> (expected: objnull) (option: 'T option) =
+    match option with
+    | None -> Assert.Fail "The specified option is None."
+    | Some value -> Assert.AreEqual(expected, value)
 
   /// Tests whether the specified condition is true.
   let inline beTrue (condition: bool) =
