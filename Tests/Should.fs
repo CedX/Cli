@@ -44,12 +44,8 @@ module internal Should =
   let inline beSequence (expected: 'T seq) (actual: 'T seq) =
     Assert.AreSequenceEqual(expected, actual)
 
-  /// Tests whether the specified object is not `None`.
-  let inline beSome<'T> (option: 'T option) =
-    option |> Option.isSome |> Assert.IsTrue
-
   /// Tests whether the specified object is `Some expected` value.
-  let inline beSomeValue<'T> (expected: objnull) (option: 'T option) =
+  let beSome<'T> (expected: objnull) (option: 'T option) =
     match option with
     | None -> Assert.Fail "The specified option is None."
     | Some value -> Assert.AreEqual(expected, value)
@@ -78,6 +74,22 @@ module internal Should =
   let inline notMatchRegex (pattern: Regex) (value: string) =
     Assert.DoesNotMatchRegex(pattern, value)
 
+  /// Tests whether the specified action does not throw an exception of the expected type.
+  let notThrow (exceptionType: Type) (action: unit -> unit) =
+    try
+      action()
+      Assert.IsTrue true
+    with ex ->
+      Assert.IsNotInstanceOfType(ex, exceptionType)
+
   /// Tests whether the specified string begins with the given prefix.
   let inline startWith (expectedPrefix: string) (value: string) =
     Assert.StartsWith(expectedPrefix, value)
+
+  /// Tests whether the specified action throws an exception of the expected type.
+  let throw (exceptionType: Type) (action: unit -> unit) =
+    try
+      action()
+      Assert.Fail "The specified action did not throw any exception."
+    with ex ->
+      Assert.IsInstanceOfType(ex, exceptionType)
