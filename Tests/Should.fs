@@ -1,6 +1,7 @@
 namespace Belin.Cli
 
 open Microsoft.VisualStudio.TestTools.UnitTesting
+open System
 open System.Text.RegularExpressions
 
 /// Contains assertions for working with unit tests.
@@ -12,8 +13,8 @@ module internal Should =
     Assert.AreEqual<'T>(expected, actual)
 
   /// Tests whether the specified object is an instance of the expected type.
-  let inline beAssignableTo<'T> (value: objnull) =
-    Assert.IsInstanceOfType<'T> value
+  let inline beAssignableTo<'T> (expectedType: Type) (value: objnull) =
+    Assert.IsInstanceOfType(value, expectedType)
 
   /// Tests whether the specified sequence is empty.
   let inline beEmpty (sequence: 'T seq) =
@@ -32,8 +33,8 @@ module internal Should =
     Assert.IsNull value
 
   /// Tests whether the specified object is exactly an instance of the expected type.
-  let inline beOfType<'T> (value: objnull) =
-    Assert.IsExactInstanceOfType<'T> value
+  let inline beOfType (expectedType: Type) (value: objnull) =
+    Assert.IsExactInstanceOfType(value, expectedType)
 
   /// Tests whether the specified value is contained in the given sequence.
   let inline beOneOf (sequence: 'T seq) (value: objnull) =
