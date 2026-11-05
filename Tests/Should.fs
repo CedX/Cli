@@ -13,7 +13,7 @@ module internal Should =
     Assert.AreEqual<'T>(expected, actual)
 
   /// Tests whether the specified object is an instance of the expected type.
-  let inline beAssignableTo<'T> (expectedType: Type) (value: objnull) =
+  let inline beAssignableTo (expectedType: Type) (value: objnull) =
     Assert.IsInstanceOfType(value, expectedType)
 
   /// Tests whether the specified sequence is empty.
