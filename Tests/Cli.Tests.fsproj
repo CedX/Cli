@@ -27,6 +27,6 @@
 	<ItemGroup>
 		<Compile Include="AssemblyInfo.fs" />
 		<Compile Include="Should.fs" />
-		<Compile Include="*.Tests.fs" />
+		<Compile Include="**/*.Tests.fs" />
 	</ItemGroup>
 </Project>

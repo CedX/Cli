@@ -9,69 +9,59 @@ open System.Text.RegularExpressions
 module internal Should =
 
   /// Tests whether the specified values are equal.
-  let inline be (expected: 'T) (actual: 'T) =
+  let be (expected: 'T) (actual: 'T) =
     Assert.AreEqual<'T>(expected, actual)
 
   /// Tests whether the specified object is an instance of the expected type.
-  let inline beAssignableTo (expectedType: Type) (value: objnull) =
+  let beAssignableTo (expectedType: Type) (value: 'T) =
     Assert.IsInstanceOfType(value, expectedType)
 
   /// Tests whether the specified sequence is empty.
-  let inline beEmpty (sequence: 'T seq) =
+  let beEmpty (sequence: 'T seq) =
     Assert.IsEmpty sequence
 
   /// Tests whether the specified condition is false.
-  let inline beFalse (condition: bool) =
+  let beFalse (condition: bool) =
     Assert.IsFalse condition
 
-  /// Tests whether the specified object is `None`.
-  let inline beNone<'T> (option: 'T option) =
-    option |> Option.isNone |> Assert.IsTrue
-
   /// Tests whether the specified object is `null`.
-  let inline beNull (value: objnull) =
+  let beNull (value: 'T) =
     Assert.IsNull value
 
   /// Tests whether the specified object is exactly an instance of the expected type.
-  let inline beOfType (expectedType: Type) (value: objnull) =
+  let beOfType (expectedType: Type) (value: 'T) =
     Assert.IsExactInstanceOfType(value, expectedType)
 
   /// Tests whether the specified value is contained in the given sequence.
-  let inline beOneOf (sequence: 'T seq) (value: objnull) =
-    Assert.Contains(value, sequence)
+  let beOneOf (sequence: 'T seq) (value: 'T) =
+    Assert.Contains<'T>(value, sequence)
 
   /// Tests whether two sequences contain equal elements in the same order.
-  let inline beSequence (expected: 'T seq) (actual: 'T seq) =
+  let beSequence (expected: 'T seq) (actual: 'T seq) =
     Assert.AreSequenceEqual(expected, actual)
 
-  /// Tests whether the specified object is `Some expected` value.
-  let beSome<'T> (expected: objnull) (option: 'T option) =
-    match option with
-    | None -> Assert.Fail "The specified option is None."
-    | Some value -> Assert.AreEqual(expected, value)
-
   /// Tests whether the specified condition is true.
-  let inline beTrue (condition: bool) =
+  let beTrue (condition: bool) =
     Assert.IsTrue condition
 
   /// Tests whether the specified string ends with the given suffix.
-  let inline endWith (expectedSuffix: string) (value: string) =
+  let endWith (expectedSuffix: string) (value: string) =
     Assert.EndsWith(expectedSuffix, value)
 
   /// Tests whether the specified string matches the given regular expression.
-  let inline matchRegex (pattern: Regex) (value: string) =
+  let matchRegex (pattern: Regex) (value: string) =
     Assert.MatchesRegex(pattern, value)
 
   /// Tests whether the specified values are unequal.
-  let inline notBe (notExpected: 'T) (actual: 'T) =
+  let notBe (notExpected: 'T) (actual: 'T) =
     Assert.AreNotEqual<'T>(notExpected, actual)
 
   /// Tests whether the specified object is not `null`.
-  let inline notBeNull (value: objnull) =
+  let notBeNull (value: 'T) =
     Assert.IsNotNull value
 
   /// Tests whether the specified string does not match the given regular expression.
-  let inline notMatchRegex (pattern: Regex) (value: string) =
+  let notMatchRegex (pattern: Regex) (value: string) =
     Assert.DoesNotMatchRegex(pattern, value)
 
   /// Tests whether the specified action does not throw an exception of the expected type.
@@ -83,7 +73,7 @@ module internal Should =
       Assert.IsNotInstanceOfType(ex, exceptionType)
 
   /// Tests whether the specified string begins with the given prefix.
-  let inline startWith (expectedPrefix: string) (value: string) =
+  let startWith (expectedPrefix: string) (value: string) =
     Assert.StartsWith(expectedPrefix, value)
 
   /// Tests whether the specified action throws an exception of the expected type.
@@ -93,3 +83,97 @@ module internal Should =
       Assert.Fail "The specified action did not throw any exception."
     with ex ->
       Assert.IsInstanceOfType(ex, exceptionType)
+
+/// Contains asynchronous assertions for working with unit tests.
+[<RequireQualifiedAccess>]
+module internal ShouldAsync =
+
+  /// Tests whether the specified values are equal.
+  let be (expected: 'T) (actual: Async<'T>) = task {
+    let! actual = actual
+    return actual |> Should.be expected
+  }
+
+  /// Tests whether the specified object is an instance of the expected type.
+  let beAssignableTo (expectedType: Type) (value: Async<'T>) = task {
+    let! value = value
+    return value |> Should.beAssignableTo expectedType
+  }
+
+  /// Tests whether the specified sequence is empty.
+  let beEmpty (sequence: Async<'T seq>) = task {
+    let! sequence = sequence
+    return Should.beEmpty sequence
+  }
+
+  /// Tests whether the specified condition is false.
+  let beFalse (condition: Async<bool>) = task {
+    let! condition = condition
+    return Should.beFalse condition
+  }
+
+  /// Tests whether the specified object is `null`.
+  let beNull (value: Async<'T>) = task {
+    let! value = value
+    return Should.beNull value
+  }
+
+  /// Tests whether the specified object is exactly an instance of the expected type.
+  let beOfType (expectedType: Type) (value: Async<'T>) = task {
+    let! value = value
+    return value |> Should.beOfType expectedType
+  }
+
+  /// Tests whether the specified value is contained in the given sequence.
+  let beOneOf (sequence: 'T seq) (value: Async<'T>) = task {
+    let! value = value
+    return value |> Should.beOneOf sequence
+  }
+
+  /// Tests whether two sequences contain equal elements in the same order.
+  let beSequence (expected: 'T seq) (actual: Async<'T seq>) = task {
+    let! actual = actual
+    return actual |> Should.beSequence expected
+  }
+
+  /// Tests whether the specified condition is true.
+  let beTrue (condition: Async<bool>) = task {
+    let! condition = condition
+    return Should.beTrue condition
+  }
+
+  /// Tests whether the specified string ends with the given suffix.
+  let endWith (expectedSuffix: string) (value: Async<string>) = task {
+    let! value = value
+    return value |> Should.endWith expectedSuffix
+  }
+
+  /// Tests whether the specified string matches the given regular expression.
+  let matchRegex (pattern: Regex) (value: Async<string>) = task {
+    let! value = value
+    return value |> Should.matchRegex pattern
+  }
+
+  /// Tests whether the specified values are unequal.
+  let notBe (notExpected: 'T) (actual: Async<'T>) = task {
+    let! actual = actual
+    return actual |> Should.notBe notExpected
+  }
+
+  /// Tests whether the specified object is not `null`.
+  let notBeNull (value: Async<'T>) = task {
+    let! value = value
+    return Should.notBeNull value
+  }
+
+  /// Tests whether the specified string does not match the given regular expression.
+  let notMatchRegex (pattern: Regex) (value: Async<string>) = task {
+    let! value = value
+    return value |> Should.notMatchRegex pattern
+  }
+
+  /// Tests whether the specified string begins with the given prefix.
+  let startWith (expectedPrefix: string) (value: Async<string>) = task {
+    let! value = value
+    return value |> Should.startWith expectedPrefix
+  }
