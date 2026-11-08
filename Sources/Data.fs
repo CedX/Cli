@@ -129,10 +129,10 @@ module InformationSchema =
       WHERE TABLE_SCHEMA = @Schema AND TABLE_NAME = @Name
       ORDER BY ORDINAL_POSITION"
 
-    connection.Query<MySqlColumn>(sql, SqlParameterCollection([
-      SqlParameter("Name", table.Name)
-      SqlParameter("Schema", table.Schema)
-    ]))
+    connection.Query<MySqlColumn>(sql, ParameterCollection [
+      "Name", table.Name :> objnull
+      "Schema", table.Schema
+    ])
 
   /// Gets the list of schemas hosted by a database server.
   let getSchemas (connection: IDbConnection): MySqlSchema seq =
@@ -150,10 +150,10 @@ module InformationSchema =
       WHERE TABLE_SCHEMA = @Name AND TABLE_TYPE = @Type
       ORDER BY TABLE_NAME"
 
-    connection.Query<MySqlTable>(sql, SqlParameterCollection([
-      SqlParameter("Name", schema.Name)
-      SqlParameter("Type", MySqlTableType.BaseTable)
-    ]))
+    connection.Query<MySqlTable>(sql, ParameterCollection [
+      "Name", schema.Name :> objnull
+      "Type", MySqlTableType.BaseTable
+    ])
 
 /// Contains operations for working with MySQL databases.
 module MySql =

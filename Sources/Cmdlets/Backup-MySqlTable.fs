@@ -60,14 +60,14 @@ type BackupMySqlTable() =
       | [| userId |] -> Uri.UnescapeDataString userId, ""
       | parts -> Uri.UnescapeDataString parts[0], Uri.UnescapeDataString parts[1]
 
-    let arguments = ResizeArray<string>([
+    let arguments = ResizeArray<string> [
       $"""--default-character-set={query["charset"] |> defaultIfNull "utf8mb4"}"""
       $"--host={connectionUri.Host}"
       $"--password={password}"
       $"--port={if connectionUri.IsDefaultPort then 3306 else connectionUri.Port}"
       $"--result-file={Path.Join(directory.FullName, object)}.sql"
       $"--user={userId}"
-    ])
+    ]
 
     if not (LocalHosts |> Array.contains connectionUri.Host) then arguments.Add "--compress"
     arguments.Add schema.Name

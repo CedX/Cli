@@ -61,14 +61,14 @@ type RestoreMySqlTable() =
       let schema = Path.GetFileNameWithoutExtension file.Name
       InformationRecord($"Importing: {schema}", nameof this.ProcessRecord) |> this.WriteInformation
 
-      let arguments = ResizeArray<string>([
+      let arguments = ResizeArray<string> [
         $"""--default-character-set={query["charset"] |> defaultIfNull "utf8mb4"}"""
         $"--execute=USE {schema}; SOURCE {file.FullName.Replace('\\', '/')};"
         $"--host={connectionUri.Host}"
         $"--password={password}"
         $"--port={if connectionUri.IsDefaultPort then 3306 else connectionUri.Port}"
         $"--user={userId}"
-      ])
+      ]
 
       if not (LocalHosts |> Array.contains connectionUri.Host) then arguments.Add "--compress"
 

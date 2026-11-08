@@ -30,6 +30,7 @@
 	)
 
 	RequiredAssemblies = @(
+		"Binaries/Belin.Sql.FSharp.dll"
 		"Binaries/Microsoft.Extensions.DependencyInjection.Abstractions.dll"
 		"Binaries/Microsoft.Extensions.Logging.Abstractions.dll"
 		"Binaries/MySqlConnector.dll"
@@ -37,7 +38,6 @@
 
 	RequiredModules = @(
 		@{ ModuleName = "Belin.FSharp"; ModuleVersion = "10.1.403" }
-		@{ ModuleName = "Belin.Sql"; ModuleVersion = "2026.11.0" }
 	)
 
 	PrivateData = @{
