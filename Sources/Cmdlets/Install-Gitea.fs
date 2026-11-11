@@ -62,12 +62,12 @@ type InstallGitea() =
   /// Downloads the Gitea release corresponding to the specified version.
   /// Returns the path to the downloaded binary.
   member private this.DownloadBinary(version: Version): Task<FileInfo> = task {
-    let platform, extension =
-      if Platform.IsMacOS then "darwin", ""
-      elif Platform.IsWindows then "windows", ".exe"
-      else "linux", ""
+    let platform, architecture, extension =
+      if Platform.IsMacOS then "darwin", "arm64", ""
+      elif Platform.IsWindows then "windows", "amd64", ".exe"
+      else "linux", "amd64", ""
 
-    let file = $"gitea-{version}-{platform}-amd64{extension}"
+    let file = $"gitea-{version}-{platform}-{architecture}{extension}"
     InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadBinary) |> this.WriteInformation
 
     let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://dl.gitea.com/gitea/{version}/{file}"

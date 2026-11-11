@@ -60,12 +60,12 @@ type InstallNode() =
   /// Downloads the Node.js release corresponding to the specified version.
   /// Returns the path to the downloaded archive.
   member private this.DownloadArchive(version: Version): Task<FileInfo> = task {
-    let platform, extension =
-      if Platform.IsMacOS then "darwin", ".tar.gz"
-      elif Platform.IsWindows then "win", ".zip"
-      else "linux", ".tar.gz"
+    let platform, architecture, extension =
+      if Platform.IsMacOS then "darwin", "arm64", "tar.gz"
+      elif Platform.IsWindows then "win", "x64", "zip"
+      else "linux", "x64", "tar.gz"
 
-    let file = $"node-v{version}-{platform}-x64{extension}"
+    let file = $"node-v{version}-{platform}-{architecture}.{extension}"
     InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
 
     let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://nodejs.org/dist/v{version}/{file}"
