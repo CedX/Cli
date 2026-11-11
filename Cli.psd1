@@ -21,6 +21,7 @@
 		"Install-Node"
 		"Install-Nssm"
 		"Install-Php"
+		"Install-PowerShell"
 		"New-NssmService"
 		"Optimize-MySqlTable"
 		"Remove-NssmService"
