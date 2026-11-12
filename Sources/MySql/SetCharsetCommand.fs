@@ -1,27 +1,21 @@
 namespace Belin.Cli.MySql
 
 open Belin.Cli
-open Belin.Cli.MySql
 open Belin.Sql
+open MySqlConnectionExtensions
 open MySqlConnector
 open System
 open System.CommandLine
-open System.Data
-open System.Management.Automation
 
 /// Alters the character set of MariaDB/MySQL tables.
-type MySqlSetCharsetCommand() =
+type MySqlSetCharsetCommand() as this =
   inherit Command("set-charset", "Alter the character set of MariaDB/MySQL tables.")
+
+  /// The name of the new character set.
+  let collationArgument = Argument<string>("collation", Description = "The name of the new character set.")
 
   /// The connection URI.
   let uriOption = UriOption()
-
-  /// The database connection.
-  let mutable dbConnection: IDbConnection | null = null
-
-  /// The name of the new character set.
-  [<Parameter(Mandatory = true, Position = 2)>]
-  member val Collation = "" with get, set
 
   /// The schema name.
   let schemaOption = SchemaOption()
@@ -29,37 +23,40 @@ type MySqlSetCharsetCommand() =
   /// The table name.
   let tableOption = TableOption()
 
-  interface IDisposable with
-    /// Releases any resources associated with this object.
-    member _.Dispose() = match dbConnection with null -> () | disposable -> disposable.Dispose()
-
-  /// Performs initialization of command execution.
-  override this.BeginProcessing() =
-    let connection = MySqlConnection.OfUri(nonNull this.Uri)
-    dbConnection <- connection
-
-    let normalizedCollation = this.Collation.ToLowerInvariant()
-    if not (connection.GetCollations() |> Seq.exists (fun collation -> collation.ToLowerInvariant() = normalizedCollation)) then
-      let ex = ArgumentOutOfRangeException (nameof this.Collation)
-      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Collation)
+  do
+    this.Arguments.Add collationArgument
+    this.Options.Add uriOption
+    this.Options.Add schemaOption
+    this.Options.Add tableOption
+    this.SetAction this.Invoke
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
-    let connection = nonNull dbConnection
-    let schemas =
-      if Array.isEmpty this.Schema then InformationSchema.getSchemas connection
-      else this.Schema |> Seq.map (fun schema -> MySqlSchema(Name = schema))
+    use connection = MySqlConnection.OfUri (Uri(parseResult.GetRequiredValue uriOption))
 
-    let tables =
-      schemas |> Seq.collect (fun schema ->
-        if Array.isEmpty this.Table then InformationSchema.getTables(connection, schema)
-        else this.Table |> Seq.map (fun table -> MySqlTable(Name = table, Schema = schema.Name)))
+    let collation = parseResult.GetRequiredValue collationArgument
+    let normalizedCollation = collation.ToLowerInvariant()
+    if not (connection.GetCollations() |> Seq.exists (fun collation -> collation.ToLowerInvariant() = normalizedCollation)) then
+      Console.Error.WriteLine "The specified collation is unknown."
+      1
+    else
+      let schemaNames = parseResult.GetRequiredValue schemaOption
+      let schemas =
+        if Array.isEmpty schemaNames then InformationSchema.getSchemas connection
+        else schemaNames |> Seq.map (fun schema -> { MySqlSchema.Default with Name = schema })
 
-    for table in tables do
-      let sql = $"
-        SET foreign_key_checks = 0;
-        ALTER TABLE {table.GetQualifiedName(escape = true)} CONVERT TO CHARACTER SET {Array.head (this.Collation.Split '_')} COLLATE {this.Collation};
-        SET foreign_key_checks = 1;"
+      let tableNames = parseResult.GetRequiredValue tableOption
+      let tables =
+        schemas |> Seq.collect (fun schema ->
+          if Array.isEmpty tableNames then InformationSchema.getTables(connection, schema)
+          else tableNames |> Seq.map (fun table -> { MySqlTable.Default with Name = table; Schema = schema.Name}))
 
-      Console.WriteLine $"Processing: {table.QualifiedName}"
-      connection.Execute sql |> ignore<int>
+      for table in tables do
+        let sql = $"
+          SET foreign_key_checks = 0;
+          ALTER TABLE {table.GetQualifiedName(escape = true)} CONVERT TO CHARACTER SET {Array.head (collation.Split '_')} COLLATE {collation};
+          SET foreign_key_checks = 1;"
+
+        Console.WriteLine $"Processing: {table.QualifiedName}"
+        connection.Execute sql |> ignore<int>
+      0

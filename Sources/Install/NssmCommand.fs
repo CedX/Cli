@@ -6,7 +6,7 @@ open System.CommandLine
 open System.IO
 
 /// Installs the latest NSSM release.
-type InstallNssmCommand() as this =
+type NssmCommand() as this =
   inherit Command("nssm", "Install the latest NSSM release.")
 
   /// The path to the destination directory.

@@ -16,7 +16,7 @@ type PowerShellRelease = {
 }
 
 /// Downloads and installs the latest PowerShell release.
-type InstallPowerShellCommand(httpClient: HttpClient) as this =
+type PowerShellCommand(httpClient: HttpClient) as this =
   inherit Command("powershell", "Install the latest PowerShell release.")
 
   /// The path to the destination directory.

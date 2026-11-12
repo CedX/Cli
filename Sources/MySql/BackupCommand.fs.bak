@@ -1,8 +1,6 @@
 namespace Belin.Cli.MySql
 
 open Belin.Cli
-open Belin.Cli.MySql
-open Belin.Cli.Options
 open MySqlConnector
 open System
 open System.CommandLine

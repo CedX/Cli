@@ -17,7 +17,7 @@ type NodeRelease = {
 }
 
 /// Downloads and installs the latest Node.js release.
-type InstallNodeCommand(httpClient: HttpClient) as this =
+type NodeCommand(httpClient: HttpClient) as this =
   inherit Command("node", "Install the latest Node.js release.")
 
   /// The path to the destination directory.

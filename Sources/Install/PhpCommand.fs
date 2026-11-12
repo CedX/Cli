@@ -19,7 +19,7 @@ type PhpRelease = {
 }
 
 /// Downloads and installs the latest PHP release.
-type InstallPhpCommand(httpClient: HttpClient) as this =
+type PhpCommand(httpClient: HttpClient) as this =
   inherit Command("php", "Install the latest PHP release.")
 
   /// The path to the destination directory.

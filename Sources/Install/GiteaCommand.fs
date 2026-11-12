@@ -18,7 +18,7 @@ type GiteaRelease = {
 }
 
 /// Downloads and installs the latest Gitea release.
-type InstallGiteaCommand(httpClient: HttpClient) as this =
+type GiteaCommand(httpClient: HttpClient) as this =
   inherit Command("gitea", "Install the latest Gitea release.")
 
   /// The path to the destination directory.

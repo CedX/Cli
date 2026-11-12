@@ -8,7 +8,7 @@ open System.Net.Http
 open System.Threading.Tasks
 
 /// Downloads and installs the latest OpenJDK release.
-type InstallJdkCommand(httpClient: HttpClient) as this =
+type JdkCommand(httpClient: HttpClient) as this =
   inherit Command("jdk", "Install the latest OpenJDK release.")
 
   /// The path to the destination directory.

@@ -187,13 +187,13 @@ module InformationSchema =
     ])
 
 /// Contains operations for working with MySQL databases.
-module MySql =
-
-  /// The list of local host addresses.
-  let LocalHosts = [| "::1"; "127.0.0.1"; "localhost" |]
+module MySqlConnectionExtensions =
 
   /// Provides extension members for MySQL connections.
   type MySqlConnection with
+
+    /// The list of local host addresses.
+    static member LocalHosts = [| "::1"; "127.0.0.1"; "localhost" |]
 
     /// Creates a new MySQL connection from the specified connection URI.
     static member OfUri(connectionUri: Uri): MySqlConnection =
@@ -212,7 +212,7 @@ module MySql =
         Password = password,
         ConvertZeroDateTime = true,
         Pooling = false,
-        UseCompression = not (LocalHosts |> Array.contains connectionUri.Host)
+        UseCompression = not (MySqlConnection.LocalHosts |> Array.contains connectionUri.Host)
       )
 
       new MySqlConnection(string builder)
