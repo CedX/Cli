@@ -21,7 +21,7 @@ type PowerShellService(path: string) as this =
       |> Seq.exactlyOne
 
     match Automation.parsePowerShellDataFile manifestPath with
-    | Error error -> raise (FormatException error)
+    | Error error -> failwith error
     | Ok manifest ->
       let rootModule = string manifest["RootModule"]
       if String.IsNullOrWhiteSpace this.Manifest.Description then this.Manifest.Description <- string manifest["Description"]
@@ -31,7 +31,7 @@ type PowerShellService(path: string) as this =
   /// The entry point of this service.
   override val EntryPoint =
     if entryPoint.Length > 0 then $@"-ExecutionPolicy Bypass -File ""{entryPoint}"" -NoLogo -NoProfile -NonInteractive"
-    else raise (EntryPointNotFoundException "Unable to resolve the service entry point.")
+    else failwith "Unable to resolve the service entry point."
 
   /// The name of the environment variable storing the service environment.
   override val EnvironmentVariable = "PODE_ENVIRONMENT"

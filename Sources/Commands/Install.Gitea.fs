@@ -74,6 +74,6 @@ type InstallGitea(httpClient: HttpClient) as this =
   member private _.FetchLatestVersion(): Task<Version> = task {
     Console.WriteLine "Fetching the list of Gitea releases..."
     match! httpClient.GetFromJsonAsync<Dictionary<string, GiteaRelease>> "https://dl.gitea.com/gitea/version.json" with
-    | null -> return raise (HttpRequestException "Unable to fetch the list of Gitea releases.")
+    | null -> return failwith "Unable to fetch the list of Gitea releases."
     | releases -> return releases |> Seq.head |> fun release -> Version.Parse release.Value.Version
   }

@@ -30,7 +30,7 @@ module Diagnostics =
     match reader.ReadUInt16() with
     | 0x014Cus -> Architecture.X86
     | 0x8664us -> Architecture.X64
-    | value -> raise (NotSupportedException (sprintf "Unsupported machine type: 0x%X" value))
+    | value -> failwith (sprintf "Unsupported machine type: 0x%X" value)
 
   /// Runs the specified command with the `--version` argument, and returns its standard output.
   let getExecutableVersion (command: string): string =

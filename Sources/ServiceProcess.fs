@@ -61,7 +61,7 @@ type Service(path: string) =
       |> Seq.exactlyOne
 
     manifest <- ApplicationManifest.Read manifestPath
-    if String.IsNullOrWhiteSpace manifest.Id then raise (EntryPointNotFoundException "Unable to locate the service manifest.")
+    if String.IsNullOrWhiteSpace manifest.Id then failwith "Unable to locate the service manifest."
 
   /// The entry point of this service.
   abstract EntryPoint: string with get

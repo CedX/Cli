@@ -88,7 +88,7 @@ type InstallPhp() =
   member private this.FetchLatestVersion(): Task<Version> = task {
     Console.WriteLine "Fetching the list of PHP releases...")
     match! httpClient.GetFromJsonAsync<Dictionary<string, PhpRelease>> "https://www.php.net/releases/?json" with
-    | null -> return raise (HttpRequestException "Unable to fetch the list of PHP releases.")
+    | null -> return failwith "Unable to fetch the list of PHP releases."
     | releases -> return releases |> Seq.head |> fun release -> Version.Parse release.Value.Version
   }
 

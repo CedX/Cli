@@ -29,4 +29,4 @@ module ServiceFactory =
 
     match service with
     | Some object -> object
-    | None -> raise (NotSupportedException "The service type could not be determined.")
+    | None -> failwith "The service type could not be determined."

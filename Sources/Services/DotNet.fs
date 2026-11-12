@@ -70,7 +70,7 @@ type DotNetService(path: string) as this =
   /// The entry point of this service.
   override val EntryPoint =
     if entryPoint.Length > 0 then entryPoint
-    else raise (EntryPointNotFoundException "Unable to resolve the service entry point.")
+    else failwith "Unable to resolve the service entry point."
 
   /// The name of the environment variable storing the service environment.
   override val EnvironmentVariable = "DOTNET_ENVIRONMENT"

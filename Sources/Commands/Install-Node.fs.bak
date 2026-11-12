@@ -78,6 +78,6 @@ type InstallNode() =
   member private this.FetchLatestVersion(): Task<Version> = task {
     Console.WriteLine "Fetching the list of Node.js releases...")
     match! httpClient.GetFromJsonAsync<NodeRelease list> "https://nodejs.org/dist/index.json" with
-    | null -> return raise (HttpRequestException "Unable to fetch the list of Node.js releases.")
+    | null -> return failwith "Unable to fetch the list of Node.js releases."
     | releases -> return releases |> List.head |> fun release -> Version.Parse release.Version[1..]
   }
