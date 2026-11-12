@@ -9,7 +9,7 @@ open System.Net.Http
 module Container =
 
   /// The application assembly.
-  let Assembly = typeof<Belin.Cli.RootCommand>.Assembly
+  let internal Assembly = typeof<Belin.Cli.RootCommand>.Assembly
 
   /// Registers the application commands.
   let configureCommands (services: IServiceCollection): IServiceCollection =
@@ -25,6 +25,7 @@ module Container =
   /// Registers the application services.
   let configureServices (services: IServiceCollection): IServiceCollection =
     services
+      .AddSingleton(Assembly)
       .AddTransient<HttpClient>(fun _ ->
         let httpClient = new HttpClient()
         httpClient.DefaultRequestHeaders.Add("User-Agent", $".NET/{Environment.Version} | Belin.Cli/{Assembly.GetName().Version}")
