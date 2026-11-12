@@ -7,7 +7,6 @@ open System.Management.Automation
 open System.ServiceProcess
 
 /// Unregisters a Windows service based on [NSSM](https://nssm.cc).
-[<Cmdlet(VerbsCommon.Remove, "NssmService"); OutputType(typeof<Void>)>]
 type RemoveNssmService() =
   inherit Command()
 

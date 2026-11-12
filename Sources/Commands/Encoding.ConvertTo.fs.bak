@@ -7,7 +7,6 @@ open System.Management.Automation
 open System.Text
 
 /// Converts the encoding of input files.
-[<Cmdlet(VerbsData.ConvertTo, "Encoding", DefaultParameterSetName = "Path"); OutputType(typeof<Void>)>]
 type ConvertToEncoding() =
   inherit Command()
 

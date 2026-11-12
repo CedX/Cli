@@ -9,9 +9,8 @@ open System.Data
 open System.Management.Automation
 
 /// Alters the storage engine of MariaDB/MySQL tables.
-[<Cmdlet(VerbsCommon.Set, "MySqlEngine"); OutputType(typeof<Void>); Sealed>]
 type SetMySqlEngine() =
-  inherit Cmdlet()
+  inherit Command()
 
   /// The database connection.
   let mutable dbConnection: IDbConnection | null = null

@@ -5,7 +5,7 @@ open System.CommandLine
 
 /// Downloads and installs a predefined program.
 type InstallCommand(gitea: InstallGitea, jdk: InstallJdk, node: InstallNode, nssm: InstallNssm, php: InstallPhp, powershell: InstallPowerShell) as this =
-  inherit Command("install", "Download and install a predefined program.")
+  inherit Command("install", "Install a predefined program.")
   do
     this.Subcommands.Add gitea
     this.Subcommands.Add jdk

@@ -10,7 +10,6 @@ open System.Text
 open System.Web
 
 /// Restores a set of MariaDB/MySQL tables.
-[<Cmdlet(VerbsData.Restore, "MySqlTable"); OutputType(typeof<Void>)>]
 type RestoreMySqlTable() =
   inherit Command()
 

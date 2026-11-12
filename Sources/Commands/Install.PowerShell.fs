@@ -18,7 +18,7 @@ type PowerShellRelease = {
 
 /// Downloads and installs the latest PowerShell release.
 type InstallPowerShell(httpClient: HttpClient) as this =
-  inherit Command("powershell", "Download and install the latest PowerShell release.")
+  inherit Command("powershell", "Install the latest PowerShell release.")
 
   /// The path to the destination directory.
   let destinationOption =

@@ -21,7 +21,7 @@ type PhpRelease = {
 
 /// Downloads and installs the latest PHP release.
 type InstallPhp(httpClient: HttpClient) as this =
-  inherit Command("php", "Download and install the latest PHP release.")
+  inherit Command("php", "Install the latest PHP release.")
 
   /// The path to the destination directory.
   let destinationOption =

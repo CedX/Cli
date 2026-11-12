@@ -20,7 +20,7 @@ type GiteaRelease = {
 
 /// Downloads and installs the latest Gitea release.
 type InstallGitea(httpClient: HttpClient) as this =
-  inherit Command("gitea", "Download and install the latest Gitea release.")
+  inherit Command("gitea", "Install the latest Gitea release.")
 
   /// The path to the destination directory.
   let destinationOption =

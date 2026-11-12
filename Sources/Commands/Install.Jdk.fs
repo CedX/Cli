@@ -10,7 +10,7 @@ open System.Threading.Tasks
 
 /// Downloads and installs the latest OpenJDK release.
 type InstallJdk(httpClient: HttpClient) as this =
-  inherit Command("jdk", "Download and install the latest OpenJDK release.")
+  inherit Command("jdk", "Install the latest OpenJDK release.")
 
   /// The path to the destination directory.
   let destinationOption =

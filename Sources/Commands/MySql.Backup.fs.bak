@@ -10,9 +10,8 @@ open System.Management.Automation
 open System.Web
 
 /// Backups a set of MariaDB/MySQL tables.
-[<Cmdlet(VerbsData.Backup, "MySqlTable"); OutputType(typeof<Void>); Sealed>]
 type BackupMySqlTable() =
-  inherit Cmdlet()
+  inherit Command()
 
   /// The connection URI.
   [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]
