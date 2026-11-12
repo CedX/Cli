@@ -2,12 +2,24 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Cmdlets",
+			"name": "Program",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "Build",
-			"program": "pwsh",
-			"args": ["-NoExit", "-NoProfile", "-Command", "Import-Module ${workspaceFolder}${/}Cli.psd1"]
+			"program": "${workspaceFolder}${/}Binaries${/}Belin.Cli.dll",
+			"args": ["${input:command}", "${input:subcommand}"]
 		}
-	]
+	],
+	"inputs": [
+    {
+			"description": "The command to invoke.",
+      "id": "command",
+      "type": "promptString"
+    },
+		{
+			"description": "The subcommand to invoke.",
+      "id": "subcommand",
+      "type": "promptString"
+    }
+  ]
 }

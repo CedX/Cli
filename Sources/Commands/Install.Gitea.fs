@@ -19,12 +19,12 @@ type GiteaRelease = {
 }
 
 /// Downloads and installs the latest Gitea release.
-/// Returns the output from the `gitea --version` command.
 type InstallGitea(httpClient: HttpClient) as this =
   inherit Command("gitea", "Download and install the latest Gitea release.")
 
   /// The path to the destination directory.
-  let destinationOption = DestinationDirectory(if OperatingSystem.IsWindows() then @"C:\Gitea" else "/opt/gitea")
+  let destinationOption =
+    DestinationDirectory(if OperatingSystem.IsWindows() then @"C:\Gitea" else "/opt/gitea")
 
   do
     this.Options.Add destinationOption
@@ -47,9 +47,9 @@ type InstallGitea(httpClient: HttpClient) as this =
       Console.WriteLine $@"Moving the binary into the directory ""{destinationPath}""..."
       Directory.CreateDirectory destinationPath |> ignore<DirectoryInfo>
       File.Copy(binary.FullName, executable, overwrite = true)
-      if not (OperatingSystem.IsWindows()) then File.makeExecutable executable
 
       if Environment.IsPrivilegedProcess then ServiceProcess.startService serviceController
+      if not (OperatingSystem.IsWindows()) then File.makeExecutable executable
       executable |> Diagnostics.getExecutableVersion |> Console.WriteLine
       0
 

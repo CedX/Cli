@@ -12,7 +12,7 @@ open System.Web
 /// Restores a set of MariaDB/MySQL tables.
 [<Cmdlet(VerbsData.Restore, "MySqlTable"); OutputType(typeof<Void>)>]
 type RestoreMySqlTable() =
-  inherit PSCmdlet()
+  inherit Command()
 
   /// The connection URI.
   [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]
@@ -34,8 +34,8 @@ type RestoreMySqlTable() =
   [<Parameter>]
   member val Recurse = SwitchParameter false with get, set
 
-  /// Performs execution of this command.
-  override this.ProcessRecord() =
+  /// Invokes this command.
+  member _.Invoke(parseResult: ParseResult): int =
     let connectionUri = nonNull this.Uri
     let query = HttpUtility.ParseQueryString connectionUri.Query
     let userId, password =

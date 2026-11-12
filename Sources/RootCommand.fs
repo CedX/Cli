@@ -4,10 +4,15 @@ open Belin.Cli.Commands
 open System.CommandLine
 
 /// Downloads and installs a predefined program.
-type InstallCommand(gitea: InstallGitea) as this =
+type InstallCommand(gitea: InstallGitea, jdk: InstallJdk, node: InstallNode, nssm: InstallNssm, php: InstallPhp, powershell: InstallPowerShell) as this =
   inherit Command("install", "Download and install a predefined program.")
   do
     this.Subcommands.Add gitea
+    this.Subcommands.Add jdk
+    this.Subcommands.Add node
+    this.Subcommands.Add nssm
+    this.Subcommands.Add php
+    this.Subcommands.Add powershell
 
 /// The root command.
 type RootCommand(install: InstallCommand) as this =

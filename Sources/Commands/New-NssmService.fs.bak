@@ -10,7 +10,7 @@ open System.ServiceProcess
 /// Registers a Windows service based on [NSSM](https://nssm.cc).
 [<Cmdlet(VerbsCommon.New, "NssmService"); OutputType(typeof<Void>)>]
 type NewNssmService() =
-  inherit PSCmdlet()
+  inherit Command()
 
   /// Gets application information for the specified command.
   let getApplicationInfo (command: string): ApplicationInfo option =
@@ -38,7 +38,7 @@ type NewNssmService() =
 
   /// Performs initialization of command execution.
   override this.BeginProcessing() =
-    if not OperatingSystem.IsWindows() then
+    if not (OperatingSystem.IsWindows()) then
       let ex = PlatformNotSupportedException "This command only supports the Windows platform."
       ErrorRecord(ex, "PlatformNotSupported", ErrorCategory.InvalidOperation, Environment.OSVersion)
 
@@ -46,8 +46,8 @@ type NewNssmService() =
       let ex = UnauthorizedAccessException "You must run this command in an elevated prompt."
       ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, Environment.UserName)
 
-  /// Performs execution of this command.
-  override this.ProcessRecord() =
+  /// Invokes this command.
+  member _.Invoke(parseResult: ParseResult): int =
     if String.IsNullOrWhiteSpace this.Path then this.Path <- this.SessionState.Path.CurrentLocation.Path
 
     let service = ServiceFactory.newService (this.GetUnresolvedProviderPathFromPSPath this.Path)

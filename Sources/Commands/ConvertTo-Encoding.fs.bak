@@ -9,7 +9,7 @@ open System.Text
 /// Converts the encoding of input files.
 [<Cmdlet(VerbsData.ConvertTo, "Encoding", DefaultParameterSetName = "Path"); OutputType(typeof<Void>)>]
 type ConvertToEncoding() =
-  inherit PSCmdlet()
+  inherit Command()
 
   /// The path of the files to convert.
   [<Parameter(Mandatory = true, ParameterSetName = "Path", Position = 1, ValueFromPipeline = true); SupportsWildcards>]
@@ -35,8 +35,8 @@ type ConvertToEncoding() =
   [<Parameter>]
   member val Recurse = SwitchParameter false with get, set
 
-  /// Performs execution of this command.
-  override this.ProcessRecord() =
+  /// Invokes this command.
+  member _.Invoke(parseResult: ParseResult): int =
     let sourceEncoding = if this.Encoding.ToLowerInvariant() = "latin1" then Encoding.UTF8 else Encoding.Latin1
     let targetEncoding = Encoding.GetEncoding this.Encoding
 

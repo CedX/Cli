@@ -46,8 +46,8 @@ type SetMySqlCharset() =
       let ex = ArgumentOutOfRangeException (nameof this.Collation)
       ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Collation)
 
-  /// Performs execution of this command.
-  override this.ProcessRecord() =
+  /// Invokes this command.
+  member _.Invoke(parseResult: ParseResult): int =
     let connection = nonNull dbConnection
     let schemas =
       if Array.isEmpty this.Schema then InformationSchema.getSchemas connection

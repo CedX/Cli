@@ -30,8 +30,8 @@ type BackupMySqlTable() =
   [<Parameter>]
   member val Table: string array = [||] with get, set
 
-  /// Performs execution of this command.
-  override this.ProcessRecord() =
+  /// Invokes this command.
+  member _.Invoke(parseResult: ParseResult): int =
     let schemas =
       if not (Array.isEmpty this.Schema) then
         this.Schema |> Seq.map (fun schema -> MySqlSchema(Name = schema))
