@@ -2,23 +2,36 @@
 	<PropertyGroup>
 		<Company>Cedric-Belin.fr</Company>
 		<Copyright>© Cédric Belin</Copyright>
-		<Description>PowerShell cmdlets for common administrative tasks, such as database management, service management and software installation.</Description>
+		<Description>Command line interface for common administrative tasks, such as database management, service management and software installation.</Description>
 		<Product>Belin CLI</Product>
-		<Version>2026.10.0</Version>
+		<Version>2026.11.0</Version>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Authors>CedX</Authors>
+		<IncludeSymbols>true</IncludeSymbols>
+		<PackageIcon>Icon.png</PackageIcon>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>ReadMe.md</PackageReadmeFile>
+		<PackageTags>TODO</PackageTags>
+		<PackAsTool>true</PackAsTool>
+		<RepositoryUrl>https://github.com/CedX/Cli.git</RepositoryUrl>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<ApplicationIcon>../Icon.ico</ApplicationIcon>
 		<AssemblyName>Belin.Cli</AssemblyName>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<HotReloadAutoRestart>true</HotReloadAutoRestart>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<OutDir>../Binaries</OutDir>
-		<PackAsTool>true</PackAsTool>
+		<OutputType>Exe</OutputType>
 		<RootNamespace>Belin.Cli</RootNamespace>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<TargetFramework>net11.0</TargetFramework>
-		<ToolCommandName>belin</ToolCommandName>
 	</PropertyGroup>
 
 	<ItemGroup>

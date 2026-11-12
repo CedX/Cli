@@ -2,9 +2,9 @@
 	<PropertyGroup>
 		<Company>Cedric-Belin.fr</Company>
 		<Copyright>© Cédric Belin</Copyright>
-		<Description>PowerShell cmdlets for common administrative tasks, such as database management, service management and software installation.</Description>
+		<Description>Command line interface for common administrative tasks, such as database management, service management and software installation.</Description>
 		<Product>Belin CLI</Product>
-		<Version>2026.10.0</Version>
+		<Version>2026.11.0</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>

@@ -4,19 +4,19 @@ param (
 	[Parameter(Position = 1)]
 	[ArgumentCompleter({
 		param ([string] $commandName, [string] $parameterName, [string] $wordToComplete)
-		(Get-Item "$PSScriptRoot/Scripts/$wordToComplete*.ps1").BaseName
+		(Get-Item "$PSScriptRoot/Scripts/$wordToComplete*.fsx").BaseName
 	})]
 	[ValidateScript(
-		{ Test-Path "$PSScriptRoot/Scripts/$_.ps1" -PathType Leaf },
+		{ Test-Path "$PSScriptRoot/Scripts/$_.fsx" -PathType Leaf },
 		ErrorMessage = "The specified script does not exist."
 	)]
 	[string] $Script = "Default",
 
-	# Value indicating whether to enable the release configuration.
-	[switch] $Release
+	# The script arguments.
+	[Parameter(ValueFromRemainingArguments)]
+	[string[]] $Arguments = @()
 )
 
 $ErrorActionPreference = "Stop"
-$InformationPreference = "Continue"
 $PSNativeCommandUseErrorActionPreference = $true
-& "$PSScriptRoot/Scripts/$Script.ps1"
+dotnet fsi --checknulls "$PSScriptRoot/Scripts/$Script.fsx" @Arguments

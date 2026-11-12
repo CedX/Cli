@@ -12,6 +12,6 @@ module Http =
 
   /// Creates a new HTTP client.
   let newClient(): HttpClient =
-    let client = new HttpClient(Timeout = TimeSpan.FromMinutes 1L)
-    client.DefaultRequestHeaders.Add("User-Agent", $"PowerShell/{PSVersionInfo.PSVersion} | Belin.Cli/{version.ToString 3}")
-    client
+    let httpClient = new HttpClient(Timeout = TimeSpan.FromMinutes 1L)
+    httpClient.DefaultRequestHeaders.Add("User-Agent", $".NET/{PSVersionInfo.PSVersion} | Belin.Cli/{version.ToString 3}")
+    httpClient
