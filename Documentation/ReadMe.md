@@ -1,5 +1,5 @@
 # Belin CLI
-[PowerShell](https://learn.microsoft.com/en-us/powershell) cmdlets for common administrative tasks,
+[.NET](https://dotnet.microsoft.com) command line interface for common administrative tasks,
 such as database management, service management and software installation.
 
 > [!CAUTION]
