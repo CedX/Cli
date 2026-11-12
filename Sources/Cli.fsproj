@@ -24,9 +24,9 @@
 		<InternalsVisibleTo Include="$(AssemblyName).Tests" />
 		<PackageReference Update="FSharp.Core" Version="11.0.101" />
 		<PackageReference Include="Belin.Sql.FSharp" Version="2026.12.1" />
-		<PackageReference Include="MySqlConnector" Version="2.6.2" />
+		<PackageReference Include="MySqlConnector" Version="3.0.0" />
 		<PackageReference Include="System.Management.Automation" Version="7.7.0" />
-		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.14" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="11.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

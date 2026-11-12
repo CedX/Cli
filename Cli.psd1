@@ -1,6 +1,6 @@
 @{
 	ModuleVersion = "2026.10.0"
-	PowerShellVersion = "7.6"
+	PowerShellVersion = "7.7"
 	RootModule = "Binaries/Belin.Cli.dll"
 
 	Author = "Cédric Belin <cedx@outlook.com>"
