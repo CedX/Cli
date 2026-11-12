@@ -35,7 +35,7 @@ type SetCharsetCommand() as this =
     let collation = parseResult.GetRequiredValue collationArgument
     let normalizedCollation = collation.ToLowerInvariant()
     if not (connection.GetCollations() |> Seq.exists (fun collation -> collation.Name.ToLowerInvariant() = normalizedCollation)) then
-      Console.Error.WriteLine "The specified collation is unknown."
+      eprintfn "The specified collation is unknown."
       1
     else
       let schemaNames = parseResult.GetRequiredValue schemaOption
@@ -55,6 +55,6 @@ type SetCharsetCommand() as this =
           ALTER TABLE {table.GetQualifiedName(escape = true)} CONVERT TO CHARACTER SET {Array.head (collation.Split '_')} COLLATE {collation};
           SET foreign_key_checks = 1;"
 
-        Console.WriteLine $"Processing: {table.QualifiedName}"
+        printn $"Processing: {table.QualifiedName}"
         connection.Execute sql |> ignore<int>
       0

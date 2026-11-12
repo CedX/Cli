@@ -32,14 +32,14 @@ type NodeCommand(httpClient: HttpClient) as this =
   member _.Invoke(parseResult: ParseResult): int =
     let destinationPath = (parseResult.GetRequiredValue destinationOption).FullName
     if not (Security.canWriteTo destinationPath) then
-      Console.Error.WriteLine "You must run this command in an elevated prompt."
+      eprintfn "You must run this command in an elevated prompt."
       1
     else
       let version = this.FetchLatestVersion().GetAwaiter().GetResult()
       let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
       let executable = Path.Join(destinationPath, if OperatingSystem.IsWindows() then "node.exe" else "bin/node")
 
-      Console.WriteLine $@"Extracting the archive into the directory ""{destinationPath}""..."
+      printn $@"Extracting the archive into the directory ""{destinationPath}""..."
       match archive.Extension with
       | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath, skip = 1)
       | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)
@@ -48,7 +48,7 @@ type NodeCommand(httpClient: HttpClient) as this =
         ["CHANGELOG.md"; "LICENSE"; "README.md"] |> List.iter (fun file -> Path.Join(destinationPath, file) |> File.Delete)
         File.makeExecutable executable
 
-      executable |> Diagnostics.getExecutableVersion |> Console.WriteLine
+      executable |> Diagnostics.getExecutableVersion |> printn
       0
 
   /// Downloads the Node.js release corresponding to the specified version.
@@ -60,7 +60,7 @@ type NodeCommand(httpClient: HttpClient) as this =
       else "linux", "x64", "tar.gz"
 
     let file = $"node-v{version}-{platform}-{architecture}.{extension}"
-    Console.WriteLine $@"Downloading the file ""{file}""..."
+    printn $@"Downloading the file ""{file}""..."
 
     let! bytes = httpClient.GetByteArrayAsync $"https://nodejs.org/dist/v{version}/{file}"
     let tempFile = $"{Path.GetTempFileName()}{extension}"
@@ -70,7 +70,7 @@ type NodeCommand(httpClient: HttpClient) as this =
 
   /// Fetches the latest version number of Node.js releases.
   member private _.FetchLatestVersion(): Task<Version> = task {
-    Console.WriteLine "Fetching the list of Node.js releases..."
+    printn "Fetching the list of Node.js releases..."
     let versionPattern = Regex @"^v\d+(\.\d+){2}$"
     match! httpClient.GetFromJsonAsync<NodeRelease list> "https://nodejs.org/dist/index.json" with
     | null -> return failwith "Unable to fetch the list of Node.js releases."

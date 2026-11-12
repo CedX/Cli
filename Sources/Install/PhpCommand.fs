@@ -43,10 +43,10 @@ type PhpCommand(httpClient: HttpClient) as this =
     let registerEventSource = parseResult.GetRequiredValue registerEventSourceOption
 
     if not (OperatingSystem.IsWindows()) then
-      Console.Error.WriteLine "This command only supports the Windows platform."
+      eprintfn "This command only supports the Windows platform."
       1
     elif not (Security.canWriteTo destinationPath) then
-      Console.Error.WriteLine "You must run this command in an elevated prompt."
+      eprintfn "You must run this command in an elevated prompt."
       2
     else
       let version = this.FetchLatestVersion().GetAwaiter().GetResult()
@@ -56,7 +56,7 @@ type PhpCommand(httpClient: HttpClient) as this =
       use serviceController = new ServiceController "W3SVC"
       if Environment.IsPrivilegedProcess then ServiceProcess.stopService serviceController
 
-      Console.WriteLine $@"Extracting the archive into the directory ""{destinationPath}""..."
+      printn $@"Extracting the archive into the directory ""{destinationPath}""..."
       Compression.ExpandZipArchive(archive.FullName, destinationPath)
 
       if Environment.IsPrivilegedProcess then
@@ -64,7 +64,7 @@ type PhpCommand(httpClient: HttpClient) as this =
         if registerEventSource then this.RegisterEventLog(version, destinationPath)
 
       if not (OperatingSystem.IsWindows()) then File.makeExecutable executable
-      executable |> Diagnostics.getExecutableVersion |> Console.WriteLine
+      executable |> Diagnostics.getExecutableVersion |> printn
       0
 
   /// Downloads the PHP release corresponding to the specified version.
@@ -73,7 +73,7 @@ type PhpCommand(httpClient: HttpClient) as this =
     let vs = if version >= Version "8.4.0" then "vs17" else "vs16"
     let architecture = (string Architecture.Current).ToLowerInvariant()
     let file = $"php-{version}-nts-Win32-{vs}-{architecture}.zip"
-    Console.WriteLine $@"Downloading the file ""{file}""..."
+    printn $@"Downloading the file ""{file}""..."
 
     let! bytes = httpClient.GetByteArrayAsync $"https://downloads.php.net/~windows/releases/archives/{file}"
     let tempFile = $"{Path.GetTempFileName()}.zip"
@@ -83,7 +83,7 @@ type PhpCommand(httpClient: HttpClient) as this =
 
   /// Fetches the latest version number of PHP releases.
   member private _.FetchLatestVersion(): Task<Version> = task {
-    Console.WriteLine "Fetching the list of PHP releases..."
+    printn "Fetching the list of PHP releases..."
     match! httpClient.GetFromJsonAsync<Dictionary<string, PhpRelease>> "https://www.php.net/releases/?json" with
     | null -> return failwith "Unable to fetch the list of PHP releases."
     | releases -> return releases |> Seq.head |> fun release -> Version.Parse release.Value.Version
@@ -91,7 +91,7 @@ type PhpCommand(httpClient: HttpClient) as this =
 
   /// Registers the PHP interpreter with the event log.
   member private _.RegisterEventLog(phpVersion: Version, phpDirectory: string) =
-    Console.WriteLine "Registering the PHP interpreter with the event log..."
+    printn "Registering the PHP interpreter with the event log..."
     let key = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Application\PHP-{phpVersion}"
     Registry.SetValue(key, "EventMessageFile", Path.GetFullPath($"php{phpVersion.Major}.dll", phpDirectory), RegistryValueKind.String)
     Registry.SetValue(key, "TypesSupported", 7, RegistryValueKind.DWord)

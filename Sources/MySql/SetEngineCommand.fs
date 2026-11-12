@@ -35,7 +35,7 @@ type SetEngineCommand() as this =
     let engine = parseResult.GetRequiredValue engineArgument
     let normalizedEngine = engine.ToLowerInvariant()
     if not (connection.GetEngines() |> Seq.exists (fun engine -> engine.Name.ToLowerInvariant() = normalizedEngine)) then
-      Console.Error.WriteLine "The specified engine is unknown."
+      eprintfn "The specified engine is unknown."
       1
     else
       let schemaNames = parseResult.GetRequiredValue schemaOption
@@ -55,6 +55,6 @@ type SetEngineCommand() as this =
           ALTER TABLE {table.GetQualifiedName(escape = true)} ENGINE = {engine};
           SET foreign_key_checks = 1;"
 
-        Console.WriteLine $"Processing: {table.QualifiedName}"
+        printn $"Processing: {table.QualifiedName}"
         connection.Execute sql |> ignore<int>
       0

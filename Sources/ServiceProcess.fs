@@ -117,13 +117,13 @@ module ServiceProcess =
   /// Starts the service managed by the specified controller.
   let startService (serviceController: ServiceController) =
     if serviceController.Status = ServiceControllerStatus.Stopped then
-      Console.WriteLine $"Starting the {serviceController.ServiceName} service..."
+      printn $"Starting the {serviceController.ServiceName} service..."
       serviceController.Start()
       serviceController.WaitForStatus ServiceControllerStatus.Running
 
   /// Stops the service managed by the specified controller.
   let stopService (serviceController: ServiceController) =
     if serviceController.Status = ServiceControllerStatus.Running then
-      Console.WriteLine $"Stopping the {serviceController.ServiceName} service..."
+      printn $"Stopping the {serviceController.ServiceName} service..."
       serviceController.Stop()
       serviceController.WaitForStatus ServiceControllerStatus.Stopped

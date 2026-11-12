@@ -40,6 +40,6 @@ type OptimizeCommand() as this =
         else tableNames |> Seq.map (fun table -> { Table.Default with Name = table; Schema = schema.Name}))
 
     for table in tables do
-      Console.WriteLine $"Optimizing: {table.QualifiedName}"
+      printn $"Optimizing: {table.QualifiedName}"
       connection.Execute $"OPTIMIZE TABLE {table.GetQualifiedName(escape = true)}" |> ignore<int>
     0

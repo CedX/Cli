@@ -88,4 +88,4 @@ type NssmNew() =
         Nssm.run nssmPath "set" service.Manifest.Id ["ObjectName"; credential.UserName; password]
 
       let created = if this.Start.IsPresent then "started" else "created"
-      Console.WriteLine $@"The service ""{service.Manifest.Id}"" has been successfully {created}.")
+      printn $@"The service ""{service.Manifest.Id}"" has been successfully {created}.")

@@ -33,19 +33,19 @@ type JdkCommand(httpClient: HttpClient) as this =
     let version = parseResult.GetRequiredValue versionOption
 
     if not (Security.canWriteTo destinationPath) then
-      Console.Error.WriteLine "You must run this command in an elevated prompt."
+      eprintfn "You must run this command in an elevated prompt."
       1
     else
       let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
       let executable = Path.Join(destinationPath, if OperatingSystem.IsWindows() then @"bin\java.exe" else "bin/java")
 
-      Console.WriteLine $@"Extracting the archive into the directory ""{destinationPath}""..."
+      printn $@"Extracting the archive into the directory ""{destinationPath}""..."
       match archive.Extension with
       | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath, skip = 1)
       | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)
 
       if not (OperatingSystem.IsWindows()) then File.makeExecutable executable
-      executable |> Diagnostics.getExecutableVersion |> Console.WriteLine
+      executable |> Diagnostics.getExecutableVersion |> printn
       0
 
   /// Downloads the OpenJDK release corresponding to the specified version.
@@ -57,7 +57,7 @@ type JdkCommand(httpClient: HttpClient) as this =
       else "linux", "x64", "tar.gz"
 
     let file = $"microsoft-jdk-{version}-{platform}-{architecture}.{extension}"
-    Console.WriteLine $@"Downloading the file ""{file}""..."
+    printn $@"Downloading the file ""{file}""..."
 
     let! bytes = httpClient.GetByteArrayAsync $"https://aka.ms/download-jdk/{file}"
     let tempFile = $"{Path.GetTempFileName()}{extension}"

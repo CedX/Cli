@@ -57,7 +57,7 @@ type MySqlRestoreCommand() =
 
     for file in files do
       let schema = Path.GetFileNameWithoutExtension file.Name
-      Console.WriteLine $"Importing: {schema}")
+      printn $"Importing: {schema}"
 
       let arguments = ResizeArray<string> [
         $"""--default-character-set={query["charset"] |> defaultIfNull "utf8mb4"}"""

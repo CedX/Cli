@@ -31,20 +31,20 @@ type PowerShellCommand(httpClient: HttpClient) as this =
   member _.Invoke(parseResult: ParseResult): int =
     let destinationPath = (parseResult.GetRequiredValue destinationOption).FullName
     if not (Security.canWriteTo destinationPath) then
-      Console.Error.WriteLine "You must run this command in an elevated prompt."
+      eprintfn "You must run this command in an elevated prompt."
       1
     else
       let version = this.FetchLatestVersion().GetAwaiter().GetResult()
       let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
       let executable = Path.Join(destinationPath, if OperatingSystem.IsWindows() then "pwsh.exe" else "pwsh")
 
-      Console.WriteLine $@"Extracting the archive into the directory ""{destinationPath}""..."
+      printn $@"Extracting the archive into the directory ""{destinationPath}""..."
       match archive.Extension with
       | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath)
       | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath)
 
       if not (OperatingSystem.IsWindows()) then File.makeExecutable executable
-      executable |> Diagnostics.getExecutableVersion |> Console.WriteLine
+      executable |> Diagnostics.getExecutableVersion |> printn
       0
 
   /// Downloads the PowerShell release corresponding to the specified version.
@@ -56,7 +56,7 @@ type PowerShellCommand(httpClient: HttpClient) as this =
       else "linux", "x64", "tar.gz"
 
     let file = $"powershell-{version}-{platform}-{architecture}.{extension}"
-    Console.WriteLine $@"Downloading the file ""{file}""..."
+    printn $@"Downloading the file ""{file}""..."
 
     let! bytes = httpClient.GetByteArrayAsync $"https://github.com/PowerShell/PowerShell/releases/download/v{version}/{file}"
     let tempFile = $"{Path.GetTempFileName()}{extension}"
@@ -66,7 +66,7 @@ type PowerShellCommand(httpClient: HttpClient) as this =
 
   /// Fetches the latest version number of PowerShell releases.
   member private _.FetchLatestVersion(): Task<Version> = task {
-    Console.WriteLine "Fetching the list of PowerShell releases..."
+    printn "Fetching the list of PowerShell releases..."
     let metadataUrl = "https://raw.githubusercontent.com/PowerShell/PowerShell/master/tools/metadata.json"
     match! httpClient.GetFromJsonAsync<PowerShellRelease> metadataUrl with
     | null -> return failwith "Unable to fetch the list of PowerShell releases."

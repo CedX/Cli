@@ -22,17 +22,17 @@ type NssmCommand() as this =
     let destinationPath = (parseResult.GetRequiredValue destinationOption).FullName
 
     if not (OperatingSystem.IsWindows()) then
-      Console.Error.WriteLine "This command only supports the Windows platform."
+      eprintfn "This command only supports the Windows platform."
       1
     elif not (Security.canWriteTo destinationPath) then
-      Console.Error.WriteLine "You must run this command in an elevated prompt."
+      eprintfn "You must run this command in an elevated prompt."
       2
     else
-      Console.WriteLine $@"Copying the binary into the directory ""{destinationPath}""..."
+      printn $@"Copying the binary into the directory ""{destinationPath}""..."
       let executable = Path.Join(destinationPath, if OperatingSystem.IsWindows() then "nssm.exe" else "nssm")
       Directory.CreateDirectory destinationPath |> ignore<DirectoryInfo>
       File.Copy(Nssm.getPath Architecture.Current, executable, overwrite = true)
 
       if not (OperatingSystem.IsWindows()) then File.makeExecutable executable
-      executable |> Diagnostics.getExecutableVersion |> Console.WriteLine
+      executable |> Diagnostics.getExecutableVersion |> printn
       0

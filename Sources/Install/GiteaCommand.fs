@@ -33,7 +33,7 @@ type GiteaCommand(httpClient: HttpClient) as this =
   member _.Invoke(parseResult: ParseResult): int =
     let destinationPath = (parseResult.GetRequiredValue destinationOption).FullName
     if not (Security.canWriteTo destinationPath) then
-      Console.Error.WriteLine "You must run this command in an elevated prompt."
+      eprintfn "You must run this command in an elevated prompt."
       1
     else
       let version = this.FetchLatestVersion().GetAwaiter().GetResult()
@@ -43,13 +43,13 @@ type GiteaCommand(httpClient: HttpClient) as this =
       use serviceController = new ServiceController "Gitea"
       if Environment.IsPrivilegedProcess then ServiceProcess.stopService serviceController
 
-      Console.WriteLine $@"Moving the binary into the directory ""{destinationPath}""..."
+      printn $@"Moving the binary into the directory ""{destinationPath}""..."
       Directory.CreateDirectory destinationPath |> ignore<DirectoryInfo>
       File.Copy(binary.FullName, executable, overwrite = true)
 
       if Environment.IsPrivilegedProcess then ServiceProcess.startService serviceController
       if not (OperatingSystem.IsWindows()) then File.makeExecutable executable
-      executable |> Diagnostics.getExecutableVersion |> Console.WriteLine
+      executable |> Diagnostics.getExecutableVersion |> printn
       0
 
   /// Downloads the Gitea release corresponding to the specified version.
@@ -61,7 +61,7 @@ type GiteaCommand(httpClient: HttpClient) as this =
       else "linux", "amd64", ""
 
     let file = $"gitea-{version}-{platform}-{architecture}{extension}"
-    Console.WriteLine $@"Downloading the file ""{file}""..."
+    printn $@"Downloading the file ""{file}""..."
 
     let! bytes = httpClient.GetByteArrayAsync $"https://dl.gitea.com/gitea/{version}/{file}"
     let tempFile = $"{Path.GetTempFileName()}{extension}"
@@ -71,7 +71,7 @@ type GiteaCommand(httpClient: HttpClient) as this =
 
   /// Fetches the latest version number of Gitea releases.
   member private _.FetchLatestVersion(): Task<Version> = task {
-    Console.WriteLine "Fetching the list of Gitea releases..."
+    printn "Fetching the list of Gitea releases..."
     match! httpClient.GetFromJsonAsync<Dictionary<string, GiteaRelease>> "https://dl.gitea.com/gitea/version.json" with
     | null -> return failwith "Unable to fetch the list of Gitea releases."
     | releases -> return releases |> Seq.head |> fun release -> Version.Parse release.Value.Version

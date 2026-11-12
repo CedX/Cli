@@ -48,4 +48,4 @@ type NssmRemove() =
     use serviceController = new ServiceController(service.Manifest.Id)
     ServiceProcess.stopService serviceController
     Nssm.run nssmPath "remove" service.Manifest.Id ["confirm"]
-    Console.WriteLine $@"The service ""{service.Manifest.Id}"" has been successfully removed.")
+    printn $@"The service ""{service.Manifest.Id}"" has been successfully removed.")

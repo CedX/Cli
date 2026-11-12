@@ -41,7 +41,7 @@ type MySqlBackupCommand() =
     for schema in schemas do
       let tables = this.Table |> Array.map (fun table -> MySqlTable(Name = table, Schema = schema.Name))
       let object = if tables.Length = 1 then tables[0].QualifiedName else schema.Name
-      Console.WriteLine $"Exporting: {object}")
+      printn $"Exporting: {object}"
       this.ExportSqlDump(directory, schema, tables)
 
   /// Exports the specified schema to a SQL dump into the specified directory.

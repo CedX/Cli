@@ -57,5 +57,5 @@ type ConvertToEncoding() =
       match Text.readAllBytes file with
       | None -> ()
       | Some bytes ->
-        Console.WriteLine $"Converting: {file}")
+        printn $"Converting: {file}"
         File.WriteAllBytes(file.FullName, Encoding.Convert(sourceEncoding, targetEncoding, bytes))
