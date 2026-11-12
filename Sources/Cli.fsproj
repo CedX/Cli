@@ -54,7 +54,6 @@
 
 		<Compile Include="Install/Compression.fs" />
 		<Compile Include="Install/File.fs" />
-
 		<Compile Include="Install/Options.fs" />
 		<Compile Include="Install/*Command.fs" />
 		<Compile Include="Install/*Module.fs" />
@@ -68,6 +67,9 @@
 		<Compile Include="MySql/Options.fs" />
 		<Compile Include="MySql/*Command.fs" />
 		<Compile Include="MySql/*Module.fs" />
+
+		<Compile Include="Nssm/*Command.fs" />
+		<Compile Include="Nssm/*Module.fs" />
 
 		<Compile Include="RootCommand.fs" />
 		<Compile Include="Container.fs" />

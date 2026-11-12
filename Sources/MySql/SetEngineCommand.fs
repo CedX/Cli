@@ -34,7 +34,7 @@ type SetEngineCommand() as this =
 
     let engine = parseResult.GetRequiredValue engineArgument
     let normalizedEngine = engine.ToLowerInvariant()
-    if not (connection.GetEngines() |> Seq.exists (fun engine -> engine.ToLowerInvariant() = normalizedEngine)) then
+    if not (connection.GetEngines() |> Seq.exists (fun engine -> engine.Name.ToLowerInvariant() = normalizedEngine)) then
       Console.Error.WriteLine "The specified engine is unknown."
       1
     else

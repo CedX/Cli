@@ -34,7 +34,7 @@ type SetCharsetCommand() as this =
 
     let collation = parseResult.GetRequiredValue collationArgument
     let normalizedCollation = collation.ToLowerInvariant()
-    if not (connection.GetCollations() |> Seq.exists (fun collation -> collation.ToLowerInvariant() = normalizedCollation)) then
+    if not (connection.GetCollations() |> Seq.exists (fun collation -> collation.Name.ToLowerInvariant() = normalizedCollation)) then
       Console.Error.WriteLine "The specified collation is unknown."
       1
     else

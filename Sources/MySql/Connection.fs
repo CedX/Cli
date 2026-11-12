@@ -37,8 +37,8 @@ module Connection =
       new MySqlConnection(string builder)
 
     /// Gets the list of all collations.
-    member this.GetCollations(): string seq =
-      this.Query<Collation> "SHOW COLLATION" |> Seq.map _.Name
+    member this.GetCollations(): Collation seq =
+      this.Query<Collation> "SHOW COLLATION"
 
     /// Gets the list of columns contained in the specified table.
     member this.GetColumns(table: Table): Column seq =
@@ -54,8 +54,8 @@ module Connection =
       ])
 
     /// Gets the list of all storage engines.
-    member this.GetEngines(): string seq =
-      this.Query<Engine> "SHOW ENGINES" |> Seq.map _.Name
+    member this.GetEngines(): Engine seq =
+      this.Query<Engine> "SHOW ENGINES"
 
     /// Gets the list of schemas hosted by a database server.
     member this.GetSchemas(): Schema seq =
