@@ -46,7 +46,7 @@ type InstallPowerShell() =
     let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
     let executable = Path.Join(destinationPath, if Platform.IsWindows then "pwsh.exe" else "pwsh")
 
-    InformationRecord($@"Moving the archive into the directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    InformationRecord($@"Extracting the archive into the directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
     match archive.Extension with
     | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath)
     | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath)

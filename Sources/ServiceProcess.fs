@@ -50,17 +50,19 @@ type ApplicationManifest() =
 
 /// Represents a service application.
 [<AbstractClass>]
-type Service(path: string) as this =
+type Service(path: string) =
+  let mutable manifest = ApplicationManifest()
+  let mutable path = path |> Path.GetFullPath |> Path.TrimEndingDirectorySeparator
+
   do
-    this.Path <- path |> Path.GetFullPath |> Path.TrimEndingDirectorySeparator
     let manifestPath =
       ["Sources/Server"; "Sources"]
-      |> Seq.collect (fun folder -> ["config"; "json"; "psd1"; "xml"] |> List.map (fun ext -> Path.Join(this.Path, $"{folder}/appsettings.{ext}")))
+      |> Seq.collect (fun folder -> ["config"; "json"; "psd1"; "xml"] |> List.map (fun ext -> Path.Join(path, $"{folder}/appsettings.{ext}")))
       |> Seq.filter File.Exists
       |> Seq.exactlyOne
 
-    this.Manifest <- ApplicationManifest.Read manifestPath
-    if String.IsNullOrWhiteSpace this.Manifest.Id then raise (EntryPointNotFoundException "Unable to locate the service manifest.")
+    manifest <- ApplicationManifest.Read manifestPath
+    if String.IsNullOrWhiteSpace manifest.Id then raise (EntryPointNotFoundException "Unable to locate the service manifest.")
 
   /// The entry point of this service.
   abstract EntryPoint: string with get
@@ -72,10 +74,14 @@ type Service(path: string) as this =
   member val Is32Bit = not Environment.Is64BitOperatingSystem with get, set
 
   /// The service manifest.
-  member val Manifest: ApplicationManifest = ApplicationManifest() with get, set
+  member _.Manifest
+    with get() = manifest
+    and set(value: ApplicationManifest) = manifest <- value
 
   /// The path to the service root directory.
-  member val Path = path with get, set
+  member _.Path
+    with get() = path
+    and set(value: string) = path <- value
 
   /// The program used to run this service.
   abstract Program: string with get
