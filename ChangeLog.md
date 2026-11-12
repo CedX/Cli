@@ -2,8 +2,8 @@
 
 ## Version [2026.11.0](https://github.com/CedX/Cli/compare/v6.1.0...v2026.11.0)
 - Breaking change: ported the source code to [F#](https://learn.microsoft.com/en-us/dotnet/fsharp).
-- Breaking change: removed the `-Config` parameter from the `Install-Node` cmdlet.
-- Added the `Install-Gitea`, `Install-Nssm` and `Install-PowerShell` cmdlets.
+- Breaking change: dropped the [PowerShell](https://learn.microsoft.com/en-us/powershell) module in favor of a [.NET](https://dotnet.microsoft.com) tool.
+- Added the `install gitea`, `install nssm` and `install powershell` commands.
 - Switched to a year-based versioning.
 
 ## Version [6.1.0](https://github.com/CedX/Cli/compare/v6.0.1...v6.1.0)
