@@ -10,8 +10,8 @@ open System.Management.Automation
 open System.Web
 
 /// Backups a set of MariaDB/MySQL tables.
-type BackupMySqlTable() =
-  inherit Command()
+type MySqlBackup() =
+  inherit Command("backup", "Backup a set of MariaDB/MySQL tables.)
 
   /// The connection URI.
   [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]

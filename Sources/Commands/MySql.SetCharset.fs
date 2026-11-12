@@ -8,9 +8,9 @@ open System
 open System.Data
 open System.Management.Automation
 
-/// Optimizes a set of MariaDB/MySQL tables.
-type OptimizeMySqlTable() =
-  inherit Command()
+/// Alters the character set of MariaDB/MySQL tables.
+type MySqlSetCharset() =
+  inherit Command("set-charset", "Alter the character set of MariaDB/MySQL tables.")
 
   /// The database connection.
   let mutable dbConnection: IDbConnection | null = null
@@ -18,6 +18,10 @@ type OptimizeMySqlTable() =
   /// The connection URI.
   [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]
   member val Uri: Uri | null = null with get, set
+
+  /// The name of the new character set.
+  [<Parameter(Mandatory = true, Position = 2)>]
+  member val Collation = "" with get, set
 
   /// The schema name.
   [<Parameter>]
@@ -32,7 +36,14 @@ type OptimizeMySqlTable() =
     member _.Dispose() = match dbConnection with null -> () | disposable -> disposable.Dispose()
 
   /// Performs initialization of command execution.
-  override this.BeginProcessing() = dbConnection <- MySqlConnection.OfUri(nonNull this.Uri)
+  override this.BeginProcessing() =
+    let connection = MySqlConnection.OfUri(nonNull this.Uri)
+    dbConnection <- connection
+
+    let normalizedCollation = this.Collation.ToLowerInvariant()
+    if not (connection.GetCollations() |> Seq.exists (fun collation -> collation.ToLowerInvariant() = normalizedCollation)) then
+      let ex = ArgumentOutOfRangeException (nameof this.Collation)
+      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Collation)
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
@@ -47,5 +58,10 @@ type OptimizeMySqlTable() =
         else this.Table |> Seq.map (fun table -> MySqlTable(Name = table, Schema = schema.Name)))
 
     for table in tables do
-      Console.WriteLine $"Optimizing: {table.QualifiedName}")
-      connection.Execute $"OPTIMIZE TABLE {table.GetQualifiedName(escape = true)}" |> ignore<int>
+      let sql = $"
+        SET foreign_key_checks = 0;
+        ALTER TABLE {table.GetQualifiedName(escape = true)} CONVERT TO CHARACTER SET {Array.head (this.Collation.Split '_')} COLLATE {this.Collation};
+        SET foreign_key_checks = 1;"
+
+      Console.WriteLine $"Processing: {table.QualifiedName}")
+      connection.Execute sql |> ignore<int>

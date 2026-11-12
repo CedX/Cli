@@ -46,6 +46,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Include="Data.fs" />
 		<Compile Include="Diagnostics.fs" />
 		<Compile Include="IO.fs" />
 		<Compile Include="Management.fs" />

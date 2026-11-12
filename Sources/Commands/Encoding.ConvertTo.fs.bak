@@ -8,7 +8,7 @@ open System.Text
 
 /// Converts the encoding of input files.
 type ConvertToEncoding() =
-  inherit Command()
+  inherit Command("TODO", "Convert the encoding of input files.")
 
   /// The path of the files to convert.
   [<Parameter(Mandatory = true, ParameterSetName = "Path", Position = 1, ValueFromPipeline = true); SupportsWildcards>]

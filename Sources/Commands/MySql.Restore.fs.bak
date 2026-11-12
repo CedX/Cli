@@ -10,8 +10,8 @@ open System.Text
 open System.Web
 
 /// Restores a set of MariaDB/MySQL tables.
-type RestoreMySqlTable() =
-  inherit Command()
+type MySqlRestore() =
+  inherit Command("restore", "Restore a set of MariaDB/MySQL tables.")
 
   /// The connection URI.
   [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]

@@ -7,8 +7,8 @@ open System.Management.Automation
 open System.ServiceProcess
 
 /// Unregisters a Windows service based on [NSSM](https://nssm.cc).
-type RemoveNssmService() =
-  inherit Command()
+type NssmRemove() =
+  inherit Command("remove", "Unregister a Windows service based on NSSM.")
 
   /// Gets application information for the specified command.
   let getApplicationInfo (command: string): ApplicationInfo option =

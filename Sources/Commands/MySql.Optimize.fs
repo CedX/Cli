@@ -8,9 +8,9 @@ open System
 open System.Data
 open System.Management.Automation
 
-/// Alters the storage engine of MariaDB/MySQL tables.
-type SetMySqlEngine() =
-  inherit Command()
+/// Optimizes a set of MariaDB/MySQL tables.
+type MySqlOptimize() =
+  inherit Command("optimize", "Optimize a set of MariaDB/MySQL tables.")
 
   /// The database connection.
   let mutable dbConnection: IDbConnection | null = null
@@ -18,10 +18,6 @@ type SetMySqlEngine() =
   /// The connection URI.
   [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]
   member val Uri: Uri | null = null with get, set
-
-  /// The name of the new storage engine.
-  [<Parameter(Mandatory = true, Position = 2)>]
-  member val Engine = "" with get, set
 
   /// The schema name.
   [<Parameter>]
@@ -36,14 +32,7 @@ type SetMySqlEngine() =
     member _.Dispose() = match dbConnection with null -> () | disposable -> disposable.Dispose()
 
   /// Performs initialization of command execution.
-  override this.BeginProcessing() =
-    let connection = MySqlConnection.OfUri(nonNull this.Uri)
-    dbConnection <- connection
-
-    let normalizedEngine = this.Engine.ToLowerInvariant()
-    if not (connection.GetEngines() |> Seq.exists (fun engine -> engine.ToLowerInvariant() = normalizedEngine)) then
-      let ex = ArgumentOutOfRangeException (nameof this.Engine)
-      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Engine)
+  override this.BeginProcessing() = dbConnection <- MySqlConnection.OfUri(nonNull this.Uri)
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
@@ -58,10 +47,5 @@ type SetMySqlEngine() =
         else this.Table |> Seq.map (fun table -> MySqlTable(Name = table, Schema = schema.Name)))
 
     for table in tables do
-      let sql = $"
-        SET foreign_key_checks = 0;
-        ALTER TABLE {table.GetQualifiedName(escape = true)} ENGINE = {this.Engine};
-        SET foreign_key_checks = 1;"
-
-      Console.WriteLine $"Processing: {table.QualifiedName}")
-      connection.Execute sql |> ignore<int>
+      Console.WriteLine $"Optimizing: {table.QualifiedName}")
+      connection.Execute $"OPTIMIZE TABLE {table.GetQualifiedName(escape = true)}" |> ignore<int>

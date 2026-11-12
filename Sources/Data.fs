@@ -37,81 +37,88 @@ module MySqlTableType =
   let View = "VIEW"
 
 /// Represents a collation.
-type MySqlCollation() =
+[<CLIMutable>]
+type MySqlCollation = {
 
   /// The collation name.
   [<Column "Collation">]
-  member val Name = "" with get, set
+  Name: string
+}
 
 /// Provides the metadata of a table column.
-[<Table "COLUMNS">]
-type MySqlColumn() =
+[<Table "COLUMNS"; CLIMutable>]
+type MySqlColumn = {
 
   /// The column name.
   [<Column "COLUMN_NAME">]
-  member val Name = "" with get, set
+  Name: string
 
   /// The column position.
   [<Column "ORDINAL_POSITION">]
-  member val Position = 0 with get, set
+  Position: int
 
   /// The schema containing this column.
   [<Column "TABLE_SCHEMA">]
-  member val Schema = "" with get, set
+  Schema: string
 
   /// The table containing this column.
   [<Column "TABLE_NAME">]
-  member val Table = "" with get, set
+  Table: string
+}
 
 /// Represents a storage engine.
-type MySqlEngine() =
+[<CLIMutable>]
+type MySqlEngine = {
 
   /// The engine name.
   [<Column "Engine">]
-  member val Name = "" with get, set
+  Name: string
+}
 
 /// Provides the metadata of a database schema.
-[<Table "SCHEMATA">]
-type MySqlSchema() =
+[<Table "SCHEMATA"; CLIMutable>]
+type MySqlSchema = {
 
   /// The default character set.
   [<Column "DEFAULT_CHARACTER_SET_NAME">]
-  member val Charset = "" with get, set
+  Charset: string
 
   /// The default collation.
   [<Column "DEFAULT_COLLATION_NAME">]
-  member val Collation = "" with get, set
+  Collation: string
 
   /// The schema name.
   [<Column "SCHEMA_NAME">]
-  member val Name = "" with get, set
+  Name: string
+}
 
 /// Provides the metadata of a database table.
-[<Table "TABLES">]
-type MySqlTable() =
+[<Table "TABLES"; CLIMutable>]
+type MySqlTable =
+  {
+    /// The default collation.
+    [<Column "TABLE_COLLATION">]
+    Collation: string
 
-  /// The default collation.
-  [<Column "TABLE_COLLATION">]
-  member val Collation = "" with get, set
+    /// The storage engine.
+    [<Column "ENGINE">]
+    Engine: string
 
-  /// The storage engine.
-  [<Column "ENGINE">]
-  member val Engine = MySqlTableEngine.None with get, set
+    /// The table name.
+    [<Column "TABLE_NAME">]
+    Name: string
 
-  /// The table name.
-  [<Column "TABLE_NAME">]
-  member val Name = "" with get, set
+    /// The schema containing this table.
+    [<Column "TABLE_SCHEMA">]
+    Schema: string
+
+    /// The table type.
+    [<Column "TABLE_TYPE">]
+    Type: string
+  }
 
   /// The fully qualified name.
   member this.QualifiedName = this.GetQualifiedName(escape = false)
-
-  /// The schema containing this table.
-  [<Column "TABLE_SCHEMA">]
-  member val Schema = "" with get, set
-
-  /// The table type.
-  [<Column "TABLE_TYPE">]
-  member val Type = MySqlTableType.BaseTable with get, set
 
   /// Gets the fully qualified name.
   member this.GetQualifiedName(escape: bool) =

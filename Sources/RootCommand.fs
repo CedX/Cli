@@ -14,6 +14,11 @@ type InstallCommand(gitea: InstallGitea, jdk: InstallJdk, node: InstallNode, nss
     this.Subcommands.Add php
     this.Subcommands.Add powershell
 
+/// Manages the MariaDB/MySQL databases.
+type MySqlCommand(optimize: MySqlOptimize) as this =
+  inherit Command("mysql", "Manage the MariaDB/MySQL databases.")
+  do ()
+
 /// The root command.
 type RootCommand(install: InstallCommand) as this =
   inherit System.CommandLine.RootCommand "Common administrative tasks, such as database management, service management and software installation."

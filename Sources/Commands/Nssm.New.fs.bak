@@ -8,8 +8,8 @@ open System.Management.Automation
 open System.ServiceProcess
 
 /// Registers a Windows service based on [NSSM](https://nssm.cc).
-type NewNssmService() =
-  inherit Command()
+type NssmNew() =
+  inherit Command("new", "Register a Windows service based on NSSM.")
 
   /// Gets application information for the specified command.
   let getApplicationInfo (command: string): ApplicationInfo option =

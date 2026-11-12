@@ -8,9 +8,9 @@ open System
 open System.Data
 open System.Management.Automation
 
-/// Alters the character set of MariaDB/MySQL tables.
-type SetMySqlCharset() =
-  inherit Command()
+/// Alters the storage engine of MariaDB/MySQL tables.
+type MySqlSetEngine() =
+  inherit Command("set-engine", "Alter the storage engine of MariaDB/MySQL tables.")
 
   /// The database connection.
   let mutable dbConnection: IDbConnection | null = null
@@ -19,9 +19,9 @@ type SetMySqlCharset() =
   [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]
   member val Uri: Uri | null = null with get, set
 
-  /// The name of the new character set.
+  /// The name of the new storage engine.
   [<Parameter(Mandatory = true, Position = 2)>]
-  member val Collation = "" with get, set
+  member val Engine = "" with get, set
 
   /// The schema name.
   [<Parameter>]
@@ -40,10 +40,10 @@ type SetMySqlCharset() =
     let connection = MySqlConnection.OfUri(nonNull this.Uri)
     dbConnection <- connection
 
-    let normalizedCollation = this.Collation.ToLowerInvariant()
-    if not (connection.GetCollations() |> Seq.exists (fun collation -> collation.ToLowerInvariant() = normalizedCollation)) then
-      let ex = ArgumentOutOfRangeException (nameof this.Collation)
-      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Collation)
+    let normalizedEngine = this.Engine.ToLowerInvariant()
+    if not (connection.GetEngines() |> Seq.exists (fun engine -> engine.ToLowerInvariant() = normalizedEngine)) then
+      let ex = ArgumentOutOfRangeException (nameof this.Engine)
+      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Engine)
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
@@ -60,7 +60,7 @@ type SetMySqlCharset() =
     for table in tables do
       let sql = $"
         SET foreign_key_checks = 0;
-        ALTER TABLE {table.GetQualifiedName(escape = true)} CONVERT TO CHARACTER SET {Array.head (this.Collation.Split '_')} COLLATE {this.Collation};
+        ALTER TABLE {table.GetQualifiedName(escape = true)} ENGINE = {this.Engine};
         SET foreign_key_checks = 1;"
 
       Console.WriteLine $"Processing: {table.QualifiedName}")
