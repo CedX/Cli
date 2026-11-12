@@ -8,7 +8,7 @@ open System
 open System.CommandLine
 
 /// Alters the character set of MariaDB/MySQL tables.
-type MySqlSetCharsetCommand() as this =
+type SetCharsetCommand() as this =
   inherit Command("set-charset", "Alter the character set of MariaDB/MySQL tables.")
 
   /// The name of the new character set.

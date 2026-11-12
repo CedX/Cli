@@ -46,7 +46,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Include="Data.fs" />
 		<Compile Include="Diagnostics.fs" />
 		<Compile Include="Management.fs" />
 		<Compile Include="Security.fs" />
@@ -58,13 +57,22 @@
 		<Compile Include="Install/*Option.fs" />
 		<Compile Include="Install/*Command.fs" />
 		<Compile Include="Install/*Module.fs" />
+
+		<Compile Include="MySql/Collation.fs" />
+		<Compile Include="MySql/Column.fs" />
+		<Compile Include="MySql/Engine.fs" />
+		<Compile Include="MySql/Table.fs" />
+		<Compile Include="MySql/Schema.fs" />
+		<Compile Include="MySql/Connection.fs" />
+		<Compile Include="MySql/InformationSchema.fs" />
 		<Compile Include="MySql/*Option.fs" />
 		<Compile Include="MySql/*Command.fs" />
 		<Compile Include="MySql/*Module.fs" />
-		<Compile Include="RootCommand.fs" />
 
+		<Compile Include="RootCommand.fs" />
 		<Compile Include="Container.fs" />
 		<Compile Include="Program.fs" />
+
 		<Content Include="../Resources/**" CopyToOutputDirectory="Always" Link="Resources/%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 </Project>

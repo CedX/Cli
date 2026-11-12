@@ -8,7 +8,7 @@ open System
 open System.CommandLine
 
 /// Alters the storage engine of MariaDB/MySQL tables.
-type MySqlSetEngineCommand() as this =
+type SetEngineCommand() as this =
   inherit Command("set-engine", "Alter the storage engine of MariaDB/MySQL tables.")
 
   /// The name of the new storage engine.

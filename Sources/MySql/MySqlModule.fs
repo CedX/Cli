@@ -4,9 +4,9 @@ open System.CommandLine
 
 /// Manages the MariaDB/MySQL databases.
 type MySqlModule(
-  optimize: MySqlOptimizeCommand,
-  setCharset: MySqlSetCharsetCommand,
-  setEngine: MySqlSetEngineCommand) as this =
+  optimize: OptimizeCommand,
+  setCharset: SetCharsetCommand,
+  setEngine: SetEngineCommand) as this =
 
   inherit Command("mysql", "Manage the MariaDB/MySQL databases.")
   do

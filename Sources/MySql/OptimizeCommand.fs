@@ -8,7 +8,7 @@ open System
 open System.CommandLine
 
 /// Optimizes a set of MariaDB/MySQL tables.
-type MySqlOptimizeCommand() as this =
+type OptimizeCommand() as this =
   inherit Command("optimize", "Optimize a set of MariaDB/MySQL tables.")
 
   /// The connection URI.
