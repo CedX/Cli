@@ -1,4 +1,4 @@
-namespace Belin.Cli.Cmdlets
+namespace Belin.Cli.Commands
 
 open Belin.Cli
 open Belin.Cli.MySql
@@ -48,5 +48,5 @@ type OptimizeMySqlTable() =
         else this.Table |> Seq.map (fun table -> MySqlTable(Name = table, Schema = schema.Name)))
 
     for table in tables do
-      InformationRecord($"Optimizing: {table.QualifiedName}", nameof this.ProcessRecord) |> this.WriteInformation
+      Console.WriteLine $"Optimizing: {table.QualifiedName}")
       connection.Execute $"OPTIMIZE TABLE {table.GetQualifiedName(escape = true)}" |> ignore<int>

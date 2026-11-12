@@ -1,4 +1,4 @@
-namespace Belin.Cli.Cmdlets
+namespace Belin.Cli.Commands
 
 open Belin.Cli
 open System
@@ -26,7 +26,7 @@ type InstallNode() =
 
   /// The path to the output directory.
   [<Parameter(Position = 1); ValidatePath("The specified output path is invalid.")>]
-  member val DestinationPath = if Platform.IsWindows then @"C:\Program Files\Node.js" else "/usr/local" with get, set
+  member val DestinationPath = if OperatingSystem.IsWindows() then @"C:\Program Files\Node.js" else "/usr/local" with get, set
 
   interface IDisposable with
     /// Releases any resources associated with this object.
@@ -40,18 +40,18 @@ type InstallNode() =
     let destinationPath = this.GetUnresolvedProviderPathFromPSPath this.DestinationPath
     if not (Security.canWriteTo destinationPath) then
       let ex = UnauthorizedAccessException "You must run this command in an elevated prompt."
-      ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, destinationPath) |> this.ThrowTerminatingError
+      ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, destinationPath)
 
     let version = this.FetchLatestVersion().GetAwaiter().GetResult()
     let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
-    let executable = Path.Join(destinationPath, if Platform.IsWindows then "node.exe" else "bin/node")
+    let executable = Path.Join(destinationPath, if OperatingSystem.IsWindows() then "node.exe" else "bin/node")
 
-    InformationRecord($@"Extracting the archive into the directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    Console.WriteLine $@"Extracting the archive into the directory ""{destinationPath}""...")
     match archive.Extension with
     | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath, skip = 1)
     | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath, skip = 1)
 
-    if not Platform.IsWindows then
+    if not OperatingSystem.IsWindows() then
       File.makeExecutable executable
       ["CHANGELOG.md"; "LICENSE"; "README.md"] |> List.iter (fun file -> Path.Join(destinationPath, file) |> File.Delete)
 
@@ -61,14 +61,14 @@ type InstallNode() =
   /// Returns the path to the downloaded archive.
   member private this.DownloadArchive(version: Version): Task<FileInfo> = task {
     let platform, architecture, extension =
-      if Platform.IsMacOS then "darwin", "arm64", "tar.gz"
-      elif Platform.IsWindows then "win", "x64", "zip"
+      if OperatingSystem.IsMacOS() then "darwin", "arm64", "tar.gz"
+      elif OperatingSystem.IsWindows() then "win", "x64", "zip"
       else "linux", "x64", "tar.gz"
 
     let file = $"node-v{version}-{platform}-{architecture}.{extension}"
-    InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
+    Console.WriteLine $@"Downloading the file ""{file}""...", nameof this.DownloadArchive)
 
-    let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://nodejs.org/dist/v{version}/{file}"
+    let! bytes = httpClient.GetByteArrayAsync $"https://nodejs.org/dist/v{version}/{file}"
     let tempFile = $"{Path.GetTempFileName()}{extension}"
     do! File.WriteAllBytesAsync(tempFile, bytes)
     return FileInfo tempFile
@@ -76,8 +76,8 @@ type InstallNode() =
 
   /// Fetches the latest version number of Node.js releases.
   member private this.FetchLatestVersion(): Task<Version> = task {
-    InformationRecord("Fetching the list of Node.js releases...", nameof this.FetchLatestVersion) |> this.WriteInformation
-    match! (nonNull httpClient).GetFromJsonAsync<NodeRelease list> "https://nodejs.org/dist/index.json" with
+    Console.WriteLine "Fetching the list of Node.js releases...")
+    match! httpClient.GetFromJsonAsync<NodeRelease list> "https://nodejs.org/dist/index.json" with
     | null -> return raise (HttpRequestException "Unable to fetch the list of Node.js releases.")
     | releases -> return releases |> List.head |> fun release -> Version.Parse release.Version[1..]
   }

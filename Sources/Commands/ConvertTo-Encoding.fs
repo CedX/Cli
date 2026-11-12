@@ -1,4 +1,4 @@
-namespace Belin.Cli.Cmdlets
+namespace Belin.Cli.Commands
 
 open Belin.Cli
 open System
@@ -58,5 +58,5 @@ type ConvertToEncoding() =
       match Text.readAllBytes file with
       | None -> ()
       | Some bytes ->
-        InformationRecord($"Converting: {file}", nameof this.ProcessRecord) |> this.WriteInformation
+        Console.WriteLine $"Converting: {file}")
         File.WriteAllBytes(file.FullName, Encoding.Convert(sourceEncoding, targetEncoding, bytes))

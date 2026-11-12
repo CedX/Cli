@@ -1,4 +1,4 @@
-namespace Belin.Cli.Cmdlets
+namespace Belin.Cli.Commands
 
 open Belin.Cli
 open Belin.Cli.Services
@@ -38,13 +38,13 @@ type NewNssmService() =
 
   /// Performs initialization of command execution.
   override this.BeginProcessing() =
-    if not Platform.IsWindows then
+    if not OperatingSystem.IsWindows() then
       let ex = PlatformNotSupportedException "This command only supports the Windows platform."
-      ErrorRecord(ex, "PlatformNotSupported", ErrorCategory.InvalidOperation, Environment.OSVersion) |> this.ThrowTerminatingError
+      ErrorRecord(ex, "PlatformNotSupported", ErrorCategory.InvalidOperation, Environment.OSVersion)
 
     if not Environment.IsPrivilegedProcess then
       let ex = UnauthorizedAccessException "You must run this command in an elevated prompt."
-      ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, Environment.UserName) |> this.ThrowTerminatingError
+      ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, Environment.UserName)
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
@@ -72,7 +72,7 @@ type NewNssmService() =
       ErrorRecord(ex, "FileNotFound", ErrorCategory.ObjectNotFound, service.Program) |> this.WriteError
     | Some applicationInfo ->
       let mutable programPath = applicationInfo.Path
-      if Platform.IsWindows && Environment.Is64BitOperatingSystem && service.Is32Bit then
+      if OperatingSystem.IsWindows() && Environment.Is64BitOperatingSystem && service.Is32Bit then
         programPath <- programPath.Replace(@"\Program Files\", @"\Program Files (x86)\")
 
       Nssm.run nssmPath "install" service.Manifest.Id [programPath; service.EntryPoint]
@@ -80,7 +80,7 @@ type NewNssmService() =
 
       if this.Start.IsPresent then
         use serviceController = new ServiceController(service.Manifest.Id)
-        this |> ServiceProcess.startService serviceController
+        ServiceProcess.startService serviceController
 
       match this.Credential with
       | null -> ()
@@ -89,4 +89,4 @@ type NewNssmService() =
         Nssm.run nssmPath "set" service.Manifest.Id ["ObjectName"; credential.UserName; password]
 
       let created = if this.Start.IsPresent then "started" else "created"
-      InformationRecord($@"The service ""{service.Manifest.Id}"" has been successfully {created}.", nameof this.ProcessRecord) |> this.WriteInformation
+      Console.WriteLine $@"The service ""{service.Manifest.Id}"" has been successfully {created}.")

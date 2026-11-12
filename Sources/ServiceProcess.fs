@@ -4,7 +4,6 @@ open System
 open System.Collections
 open System.Diagnostics
 open System.IO
-open System.Management.Automation
 open System.ServiceProcess
 open System.Text.Json
 open System.Xml
@@ -101,12 +100,12 @@ module Nssm =
   let run (nssmPath: string) (command: string) (service: string) (arguments: string seq) =
     let startInfo = ProcessStartInfo(nssmPath, [command; service] |> Seq.append arguments, CreateNoWindow = true, RedirectStandardError = true)
     match Process.Start startInfo with
-    | null -> raise (ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}")
+    | null -> failwith $"{startInfo.FileName} {startInfo.Arguments}"
     | disposable ->
       use startedProcess = disposable
       let stderr = startedProcess.StandardError.ReadToEnd().Trim()
       startedProcess.WaitForExit()
-      if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException stderr)
+      if startedProcess.ExitCode <> 0 then failwith stderr
 
 /// Contains operations for working with service applications.
 module ServiceProcess =
@@ -116,15 +115,15 @@ module ServiceProcess =
     ServiceController.GetServices() |> Array.exists (fun service -> service.ServiceName = id)
 
   /// Starts the service managed by the specified controller.
-  let startService (serviceController: ServiceController) (cmdlet: Cmdlet) =
+  let startService (serviceController: ServiceController) =
     if serviceController.Status = ServiceControllerStatus.Stopped then
-      InformationRecord($"Starting the {serviceController.ServiceName} service...", "ServiceProcess.startService") |> cmdlet.WriteInformation
+      Console.WriteLine $"Starting the {serviceController.ServiceName} service..."
       serviceController.Start()
       serviceController.WaitForStatus ServiceControllerStatus.Running
 
   /// Stops the service managed by the specified controller.
-  let stopService (serviceController: ServiceController) (cmdlet: Cmdlet) =
+  let stopService (serviceController: ServiceController) =
     if serviceController.Status = ServiceControllerStatus.Running then
-      InformationRecord($"Stopping the {serviceController.ServiceName} service...", "ServiceProcess.stopService") |> cmdlet.WriteInformation
+      Console.WriteLine $"Stopping the {serviceController.ServiceName} service..."
       serviceController.Stop()
       serviceController.WaitForStatus ServiceControllerStatus.Stopped

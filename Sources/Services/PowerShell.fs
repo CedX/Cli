@@ -37,4 +37,4 @@ type PowerShellService(path: string) as this =
   override val EnvironmentVariable = "PODE_ENVIRONMENT"
 
   /// The program used to run this service.
-  override val Program = if Platform.IsWindows then "pwsh.exe" else "pwsh"
+  override val Program = if OperatingSystem.IsWindows() then "pwsh.exe" else "pwsh"

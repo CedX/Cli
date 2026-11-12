@@ -9,7 +9,7 @@ open System.Net.Http
 module Container =
 
   /// The application assembly.
-  let Assembly = typeof<RootCommand>.Assembly
+  let Assembly = typeof<Belin.Cli.RootCommand>.Assembly
 
   /// Registers the application commands.
   let configureCommands (services: IServiceCollection): IServiceCollection =

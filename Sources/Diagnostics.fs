@@ -3,7 +3,6 @@ namespace Belin.Cli
 open System
 open System.Diagnostics
 open System.IO
-open System.Management.Automation
 open System.Runtime.Versioning
 
 /// An enumeration of instruction set architectures.
@@ -39,10 +38,10 @@ module Diagnostics =
     let message = $"{startInfo.FileName} {startInfo.Arguments}"
 
     match Process.Start startInfo with
-    | null -> raise (ApplicationFailedException message)
+    | null -> failwith message
     | disposable ->
       use startedProcess = disposable
       let stdout = startedProcess.StandardOutput.ReadToEnd().Trim()
       startedProcess.WaitForExit()
-      if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException message)
+      if startedProcess.ExitCode <> 0 then failwith message
       stdout

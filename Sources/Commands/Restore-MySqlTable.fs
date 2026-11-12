@@ -1,4 +1,4 @@
-namespace Belin.Cli.Cmdlets
+namespace Belin.Cli.Commands
 
 open Belin.Cli
 open Belin.Cli.MySql
@@ -59,7 +59,7 @@ type RestoreMySqlTable() =
 
     for file in files do
       let schema = Path.GetFileNameWithoutExtension file.Name
-      InformationRecord($"Importing: {schema}", nameof this.ProcessRecord) |> this.WriteInformation
+      Console.WriteLine $"Importing: {schema}")
 
       let arguments = ResizeArray<string> [
         $"""--default-character-set={query["charset"] |> defaultIfNull "utf8mb4"}"""
@@ -76,11 +76,11 @@ type RestoreMySqlTable() =
       match Process.Start startInfo with
       | null ->
         let ex = ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}"
-        ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo) |> this.ThrowTerminatingError
+        ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo)
       | disposable ->
         use startedProcess = disposable
         let stderr = startedProcess.StandardError.ReadToEnd().Trim()
         startedProcess.WaitForExit()
         if startedProcess.ExitCode <> 0 then
           let ex = ApplicationFailedException stderr
-          ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo) |> this.ThrowTerminatingError
+          ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo)

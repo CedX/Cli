@@ -3,7 +3,6 @@ namespace Belin.Cli
 open System.Diagnostics
 open System.IO
 open System.IO.Compression
-open System.Management.Automation
 open System.Runtime.Versioning
 
 /// Contains operations for decompressing archives.
@@ -22,12 +21,12 @@ type Compression =
 
     let startInfo = ProcessStartInfo("tar", arguments, CreateNoWindow = true, RedirectStandardError = true)
     match Process.Start startInfo with
-    | null -> raise (ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}")
+    | null -> failwith $"{startInfo.FileName} {startInfo.Arguments}"
     | disposable ->
       use startedProcess = disposable
       let stderr = startedProcess.StandardError.ReadToEnd().Trim()
       startedProcess.WaitForExit()
-      if startedProcess.ExitCode <> 0 then raise (ApplicationFailedException stderr)
+      if startedProcess.ExitCode <> 0 then failwith stderr
 
   /// Extracts the specified ZIP archive into a given directory.
   static member ExpandZipArchive(path: string, destinationPath: string, ?skip: int) =

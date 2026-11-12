@@ -1,4 +1,4 @@
-namespace Belin.Cli.Cmdlets
+namespace Belin.Cli.Commands
 
 open Belin.Cli
 open Belin.Cli.MySql
@@ -45,7 +45,7 @@ type BackupMySqlTable() =
     for schema in schemas do
       let tables = this.Table |> Array.map (fun table -> MySqlTable(Name = table, Schema = schema.Name))
       let object = if tables.Length = 1 then tables[0].QualifiedName else schema.Name
-      InformationRecord($"Exporting: {object}", nameof this.ProcessRecord) |> this.WriteInformation
+      Console.WriteLine $"Exporting: {object}")
       this.ExportSqlDump(directory, schema, tables)
 
   /// Exports the specified schema to a SQL dump into the specified directory.
@@ -77,11 +77,11 @@ type BackupMySqlTable() =
     match Process.Start startInfo with
     | null ->
       let ex = ApplicationFailedException $"{startInfo.FileName} {startInfo.Arguments}"
-      ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo) |> this.ThrowTerminatingError
+      ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo)
     | disposable ->
       use startedProcess = disposable
       let stderr = startedProcess.StandardError.ReadToEnd().Trim()
       startedProcess.WaitForExit()
       if startedProcess.ExitCode <> 0 then
         let ex = ApplicationFailedException stderr
-        ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo) |> this.ThrowTerminatingError
+        ErrorRecord(ex, "ApplicationFailed", ErrorCategory.OperationStopped, startInfo)

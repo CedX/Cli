@@ -1,4 +1,4 @@
-namespace Belin.Cli.Cmdlets
+namespace Belin.Cli.Commands
 
 open Belin.Cli
 open Belin.Cli.MySql
@@ -44,7 +44,7 @@ type SetMySqlEngine() =
     let normalizedEngine = this.Engine.ToLowerInvariant()
     if not (connection.GetEngines() |> Seq.exists (fun engine -> engine.ToLowerInvariant() = normalizedEngine)) then
       let ex = ArgumentOutOfRangeException (nameof this.Engine)
-      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Engine) |> this.ThrowTerminatingError
+      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Engine)
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
@@ -64,5 +64,5 @@ type SetMySqlEngine() =
         ALTER TABLE {table.GetQualifiedName(escape = true)} ENGINE = {this.Engine};
         SET foreign_key_checks = 1;"
 
-      InformationRecord($"Processing: {table.QualifiedName}", nameof this.ProcessRecord) |> this.WriteInformation
+      Console.WriteLine $"Processing: {table.QualifiedName}")
       connection.Execute sql |> ignore<int>

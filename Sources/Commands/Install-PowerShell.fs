@@ -1,4 +1,4 @@
-namespace Belin.Cli.Cmdlets
+namespace Belin.Cli.Commands
 
 open Belin.Cli
 open System
@@ -26,7 +26,7 @@ type InstallPowerShell() =
 
   /// The path to the output directory.
   [<Parameter(Position = 1); ValidatePath("The specified output path is invalid.")>]
-  member val DestinationPath = if Platform.IsWindows then @"C:\Program Files\PowerShell" else "/opt/powershell" with get, set
+  member val DestinationPath = if OperatingSystem.IsWindows() then @"C:\Program Files\PowerShell" else "/opt/powershell" with get, set
 
   interface IDisposable with
     /// Releases any resources associated with this object.
@@ -40,13 +40,13 @@ type InstallPowerShell() =
     let destinationPath = this.GetUnresolvedProviderPathFromPSPath this.DestinationPath
     if not (Security.canWriteTo destinationPath) then
       let ex = UnauthorizedAccessException "You must run this command in an elevated prompt."
-      ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, destinationPath) |> this.ThrowTerminatingError
+      ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, destinationPath)
 
     let version = this.FetchLatestVersion().GetAwaiter().GetResult()
     let archive = this.DownloadArchive(version).GetAwaiter().GetResult()
-    let executable = Path.Join(destinationPath, if Platform.IsWindows then "pwsh.exe" else "pwsh")
+    let executable = Path.Join(destinationPath, if OperatingSystem.IsWindows() then "pwsh.exe" else "pwsh")
 
-    InformationRecord($@"Extracting the archive into the directory ""{destinationPath}""...", nameof this.ProcessRecord) |> this.WriteInformation
+    Console.WriteLine $@"Extracting the archive into the directory ""{destinationPath}""...")
     match archive.Extension with
     | ".zip" -> Compression.ExpandZipArchive(archive.FullName, destinationPath)
     | _ -> Compression.ExpandTarArchive(archive.FullName, destinationPath)
@@ -57,14 +57,14 @@ type InstallPowerShell() =
   /// Returns the path to the downloaded archive.
   member private this.DownloadArchive(version: Version): Task<FileInfo> = task {
     let platform, architecture, extension =
-      if Platform.IsMacOS then "osx", "arm64", "tar.gz"
-      elif Platform.IsWindows then "win", "x64", "zip"
+      if OperatingSystem.IsMacOS() then "osx", "arm64", "tar.gz"
+      elif OperatingSystem.IsWindows() then "win", "x64", "zip"
       else "linux", "x64", "tar.gz"
 
     let file = $"powershell-{version}-{platform}-{architecture}.{extension}"
-    InformationRecord($@"Downloading the file ""{file}""...", nameof this.DownloadArchive) |> this.WriteInformation
+    Console.WriteLine $@"Downloading the file ""{file}""...", nameof this.DownloadArchive)
 
-    let! bytes = (nonNull httpClient).GetByteArrayAsync $"https://github.com/PowerShell/PowerShell/releases/download/v{version}/{file}"
+    let! bytes = httpClient.GetByteArrayAsync $"https://github.com/PowerShell/PowerShell/releases/download/v{version}/{file}"
     let tempFile = $"{Path.GetTempFileName()}{extension}"
     do! File.WriteAllBytesAsync(tempFile, bytes)
     return FileInfo tempFile
@@ -72,9 +72,9 @@ type InstallPowerShell() =
 
   /// Fetches the latest version number of PowerShell releases.
   member private this.FetchLatestVersion(): Task<Version> = task {
-    InformationRecord("Fetching the list of PowerShell releases...", nameof this.FetchLatestVersion) |> this.WriteInformation
+    Console.WriteLine "Fetching the list of PowerShell releases...")
     let metadataUrl = "https://raw.githubusercontent.com/PowerShell/PowerShell/master/tools/metadata.json"
-    match! (nonNull httpClient).GetFromJsonAsync<PowerShellRelease> metadataUrl with
+    match! httpClient.GetFromJsonAsync<PowerShellRelease> metadataUrl with
     | null -> return raise (HttpRequestException "Unable to fetch the list of PowerShell releases.")
     | release -> return Version.Parse release.StableReleaseTag[1..]
   }

@@ -1,4 +1,4 @@
-namespace Belin.Cli.Cmdlets
+namespace Belin.Cli.Commands
 
 open Belin.Cli
 open Belin.Cli.MySql
@@ -44,7 +44,7 @@ type SetMySqlCharset() =
     let normalizedCollation = this.Collation.ToLowerInvariant()
     if not (connection.GetCollations() |> Seq.exists (fun collation -> collation.ToLowerInvariant() = normalizedCollation)) then
       let ex = ArgumentOutOfRangeException (nameof this.Collation)
-      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Collation) |> this.ThrowTerminatingError
+      ErrorRecord(ex, "ArgumentOutOfRange", ErrorCategory.InvalidArgument, this.Collation)
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
@@ -64,5 +64,5 @@ type SetMySqlCharset() =
         ALTER TABLE {table.GetQualifiedName(escape = true)} CONVERT TO CHARACTER SET {Array.head (this.Collation.Split '_')} COLLATE {this.Collation};
         SET foreign_key_checks = 1;"
 
-      InformationRecord($"Processing: {table.QualifiedName}", nameof this.ProcessRecord) |> this.WriteInformation
+      Console.WriteLine $"Processing: {table.QualifiedName}")
       connection.Execute sql |> ignore<int>

@@ -50,4 +50,4 @@ type NodeService(path: string) as this =
   override val EnvironmentVariable = "NODE_ENV"
 
   /// The program used to run this service.
-  override val Program = if Platform.IsWindows then "node.exe" else "node"
+  override val Program = if OperatingSystem.IsWindows() then "node.exe" else "node"

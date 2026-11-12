@@ -1,4 +1,4 @@
-namespace Belin.Cli.Cmdlets
+namespace Belin.Cli.Commands
 
 open Belin.Cli
 open Belin.Cli.Services
@@ -29,13 +29,13 @@ type RemoveNssmService() =
 
   /// Performs initialization of command execution.
   override this.BeginProcessing() =
-    if not Platform.IsWindows then
+    if not OperatingSystem.IsWindows() then
       let ex = PlatformNotSupportedException "This command only supports the Windows platform."
-      ErrorRecord(ex, "PlatformNotSupported", ErrorCategory.InvalidOperation, Environment.OSVersion) |> this.ThrowTerminatingError
+      ErrorRecord(ex, "PlatformNotSupported", ErrorCategory.InvalidOperation, Environment.OSVersion)
 
     if not Environment.IsPrivilegedProcess then
       let ex = UnauthorizedAccessException "You must run this command in an elevated prompt."
-      ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, Environment.UserName) |> this.ThrowTerminatingError
+      ErrorRecord(ex, "UnauthorizedAccess", ErrorCategory.PermissionDenied, Environment.UserName)
 
   /// Performs execution of this command.
   override this.ProcessRecord() =
@@ -47,6 +47,6 @@ type RemoveNssmService() =
       ErrorRecord(ex, "InvalidOperation", ErrorCategory.ObjectNotFound, service) |> this.WriteError
 
     use serviceController = new ServiceController(service.Manifest.Id)
-    this |> ServiceProcess.stopService serviceController
+    ServiceProcess.stopService serviceController
     Nssm.run nssmPath "remove" service.Manifest.Id ["confirm"]
-    InformationRecord($@"The service ""{service.Manifest.Id}"" has been successfully removed.", nameof this.ProcessRecord) |> this.WriteInformation
+    Console.WriteLine $@"The service ""{service.Manifest.Id}"" has been successfully removed.")

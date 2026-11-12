@@ -76,4 +76,4 @@ type DotNetService(path: string) as this =
   override val EnvironmentVariable = "DOTNET_ENVIRONMENT"
 
   /// The program used to run this service.
-  override val Program = if Platform.IsWindows then "dotnet.exe" else "dotnet"
+  override val Program = if OperatingSystem.IsWindows() then "dotnet.exe" else "dotnet"

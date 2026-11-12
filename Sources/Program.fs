@@ -3,6 +3,12 @@ open Microsoft.Extensions.DependencyInjection
 open System
 open System.Reflection
 
+// Customize the console title bar.
+Console.Title <-
+  Container.Assembly.GetCustomAttribute<AssemblyProductAttribute>()
+  |> nonNull
+  |> _.Product
+
 // Configure the dependency container.
 let services =
   new ServiceCollection()
@@ -10,10 +16,7 @@ let services =
   |> Container.configureCommands
 
 // Start the application.
-Console.Title <-
-  (nonNull (Container.Assembly.GetCustomAttribute<AssemblyProductAttribute>())).Product
-
-let args = Environment.GetCommandLineArgs()
+let args = Environment.GetCommandLineArgs() |> Array.skip 1
 Environment.ExitCode <-
   services
     .BuildServiceProvider()
