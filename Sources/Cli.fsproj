@@ -21,9 +21,8 @@
 
 	<PropertyGroup>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<ApplicationIcon>../Icon.ico</ApplicationIcon>
+		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<AssemblyName>Belin.Cli</AssemblyName>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<HotReloadAutoRestart>true</HotReloadAutoRestart>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
@@ -59,5 +58,7 @@
 		<Compile Include="Services/PowerShell.fs" />
 		<Compile Include="Services/Factory.fs" />
 		<Compile Include="Cmdlets/*.fs" /> -->
+		<Compile Include="Program.fs" />
+		<Content Include="../Resources/**" CopyToOutputDirectory="Always" Link="Resources/%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 </Project>
