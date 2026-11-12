@@ -1,10 +1,10 @@
-namespace Belin.Cli.Options
+namespace Belin.Cli.Install
 
 open System.CommandLine
 open System.IO
 
 /// Provides the path to a destination directory.
-type DestinationDirectory(defaultValue: string) as this =
+type DestinationOption(defaultValue: string) as this =
   inherit Option<DirectoryInfo>("--destination", [| "-d" |], HelpName = "path")
   do
     this.DefaultValueFactory <- fun _ -> DirectoryInfo defaultValue

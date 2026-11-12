@@ -1,10 +1,18 @@
 namespace Belin.Cli
 
-open Belin.Cli.Commands
+open Belin.Cli.Install
+open Belin.Cli.MySql
 open System.CommandLine
 
 /// Downloads and installs a predefined program.
-type InstallCommand(gitea: InstallGitea, jdk: InstallJdk, node: InstallNode, nssm: InstallNssm, php: InstallPhp, powershell: InstallPowerShell) as this =
+type InstallCommand(
+  gitea: InstallGiteaCommand,
+  jdk: InstallJdkCommand,
+  node: InstallNodeCommand,
+  nssm: InstallNssmCommand,
+  php: InstallPhpCommand,
+  powershell: InstallPowerShellCommand) as this =
+
   inherit Command("install", "Install a predefined program.")
   do
     this.Subcommands.Add gitea
@@ -15,12 +23,16 @@ type InstallCommand(gitea: InstallGitea, jdk: InstallJdk, node: InstallNode, nss
     this.Subcommands.Add powershell
 
 /// Manages the MariaDB/MySQL databases.
-type MySqlCommand(optimize: MySqlOptimize) as this =
+type MySqlCommand(
+  optimize: MySqlOptimizeCommand) as this =
+
   inherit Command("mysql", "Manage the MariaDB/MySQL databases.")
-  do ()
+  do
+    this.Subcommands.Add optimize
 
 /// The root command.
-type RootCommand(install: InstallCommand) as this =
+type RootCommand(install: InstallCommand, mysql: MySqlCommand) as this =
   inherit System.CommandLine.RootCommand "Common administrative tasks, such as database management, service management and software installation."
   do
     this.Subcommands.Add install
+    this.Subcommands.Add mysql

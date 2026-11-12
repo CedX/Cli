@@ -1,8 +1,10 @@
-namespace Belin.Cli.Commands
+namespace Belin.Cli.MySql
 
 open Belin.Cli
 open Belin.Cli.MySql
+open Belin.Cli.Options
 open System
+open System.CommandLine
 open System.Diagnostics
 open System.IO
 open System.Management.Automation
@@ -10,12 +12,11 @@ open System.Text
 open System.Web
 
 /// Restores a set of MariaDB/MySQL tables.
-type MySqlRestore() =
+type MySqlRestoreCommand() =
   inherit Command("restore", "Restore a set of MariaDB/MySQL tables.")
 
   /// The connection URI.
-  [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]
-  member val Uri: Uri | null = null with get, set
+  let uriOption = UriOption()
 
   /// Specifies the path to an SQL dump.
   [<Parameter(Mandatory = true, ParameterSetName = "Path", Position = 2, ValueFromPipeline = true); SupportsWildcards>]

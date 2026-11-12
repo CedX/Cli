@@ -1,15 +1,14 @@
-namespace Belin.Cli.Options
+namespace Belin.Cli.MySql
 
 open System
 open System.CommandLine
 open System.CommandLine.Parsing
 
 /// Provides the connection string of a data source.
-type ConnectionUri() as this =
+type UriOption() as this =
   inherit Option<string>("--uri", [| "-u" |], HelpName = "dsn")
   do
     this.Description <- "The connection URI."
-    this.Recursive <- true
     this.Required <- true
     this.Validators.Add this.Validate
 

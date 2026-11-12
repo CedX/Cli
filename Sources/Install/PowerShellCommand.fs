@@ -1,7 +1,6 @@
-namespace Belin.Cli.Commands
+namespace Belin.Cli.Install
 
 open Belin.Cli
-open Belin.Cli.Options
 open System
 open System.CommandLine
 open System.IO
@@ -17,12 +16,12 @@ type PowerShellRelease = {
 }
 
 /// Downloads and installs the latest PowerShell release.
-type InstallPowerShell(httpClient: HttpClient) as this =
+type InstallPowerShellCommand(httpClient: HttpClient) as this =
   inherit Command("powershell", "Install the latest PowerShell release.")
 
   /// The path to the destination directory.
   let destinationOption =
-    DestinationDirectory(if OperatingSystem.IsWindows() then @"C:\Program Files\PowerShell" else "/opt/powershell")
+    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Program Files\PowerShell" else "/opt/powershell")
 
   do
     this.Options.Add destinationOption

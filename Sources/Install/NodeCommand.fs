@@ -1,7 +1,6 @@
-namespace Belin.Cli.Commands
+namespace Belin.Cli.Install
 
 open Belin.Cli
-open Belin.Cli.Options
 open System
 open System.CommandLine
 open System.IO
@@ -18,12 +17,12 @@ type NodeRelease = {
 }
 
 /// Downloads and installs the latest Node.js release.
-type InstallNode(httpClient: HttpClient) as this =
+type InstallNodeCommand(httpClient: HttpClient) as this =
   inherit Command("node", "Install the latest Node.js release.")
 
   /// The path to the destination directory.
   let destinationOption =
-    DestinationDirectory(if OperatingSystem.IsWindows() then @"C:\Program Files\Node.js" else "/usr/local")
+    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Program Files\Node.js" else "/usr/local")
 
   do
     this.Options.Add destinationOption

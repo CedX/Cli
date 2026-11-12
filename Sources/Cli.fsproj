@@ -53,8 +53,10 @@
 		<Compile Include="Security.fs" />
 		<Compile Include="ServiceProcess.fs" />
 		<Compile Include="Text.fs" />
-		<Compile Include="Options/*.fs" />
-		<Compile Include="Commands/*.fs" />
+		<Compile Include="Install/*Option.fs" />
+		<Compile Include="Install/*Command.fs" />
+		<Compile Include="MySql/*Option.fs" />
+		<Compile Include="MySql/*Command.fs" />
 		<Compile Include="RootCommand.fs" />
 		<Compile Include="Container.fs" />
 		<Compile Include="Program.fs" />

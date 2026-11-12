@@ -1,33 +1,32 @@
-namespace Belin.Cli.Commands
+namespace Belin.Cli.MySql
 
 open Belin.Cli
 open Belin.Cli.MySql
+open Belin.Cli.Options
 open MySqlConnector
 open System
+open System.CommandLine
 open System.Diagnostics
 open System.IO
 open System.Management.Automation
 open System.Web
 
 /// Backups a set of MariaDB/MySQL tables.
-type MySqlBackup() =
+type MySqlBackupCommand() =
   inherit Command("backup", "Backup a set of MariaDB/MySQL tables.)
 
   /// The connection URI.
-  [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]
-  member val Uri: Uri | null = null with get, set
+  let uriOption = UriOption()
 
   /// The path to the output directory.
   [<Parameter(Mandatory = true, Position = 2); ValidatePath("The specified output path is invalid.")>]
   member val Path = "" with get, set
 
   /// The schema name.
-  [<Parameter>]
-  member val Schema: string array = [||] with get, set
+  let schemaOption = SchemaOption()
 
   /// The table name.
-  [<Parameter>]
-  member val Table: string array = [||] with get, set
+  let tableOption = TableOption()
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =

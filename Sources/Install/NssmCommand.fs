@@ -1,18 +1,17 @@
-namespace Belin.Cli.Commands
+namespace Belin.Cli.Install
 
 open Belin.Cli
-open Belin.Cli.Options
 open System
 open System.CommandLine
 open System.IO
 
 /// Installs the latest NSSM release.
-type InstallNssm() as this =
+type InstallNssmCommand() as this =
   inherit Command("nssm", "Install the latest NSSM release.")
 
   /// The path to the destination directory.
   let destinationOption =
-    DestinationDirectory(if OperatingSystem.IsWindows() then @"C:\Windows\System32" else "/usr/local/bin")
+    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Windows\System32" else "/usr/local/bin")
 
   do
     this.Options.Add destinationOption

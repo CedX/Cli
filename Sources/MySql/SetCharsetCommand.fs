@@ -1,35 +1,33 @@
-namespace Belin.Cli.Commands
+namespace Belin.Cli.MySql
 
 open Belin.Cli
 open Belin.Cli.MySql
 open Belin.Sql
 open MySqlConnector
 open System
+open System.CommandLine
 open System.Data
 open System.Management.Automation
 
 /// Alters the character set of MariaDB/MySQL tables.
-type MySqlSetCharset() =
+type MySqlSetCharsetCommand() =
   inherit Command("set-charset", "Alter the character set of MariaDB/MySQL tables.")
+
+  /// The connection URI.
+  let uriOption = UriOption()
 
   /// The database connection.
   let mutable dbConnection: IDbConnection | null = null
-
-  /// The connection URI.
-  [<Parameter(Mandatory = true, Position = 1); ValidateConnectionUri>]
-  member val Uri: Uri | null = null with get, set
 
   /// The name of the new character set.
   [<Parameter(Mandatory = true, Position = 2)>]
   member val Collation = "" with get, set
 
   /// The schema name.
-  [<Parameter>]
-  member val Schema: string array = [||] with get, set
+  let schemaOption = SchemaOption()
 
   /// The table name.
-  [<Parameter>]
-  member val Table: string array = [||] with get, set
+  let tableOption = TableOption()
 
   interface IDisposable with
     /// Releases any resources associated with this object.
@@ -63,5 +61,5 @@ type MySqlSetCharset() =
         ALTER TABLE {table.GetQualifiedName(escape = true)} CONVERT TO CHARACTER SET {Array.head (this.Collation.Split '_')} COLLATE {this.Collation};
         SET foreign_key_checks = 1;"
 
-      Console.WriteLine $"Processing: {table.QualifiedName}")
+      Console.WriteLine $"Processing: {table.QualifiedName}"
       connection.Execute sql |> ignore<int>

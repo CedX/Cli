@@ -1,7 +1,6 @@
-namespace Belin.Cli.Commands
+namespace Belin.Cli.Install
 
 open Belin.Cli
-open Belin.Cli.Options
 open System
 open System.CommandLine
 open System.IO
@@ -9,12 +8,12 @@ open System.Net.Http
 open System.Threading.Tasks
 
 /// Downloads and installs the latest OpenJDK release.
-type InstallJdk(httpClient: HttpClient) as this =
+type InstallJdkCommand(httpClient: HttpClient) as this =
   inherit Command("jdk", "Install the latest OpenJDK release.")
 
   /// The path to the destination directory.
   let destinationOption =
-    DestinationDirectory(if OperatingSystem.IsWindows() then @"C:\Program Files\Node.js" else "/usr/local")
+    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Program Files\Node.js" else "/usr/local")
 
   /// The major version of the Java development kit.
   let versionOption =

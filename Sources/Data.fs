@@ -47,24 +47,32 @@ type MySqlCollation = {
 
 /// Provides the metadata of a table column.
 [<Table "COLUMNS"; CLIMutable>]
-type MySqlColumn = {
+type MySqlColumn =
+  {
+    /// The column name.
+    [<Column "COLUMN_NAME">]
+    Name: string
 
-  /// The column name.
-  [<Column "COLUMN_NAME">]
-  Name: string
+    /// The column position.
+    [<Column "ORDINAL_POSITION">]
+    Position: int
 
-  /// The column position.
-  [<Column "ORDINAL_POSITION">]
-  Position: int
+    /// The schema containing this column.
+    [<Column "TABLE_SCHEMA">]
+    Schema: string
 
-  /// The schema containing this column.
-  [<Column "TABLE_SCHEMA">]
-  Schema: string
+    /// The table containing this column.
+    [<Column "TABLE_NAME">]
+    Table: string
+  }
 
-  /// The table containing this column.
-  [<Column "TABLE_NAME">]
-  Table: string
-}
+  /// Creates a new instance with default values.
+  static member Default = {
+    Name = ""
+    Position = 0
+    Schema = ""
+    Table = ""
+  }
 
 /// Represents a storage engine.
 [<CLIMutable>]
@@ -77,20 +85,27 @@ type MySqlEngine = {
 
 /// Provides the metadata of a database schema.
 [<Table "SCHEMATA"; CLIMutable>]
-type MySqlSchema = {
+type MySqlSchema =
+  {
+    /// The default character set.
+    [<Column "DEFAULT_CHARACTER_SET_NAME">]
+    Charset: string
 
-  /// The default character set.
-  [<Column "DEFAULT_CHARACTER_SET_NAME">]
-  Charset: string
+    /// The default collation.
+    [<Column "DEFAULT_COLLATION_NAME">]
+    Collation: string
 
-  /// The default collation.
-  [<Column "DEFAULT_COLLATION_NAME">]
-  Collation: string
+    /// The schema name.
+    [<Column "SCHEMA_NAME">]
+    Name: string
+  }
 
-  /// The schema name.
-  [<Column "SCHEMA_NAME">]
-  Name: string
-}
+  /// Creates a new instance with default values.
+  static member Default = {
+    Charset = ""
+    Collation = ""
+    Name = ""
+  }
 
 /// Provides the metadata of a database table.
 [<Table "TABLES"; CLIMutable>]
@@ -115,6 +130,15 @@ type MySqlTable =
     /// The table type.
     [<Column "TABLE_TYPE">]
     Type: string
+  }
+
+  /// Creates a new instance with default values.
+  static member Default = {
+    Collation = ""
+    Engine = MySqlTableEngine.None
+    Name = ""
+    Schema = ""
+    Type = MySqlTableType.BaseTable
   }
 
   /// The fully qualified name.

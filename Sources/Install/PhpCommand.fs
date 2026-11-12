@@ -1,7 +1,6 @@
-namespace Belin.Cli.Commands
+namespace Belin.Cli.Install
 
 open Belin.Cli
-open Belin.Cli.Options
 open Microsoft.Win32
 open System
 open System.Collections.Generic
@@ -20,12 +19,12 @@ type PhpRelease = {
 }
 
 /// Downloads and installs the latest PHP release.
-type InstallPhp(httpClient: HttpClient) as this =
+type InstallPhpCommand(httpClient: HttpClient) as this =
   inherit Command("php", "Install the latest PHP release.")
 
   /// The path to the destination directory.
   let destinationOption =
-    DestinationDirectory(if OperatingSystem.IsWindows() then @"C:\Program Files\PHP" else "/usr/local")
+    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Program Files\PHP" else "/usr/local")
 
   /// Value indicating whether to register the PHP interpreter with the event log.
   let registerEventSourceOption =

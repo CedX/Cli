@@ -1,7 +1,6 @@
-namespace Belin.Cli.Commands
+namespace Belin.Cli.Install
 
 open Belin.Cli
-open Belin.Cli.Options
 open System
 open System.Collections.Generic
 open System.CommandLine
@@ -19,12 +18,12 @@ type GiteaRelease = {
 }
 
 /// Downloads and installs the latest Gitea release.
-type InstallGitea(httpClient: HttpClient) as this =
+type InstallGiteaCommand(httpClient: HttpClient) as this =
   inherit Command("gitea", "Install the latest Gitea release.")
 
   /// The path to the destination directory.
   let destinationOption =
-    DestinationDirectory(if OperatingSystem.IsWindows() then @"C:\Gitea" else "/opt/gitea")
+    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Gitea" else "/opt/gitea")
 
   do
     this.Options.Add destinationOption
