@@ -1,8 +1,6 @@
 namespace Belin.Cli.MySql
 
-open Belin.Cli
 open Belin.Sql
-open MySqlConnectionExtensions
 open MySqlConnector
 open System
 open System.CommandLine
@@ -32,14 +30,14 @@ type OptimizeCommand() as this =
 
     let schemaNames = parseResult.GetRequiredValue schemaOption
     let schemas =
-      if Array.isEmpty schemaNames then InformationSchema.getSchemas connection
-      else schemaNames |> Seq.map (fun schema -> { MySqlSchema.Default with Name = schema })
+      if Array.isEmpty schemaNames then connection.GetSchemas()
+      else schemaNames |> Seq.map (fun schema -> { Schema.Default with Name = schema })
 
     let tableNames = parseResult.GetRequiredValue tableOption
     let tables =
       schemas |> Seq.collect (fun schema ->
-        if Array.isEmpty tableNames then InformationSchema.getTables(connection, schema)
-        else tableNames |> Seq.map (fun table -> { MySqlTable.Default with Name = table; Schema = schema.Name}))
+        if Array.isEmpty tableNames then connection.GetTables schema
+        else tableNames |> Seq.map (fun table -> { Table.Default with Name = table; Schema = schema.Name}))
 
     for table in tables do
       Console.WriteLine $"Optimizing: {table.QualifiedName}"

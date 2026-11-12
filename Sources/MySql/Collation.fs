@@ -4,7 +4,7 @@ open System.ComponentModel.DataAnnotations.Schema
 
 /// Represents a collation.
 [<CLIMutable>]
-type MySqlCollation = {
+type Collation = {
 
   /// The collation name.
   [<Column "Collation">]

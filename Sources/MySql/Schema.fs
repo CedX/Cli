@@ -4,7 +4,7 @@ open System.ComponentModel.DataAnnotations.Schema
 
 /// Provides the metadata of a database schema.
 [<Table "SCHEMATA"; CLIMutable>]
-type MySqlSchema =
+type Schema =
   {
     /// The default character set.
     [<Column "DEFAULT_CHARACTER_SET_NAME">]

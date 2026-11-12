@@ -4,7 +4,7 @@ open System.ComponentModel.DataAnnotations.Schema
 
 /// Provides the metadata of a table column.
 [<Table "COLUMNS"; CLIMutable>]
-type MySqlColumn =
+type Column =
   {
     /// The column name.
     [<Column "COLUMN_NAME">]

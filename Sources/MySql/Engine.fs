@@ -4,7 +4,7 @@ open System.ComponentModel.DataAnnotations.Schema
 
 /// Represents a storage engine.
 [<CLIMutable>]
-type MySqlEngine = {
+type Engine = {
 
   /// The engine name.
   [<Column "Engine">]

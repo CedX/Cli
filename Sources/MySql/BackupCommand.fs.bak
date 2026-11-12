@@ -33,7 +33,7 @@ type MySqlBackupCommand() =
         this.Schema |> Seq.map (fun schema -> MySqlSchema(Name = schema))
       else
         use connection = MySqlConnection.OfUri(nonNull this.Uri)
-        let objects = InformationSchema.getSchemas connection
+        let objects = connection.GetSchemas()
         connection.Close()
         objects
 

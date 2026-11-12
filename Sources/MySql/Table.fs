@@ -3,7 +3,7 @@ namespace Belin.Cli.MySql
 open System.ComponentModel.DataAnnotations.Schema
 
 /// Defines the storage engine of a table.
-module MySqlTableEngine =
+module TableEngine =
 
   /// The table does not use any storage engine.
   [<Literal>]
@@ -22,7 +22,7 @@ module MySqlTableEngine =
   let MyISAM = "MyISAM"
 
 /// Defines the type of a table.
-module MySqlTableType =
+module TableType =
 
   /// A base table.
   [<Literal>]
@@ -34,7 +34,7 @@ module MySqlTableType =
 
 /// Provides the metadata of a database table.
 [<Table "TABLES"; CLIMutable>]
-type MySqlTable =
+type Table =
   {
     /// The default collation.
     [<Column "TABLE_COLLATION">]
@@ -60,10 +60,10 @@ type MySqlTable =
   /// Creates a new instance with default values.
   static member Default = {
     Collation = ""
-    Engine = MySqlTableEngine.None
+    Engine = TableEngine.None
     Name = ""
     Schema = ""
-    Type = MySqlTableType.BaseTable
+    Type = TableType.BaseTable
   }
 
   /// The fully qualified name.

@@ -4,14 +4,15 @@ open Belin.Sql
 open MySqlConnector
 open System
 
-/// Contains operations for working with MySQL databases.
-module MySqlConnectionExtensions =
+/// Contains operations for working with database connections.
+[<AutoOpen>]
+module Connection =
+
+  /// The list of local host addresses.
+  let LocalHosts = [| "::1"; "127.0.0.1"; "localhost" |]
 
   /// Provides extension members for MySQL connections.
   type MySqlConnection with
-
-    /// The list of local host addresses.
-    static member LocalHosts = [| "::1"; "127.0.0.1"; "localhost" |]
 
     /// Creates a new MySQL connection from the specified connection URI.
     static member OfUri(connectionUri: Uri): MySqlConnection =
@@ -30,15 +31,49 @@ module MySqlConnectionExtensions =
         Password = password,
         ConvertZeroDateTime = true,
         Pooling = false,
-        UseCompression = not (MySqlConnection.LocalHosts |> Array.contains connectionUri.Host)
+        UseCompression = not (LocalHosts |> Array.contains connectionUri.Host)
       )
 
       new MySqlConnection(string builder)
 
     /// Gets the list of all collations.
     member this.GetCollations(): string seq =
-      this.Query<MySqlCollation> "SHOW COLLATION" |> Seq.map _.Name
+      this.Query<Collation> "SHOW COLLATION" |> Seq.map _.Name
+
+    /// Gets the list of columns contained in the specified table.
+    member this.GetColumns(table: Table): Column seq =
+      let sql = "
+        SELECT *
+        FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = @Schema AND TABLE_NAME = @Name
+        ORDER BY ORDINAL_POSITION"
+
+      this.Query<Column>(sql, ParameterCollection [
+        "Name", table.Name :> objnull
+        "Schema", table.Schema
+      ])
 
     /// Gets the list of all storage engines.
     member this.GetEngines(): string seq =
-      this.Query<MySqlEngine> "SHOW ENGINES" |> Seq.map _.Name
+      this.Query<Engine> "SHOW ENGINES" |> Seq.map _.Name
+
+    /// Gets the list of schemas hosted by a database server.
+    member this.GetSchemas(): Schema seq =
+      this.Query<Schema> "
+        SELECT *
+        FROM information_schema.SCHEMATA
+        WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys')
+        ORDER BY SCHEMA_NAME"
+
+    /// Gets the list of tables contained in the specified schema.
+    member this.GetTables(schema: Schema): Table seq =
+      let sql = "
+        SELECT *
+        FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = @Name AND TABLE_TYPE = @Type
+        ORDER BY TABLE_NAME"
+
+      this.Query<Table>(sql, ParameterCollection [
+        "Name", schema.Name :> objnull
+        "Type", TableType.BaseTable
+      ])
