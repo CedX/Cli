@@ -51,8 +51,9 @@
 		<Compile Include="Management.fs" />
 		<Compile Include="Security.fs" />
 		<Compile Include="ServiceProcess.fs" />
+		<Compile Include="Text.fs" />
 		<Compile Include="Options/*.fs" />
-		<Compile Include="Commands/Install.Gitea.fs" />
+		<Compile Include="Commands/*.fs" />
 		<Compile Include="RootCommand.fs" />
 		<Compile Include="Container.fs" />
 		<Compile Include="Program.fs" />
