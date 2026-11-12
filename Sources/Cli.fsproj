@@ -10,27 +10,29 @@
 	<PropertyGroup>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AssemblyName>Belin.Cli</AssemblyName>
-		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<HotReloadAutoRestart>true</HotReloadAutoRestart>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<OutDir>../Binaries</OutDir>
+		<PackAsTool>true</PackAsTool>
 		<RootNamespace>Belin.Cli</RootNamespace>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<TargetFramework>net11.0</TargetFramework>
+		<ToolCommandName>belin</ToolCommandName>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="$(AssemblyName).Tests" />
 		<PackageReference Update="FSharp.Core" Version="11.0.101" />
 		<PackageReference Include="Belin.Sql.FSharp" Version="2026.12.1" />
+		<PackageReference Include="Belin.Which.FSharp" Version="2026.11.0" />
 		<PackageReference Include="MySqlConnector" Version="3.0.0" />
-		<PackageReference Include="System.Management.Automation" Version="7.7.0" />
+		<PackageReference Include="System.CommandLine" Version="3.0.0" />
 		<PackageReference Include="System.ServiceProcess.ServiceController" Version="11.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Include="Data.fs" />
+		<!-- <Compile Include="Data.fs" />
 		<Compile Include="Diagnostics.fs" />
 		<Compile Include="IO.fs" />
 		<Compile Include="Management.fs" />
@@ -43,6 +45,6 @@
 		<Compile Include="Services/Node.fs" />
 		<Compile Include="Services/PowerShell.fs" />
 		<Compile Include="Services/Factory.fs" />
-		<Compile Include="Cmdlets/*.fs" />
+		<Compile Include="Cmdlets/*.fs" /> -->
 	</ItemGroup>
 </Project>
