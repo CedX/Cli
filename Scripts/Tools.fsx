@@ -38,7 +38,7 @@ module Tools =
 
   /// Prints the specified message to the standard error and terminates the process.
   let writeError (message: objnull) =
-    eprintfn "%s" (Convert.ToString message)
+    eprintfn "%s" (string message)
     Environment.Exit 1
 
   /// Prints the specified message to the standard output.

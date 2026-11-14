@@ -34,8 +34,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="$(AssemblyName).Tests" />
-		<PackageReference Update="FSharp.Core" Version="11.0.101" />
 		<PackageReference Include="Belin.Sql.FSharp" Version="2026.12.1" />
 		<PackageReference Include="Belin.Which.FSharp" Version="2026.11.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0" />

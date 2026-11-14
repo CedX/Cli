@@ -18,7 +18,7 @@ type UriOption() as this =
   /// Validates the result produced when parsing this option.
   member private _.Validate(result: OptionResult) =
     let schemes = allowedSchemes |> Array.map (fun scheme -> $"'{scheme}'") |> String.concat " or "
-    match Uri.TryCreate(result.GetValue this, UriKind.Absolute) with
+    match Uri.TryCreate(result.GetRequiredValue this, UriKind.Absolute) with
     | false, _ -> result.AddError $"The '--{this.Name}' option requires a valid connection URI."
     | true, uri ->
       let uri = nonNull uri
