@@ -4,22 +4,6 @@ open System
 open System.CommandLine
 open System.CommandLine.Parsing
 
-/// Provides the name of a database schema.
-type SchemaOption() =
-  inherit Option<string array>(
-    "--schema", [| "-s" |],
-    HelpName = "name",
-    Description = "The schema name."
-  )
-
-/// Provides the name of a database table.
-type TableOption() =
-  inherit Option<string array>(
-    "--table", [| "-t" |],
-    HelpName = "name",
-    Description = "The table name."
-  )
-
 /// Provides the connection string of a data source.
 type UriOption() as this =
   inherit Option<string>("--uri", [| "-u" |], HelpName = "dsn")

@@ -13,7 +13,7 @@
 		<PackageIcon>Icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>ReadMe.md</PackageReadmeFile>
-		<PackageTags>TODO</PackageTags>
+		<PackageTags>automation;cli;installer;system;tools</PackageTags>
 		<PackAsTool>true</PackAsTool>
 		<RepositoryUrl>https://github.com/CedX/Cli.git</RepositoryUrl>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -54,7 +54,7 @@
 
 		<Compile Include="Install/Compression.fs" />
 		<Compile Include="Install/File.fs" />
-		<Compile Include="Install/Options.fs" />
+		<Compile Include="Install/*Option.fs" />
 		<Compile Include="Install/*Command.fs" />
 		<Compile Include="Install/*Module.fs" />
 
@@ -64,7 +64,7 @@
 		<Compile Include="MySql/Table.fs" />
 		<Compile Include="MySql/Schema.fs" />
 		<Compile Include="MySql/Connection.fs" />
-		<Compile Include="MySql/Options.fs" />
+		<Compile Include="MySql/*Option.fs" />
 		<Compile Include="MySql/*Command.fs" />
 		<Compile Include="MySql/*Module.fs" />
 
@@ -75,6 +75,6 @@
 		<Compile Include="Container.fs" />
 		<Compile Include="Program.fs" />
 
-		<Content Include="../Resources/**" CopyToOutputDirectory="Always" Link="Resources/%(RecursiveDir)%(Filename)%(Extension)" />
+		<Content Include="../Resources/**" CopyToOutputDirectory="Always" Link="Resources/%(RecursiveDir)%(Filename)%(Extension)" Pack="false" />
 	</ItemGroup>
 </Project>

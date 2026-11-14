@@ -9,7 +9,7 @@ module Text =
 
   /// The path to the resource directory.
   let private resources: string =
-    typeof<Architecture>.Assembly.Location |> Path.GetDirectoryName |> fun name -> Path.Join(name, "../Resources/Text")
+    typeof<Architecture>.Assembly.Location |> Path.GetDirectoryName |> fun name -> Path.Join(name, "Resources/Text")
 
   /// The list of binary file extensions.
   let private binaryExtensions: string array =

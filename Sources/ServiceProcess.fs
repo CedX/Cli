@@ -90,7 +90,7 @@ module Nssm =
 
   /// The path to the resource directory.
   let private resources: string =
-    typeof<Architecture>.Assembly.Location |> Path.GetDirectoryName |> fun name -> Path.Join(name, "../Resources/ServiceProcess")
+    typeof<Architecture>.Assembly.Location |> Path.GetDirectoryName |> fun name -> Path.Join(name, "Resources/ServiceProcess")
 
   /// Returns the absolute path of the `nssm` program according to the specified process architecture.
   let getPath (architecture: Architecture): string =

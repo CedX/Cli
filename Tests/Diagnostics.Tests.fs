@@ -14,7 +14,7 @@ type DiagnosticsTests() =
   [<DataRow("nssm.x64.exe", Architecture.X64)>]
   [<DataRow("nssm.x86.exe", Architecture.X86)>]
   member _.GetExecutableArchitecture(executable: string, expected: Architecture) =
-    Path.Join(AppContext.BaseDirectory, $"../Resources/ServiceProcess/{executable}") |> Diagnostics.getExecutableArchitecture |> Should.be expected
+    Path.Join(AppContext.BaseDirectory, $"Resources/ServiceProcess/{executable}") |> Diagnostics.getExecutableArchitecture |> Should.be expected
 
   [<TestMethod>]
   member _.GetExecutableVersion() =
