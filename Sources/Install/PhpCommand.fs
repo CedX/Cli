@@ -28,9 +28,7 @@ type PhpCommand(httpClient: HttpClient) as this =
 
   /// Value indicating whether to register the PHP interpreter with the event log.
   let registerEventSourceOption =
-    let option = Option<bool> "--register-event-source"
-    option.Description <- "Value indicating whether to register the PHP interpreter with the event log."
-    option
+    Option<bool>("--register-event-source", Description = "Value indicating whether to register the PHP interpreter with the event log.")
 
   do
     this.Options.Add destinationOption
