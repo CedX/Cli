@@ -52,7 +52,7 @@
 
 		<Compile Include="Install/Compression.fs" />
 		<Compile Include="Install/File.fs" />
-		<Compile Include="Install/*Option.fs" />
+		<Compile Include="Install/*Argument.fs" />
 		<Compile Include="Install/*Command.fs" />
 		<Compile Include="Install/*Module.fs" />
 

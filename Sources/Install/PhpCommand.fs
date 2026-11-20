@@ -23,21 +23,21 @@ type PhpCommand(httpClient: HttpClient) as this =
   inherit Command("php", "Install the latest PHP release.")
 
   /// The path to the destination directory.
-  let destinationOption =
-    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Program Files\PHP" else "/usr/local")
+  let destinationArgument =
+    DestinationArgument(if OperatingSystem.IsWindows() then @"C:\Program Files\PHP" else "/usr/local")
 
   /// Value indicating whether to register the PHP interpreter with the event log.
   let registerEventSourceOption =
     Option<bool>("--register-event-source", Description = "Value indicating whether to register the PHP interpreter with the event log.")
 
   do
-    this.Options.Add destinationOption
+    this.Arguments.Add destinationArgument
     this.Options.Add registerEventSourceOption
     this.SetAction this.Invoke
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
-    let destinationPath = (parseResult.GetRequiredValue destinationOption).FullName
+    let destinationPath = (parseResult.GetRequiredValue destinationArgument).FullName
     let registerEventSource = parseResult.GetRequiredValue registerEventSourceOption
 
     if not (OperatingSystem.IsWindows()) then

@@ -20,16 +20,16 @@ type PowerShellCommand(httpClient: HttpClient) as this =
   inherit Command("powershell", "Install the latest PowerShell release.")
 
   /// The path to the destination directory.
-  let destinationOption =
-    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Program Files\PowerShell" else "/opt/powershell")
+  let destinationArgument =
+    DestinationArgument(if OperatingSystem.IsWindows() then @"C:\Program Files\PowerShell" else "/opt/powershell")
 
   do
-    this.Options.Add destinationOption
+    this.Arguments.Add destinationArgument
     this.SetAction this.Invoke
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
-    let destinationPath = (parseResult.GetRequiredValue destinationOption).FullName
+    let destinationPath = (parseResult.GetRequiredValue destinationArgument).FullName
     if not (Security.canWriteTo destinationPath) then
       eprintfn "You must run this command in an elevated prompt."
       1

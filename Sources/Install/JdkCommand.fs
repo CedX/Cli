@@ -12,24 +12,24 @@ type JdkCommand(httpClient: HttpClient) as this =
   inherit Command("jdk", "Install the latest OpenJDK release.")
 
   /// The path to the destination directory.
-  let destinationOption =
-    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Program Files\Node.js" else "/usr/local")
+  let destinationArgument =
+    DestinationArgument(if OperatingSystem.IsWindows() then @"C:\Program Files\Node.js" else "/usr/local")
 
   /// The major version of the Java development kit.
   let versionOption =
-    let option = Option<int>("--version", [| "-v" |], HelpName = "version")
+    let option = Option<int>("--version", [| "-v" |], HelpName = "number")
     option.DefaultValueFactory <- fun _ -> 25
     option.Description <- "The major version of the Java development kit."
     option.AcceptOnlyFromAmong("11", "17", "21", "25")
 
   do
-    this.Options.Add destinationOption
+    this.Arguments.Add destinationArgument
     this.Options.Add versionOption
     this.SetAction this.Invoke
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
-    let destinationPath = (parseResult.GetRequiredValue destinationOption).FullName
+    let destinationPath = (parseResult.GetRequiredValue destinationArgument).FullName
     let version = parseResult.GetRequiredValue versionOption
 
     if not (Security.canWriteTo destinationPath) then

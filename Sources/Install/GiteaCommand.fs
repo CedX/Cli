@@ -22,16 +22,16 @@ type GiteaCommand(httpClient: HttpClient) as this =
   inherit Command("gitea", "Install the latest Gitea release.")
 
   /// The path to the destination directory.
-  let destinationOption =
-    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Gitea" else "/opt/gitea")
+  let destinationArgument =
+    DestinationArgument(if OperatingSystem.IsWindows() then @"C:\Gitea" else "/opt/gitea")
 
   do
-    this.Options.Add destinationOption
+    this.Arguments.Add destinationArgument
     this.SetAction this.Invoke
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
-    let destinationPath = (parseResult.GetRequiredValue destinationOption).FullName
+    let destinationPath = (parseResult.GetRequiredValue destinationArgument).FullName
     if not (Security.canWriteTo destinationPath) then
       eprintfn "You must run this command in an elevated prompt."
       1

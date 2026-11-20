@@ -10,16 +10,16 @@ type NssmCommand() as this =
   inherit Command("nssm", "Install the latest NSSM release.")
 
   /// The path to the destination directory.
-  let destinationOption =
-    DestinationOption(if OperatingSystem.IsWindows() then @"C:\Windows\System32" else "/usr/local/bin")
+  let destinationArgument =
+    DestinationArgument(if OperatingSystem.IsWindows() then @"C:\Windows\System32" else "/usr/local/bin")
 
   do
-    this.Options.Add destinationOption
+    this.Arguments.Add destinationArgument
     this.SetAction this.Invoke
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
-    let destinationPath = (parseResult.GetRequiredValue destinationOption).FullName
+    let destinationPath = (parseResult.GetRequiredValue destinationArgument).FullName
 
     if not (OperatingSystem.IsWindows()) then
       eprintfn "This command only supports the Windows platform."
