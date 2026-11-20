@@ -14,7 +14,7 @@ type MySqlRestoreCommand() =
   inherit Command("restore", "Restore a set of MariaDB/MySQL tables.")
 
   /// The connection URI.
-  let uriOption = UriOption()
+  let uriArgument = UriArgument()
 
   /// Specifies the path to an SQL dump.
   [<Parameter(Mandatory = true, ParameterSetName = "Path", Position = 2, ValueFromPipeline = true); SupportsWildcards>]

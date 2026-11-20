@@ -9,11 +9,11 @@ open System.CommandLine
 type SetCharsetCommand() as this =
   inherit Command("set-charset", "Alter the character set of MariaDB/MySQL tables.")
 
+  /// The connection URI.
+  let uriArgument = UriArgument()
+
   /// The name of the new character set.
   let collationArgument = Argument<string>("collation", Description = "The name of the new character set.")
-
-  /// The connection URI.
-  let uriOption = UriOption()
 
   /// The schema name.
   let schemaOption = SchemaOption()
@@ -22,15 +22,15 @@ type SetCharsetCommand() as this =
   let tableOption = TableOption()
 
   do
+    this.Arguments.Add uriArgument
     this.Arguments.Add collationArgument
-    this.Options.Add uriOption
     this.Options.Add schemaOption
     this.Options.Add tableOption
     this.SetAction this.Invoke
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
-    use connection = MySqlConnection.OfUri (Uri(parseResult.GetRequiredValue uriOption))
+    use connection = MySqlConnection.OfUri (Uri(parseResult.GetRequiredValue uriArgument))
 
     let collation = parseResult.GetRequiredValue collationArgument
     let normalizedCollation = collation.ToLowerInvariant()
@@ -38,12 +38,12 @@ type SetCharsetCommand() as this =
       eprintfn "The specified collation is unknown."
       1
     else
-      let schemaNames = parseResult.GetRequiredValue schemaOption
+      let schemaNames = parseResult.GetValue schemaOption |> defaultIfNull [||]
       let schemas =
         if Array.isEmpty schemaNames then connection.GetSchemas()
         else schemaNames |> Seq.map (fun schema -> { Schema.Default with Name = schema })
 
-      let tableNames = parseResult.GetRequiredValue tableOption
+      let tableNames = parseResult.GetValue tableOption |> defaultIfNull [||]
       let tables =
         schemas |> Seq.collect (fun schema ->
           if Array.isEmpty tableNames then connection.GetTables schema

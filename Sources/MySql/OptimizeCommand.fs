@@ -10,7 +10,7 @@ type OptimizeCommand() as this =
   inherit Command("optimize", "Optimize a set of MariaDB/MySQL tables.")
 
   /// The connection URI.
-  let uriOption = UriOption()
+  let uriArgument = UriArgument()
 
   /// The schema name.
   let schemaOption = SchemaOption()
@@ -19,21 +19,21 @@ type OptimizeCommand() as this =
   let tableOption = TableOption()
 
   do
-    this.Options.Add uriOption
+    this.Arguments.Add uriArgument
     this.Options.Add schemaOption
     this.Options.Add tableOption
     this.SetAction this.Invoke
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
-    use connection = MySqlConnection.OfUri (Uri(parseResult.GetRequiredValue uriOption))
+    use connection = MySqlConnection.OfUri (Uri(parseResult.GetRequiredValue uriArgument))
 
-    let schemaNames = parseResult.GetRequiredValue schemaOption
+    let schemaNames = parseResult.GetValue schemaOption |> defaultIfNull [||]
     let schemas =
       if Array.isEmpty schemaNames then connection.GetSchemas()
       else schemaNames |> Seq.map (fun schema -> { Schema.Default with Name = schema })
 
-    let tableNames = parseResult.GetRequiredValue tableOption
+    let tableNames = parseResult.GetValue tableOption |> defaultIfNull [||]
     let tables =
       schemas |> Seq.collect (fun schema ->
         if Array.isEmpty tableNames then connection.GetTables schema

@@ -9,11 +9,11 @@ open System.CommandLine
 type SetEngineCommand() as this =
   inherit Command("set-engine", "Alter the storage engine of MariaDB/MySQL tables.")
 
+  /// The connection URI.
+  let uriArgument = UriArgument()
+
   /// The name of the new storage engine.
   let engineArgument = Argument<string>("engine", Description = "The name of the new storage engine.")
-
-  /// The connection URI.
-  let uriOption = UriOption()
 
   /// The schema name.
   let schemaOption = SchemaOption()
@@ -22,15 +22,15 @@ type SetEngineCommand() as this =
   let tableOption = TableOption()
 
   do
+    this.Arguments.Add uriArgument
     this.Arguments.Add engineArgument
-    this.Options.Add uriOption
     this.Options.Add schemaOption
     this.Options.Add tableOption
     this.SetAction this.Invoke
 
   /// Invokes this command.
   member _.Invoke(parseResult: ParseResult): int =
-    use connection = MySqlConnection.OfUri (Uri(parseResult.GetRequiredValue uriOption))
+    use connection = MySqlConnection.OfUri (Uri(parseResult.GetRequiredValue uriArgument))
 
     let engine = parseResult.GetRequiredValue engineArgument
     let normalizedEngine = engine.ToLowerInvariant()
@@ -38,12 +38,12 @@ type SetEngineCommand() as this =
       eprintfn "The specified engine is unknown."
       1
     else
-      let schemaNames = parseResult.GetRequiredValue schemaOption
+      let schemaNames = parseResult.GetValue schemaOption |> defaultIfNull [||]
       let schemas =
         if Array.isEmpty schemaNames then connection.GetSchemas()
         else schemaNames |> Seq.map (fun schema -> { Schema.Default with Name = schema })
 
-      let tableNames = parseResult.GetRequiredValue tableOption
+      let tableNames = parseResult.GetValue tableOption |> defaultIfNull [||]
       let tables =
         schemas |> Seq.collect (fun schema ->
           if Array.isEmpty tableNames then connection.GetTables schema

@@ -62,6 +62,7 @@
 		<Compile Include="MySql/Table.fs" />
 		<Compile Include="MySql/Schema.fs" />
 		<Compile Include="MySql/Connection.fs" />
+		<Compile Include="MySql/*Argument.fs" />
 		<Compile Include="MySql/*Option.fs" />
 		<Compile Include="MySql/*Command.fs" />
 		<Compile Include="MySql/*Module.fs" />

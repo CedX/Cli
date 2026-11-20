@@ -14,7 +14,7 @@ type MySqlBackupCommand() =
   inherit Command("backup", "Backup a set of MariaDB/MySQL tables.)
 
   /// The connection URI.
-  let uriOption = UriOption()
+  let uriArgument = UriArgument()
 
   /// The path to the output directory.
   [<Parameter(Mandatory = true, Position = 2); ValidatePath("The specified output path is invalid.")>]
