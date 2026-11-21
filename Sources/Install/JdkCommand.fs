@@ -16,11 +16,11 @@ type JdkCommand(httpClient: HttpClient) as this =
     DestinationArgument(if OperatingSystem.IsWindows() then @"C:\Program Files\Node.js" else "/usr/local")
 
   /// The major version of the Java development kit.
-  let versionOption =
-    let option = Option<int>("--version", [| "-v" |], HelpName = "number")
-    option.DefaultValueFactory <- fun _ -> 25
-    option.Description <- "The major version of the Java development kit."
-    option.AcceptOnlyFromAmong("11", "17", "21", "25")
+  let versionOption = Option<int>(
+    "--version", [| "-v" |],
+    HelpName = "number",
+    Description = "The major version of the Java development kit.",
+    DefaultValueFactory = (fun _ -> 25)).AcceptOnlyFromAmong("11", "17", "21", "25")
 
   do
     this.Arguments.Add destinationArgument
